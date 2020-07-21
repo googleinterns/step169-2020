@@ -1,0 +1,46 @@
+#navbar {
+    width: 100%;
+    height: auto;
+    background-color: #000000;
+    position: fixed;
+    z-index: 100;
+    padding: 5px 10px;
+    left: 0;
+    top: 0;
+    overflow: auto;
+    text-align: center;
+}
+
+#search-form {
+  display: inline-table;
+}
+
+#search-form > * {
+  margin: 0 7px;
+}
+
+#content {
+  padding-top: 30px; 
+}
+
+#content::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+#map-container {
+  width: 66%;
+  height: 100vh;
+  background-color: blue;
+  float: left;
+  clear: left;
+}
+
+#article-list-container {
+  width: 33%;
+  height: 100vh;
+  background-color: red;
+  float: right;
+  clear: right;
+}

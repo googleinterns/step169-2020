@@ -11,3 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+function attachSearchFormSubmissionEvent() {
+  const nicknameForm = document.getElementById('search-form');
+  nicknameForm.addEventListener('submit', event => {
+    event.preventDefault();
+    doSearch(event.target);
+  });
+}
+
+function doSearch(form) {
+  // TODO implement the search
+}
