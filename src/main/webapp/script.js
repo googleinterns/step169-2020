@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function onPageLoad() {
+  attachSearchFormSubmissionEvent();
+  initMap();
+}
+
 function attachSearchFormSubmissionEvent() {
-  const nicknameForm = document.getElementById('search-form');
-  nicknameForm.addEventListener('submit', event => {
+  const searchForm = document.getElementById('search-form');
+  searchForm.addEventListener('submit', event => {
     event.preventDefault();
     doSearch(event.target);
   });
