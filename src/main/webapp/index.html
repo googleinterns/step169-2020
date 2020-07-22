@@ -8,14 +8,14 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlKFdxL2rShylt-FgSZJsI1262UzOmTCE&callback=initMap">
     </script>
     <script src="script.js"></script>
-</head>
+  </head>
 
-  <body onload="initMap(); getInitialContent()">
+  <body onload="onPageLoad()">
     <header>
       <!-- Navigation bar with search form -->
       <nav id="navbar">
         <a id="nav-toggle" href="#">&#9776;</a>
-        <form id="search-form" method="GET" onsubmit="doSearch()">
+        <form id="search-form">
           <input type="text" class="text-field" id="topic-search-field" placeholder="Search Topic..."></input>
           <input type="text" class="text-field" id="region-search-field" placeholder="Search Region..."></input>
           <input type="submit" value="Search" id="search-button"></input>
@@ -31,14 +31,13 @@
 
       <!-- List of articles returned from the search -->
       <div id="article-list-container">
-          <div id ="list">
-            <ul id="articles-list">                             
-            </ul>
-          </div>
-
+        <div id ="list">
+          <ul id="articles-list">                             
+          </ul>
+        </div>
       </div>
+      
     </div>
-    
   </body>
 </html>
  

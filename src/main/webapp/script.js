@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function onPageLoad() {
+  attachSearchFormSubmissionEvent();
+  initMap();
+  getInitialContent();
+}
+
 function attachSearchFormSubmissionEvent() {
-  const nicknameForm = document.getElementById('search-form');
-  nicknameForm.addEventListener('submit', event => {
+  const searchForm = document.getElementById('search-form');
+  searchForm.addEventListener('submit', event => {
     event.preventDefault();
     doSearch(event.target);
   });
@@ -29,7 +35,7 @@ function doSearch(form) {
  */
 function getInitialContent() {
     for (i = 1; i <= 10; i++) {
-        addArticle("Title " + i, "Publisher " + i, "Content " + i, "www.google.com");
+        addArticle("Title " + i, "Publisher " + i, "Content " + i, "https://www.google.com");
     }
 }
 
