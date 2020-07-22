@@ -10,14 +10,14 @@
     <script src="script.js"></script>
 </head>
 
-  <body>
+  <body onload="initMap()">
     <header>
       <!-- Navigation bar with search form -->
       <nav id="navbar">
         <a id="nav-toggle" href="#">&#9776;</a>
         <form id="search-form" method="GET" onsubmit="doSearch()">
-          <input type="text" class="text-field" id="topic-search-field" placehlider="Search Topic..."></input>
-          <input type="text" class="text-field" id="region-search-field" placehlider="Search Region..."></input>
+          <input type="text" class="text-field" id="topic-search-field" placeholder="Search Topic..."></input>
+          <input type="text" class="text-field" id="region-search-field" placeholder="Search Region..."></input>
           <input type="submit" value="Search" id="search-button"></input>
         </form>
       </nav>
@@ -33,40 +33,46 @@
       <div id="article-list-container">
           <div id ="list">
             <ul>
-                  <li><h2>Article Title</h2>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
-                          <ul>
-                  <li><h2>Article Title</h2>
+            <ul>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
-                          <ul>
-                  <li><h2>Article Title</h2>
+            <ul>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
-                          <ul>
-                  <li><h2>Article Title</h2>
+            <ul>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
-                          <ul>
-                  <li><h2>Article Title</h2>
+            <ul>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
-                          <ul>
-                  <li><h2>Article Title</h2>
+            <ul>
+                <li>
+                  <h2>Article Title</h2>
                   <h4>Article Publisher</h4>
                   <p>sample content</p>
-                  </li>  
+                </li>  
             </ul>
           </div>
 
