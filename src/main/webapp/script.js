@@ -14,8 +14,11 @@
 
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
-  initMap();
+  map = initMap();
   getInitialContent();
+  addLandmark(map, 40.7128, -74.0060, "New York City");
+  addLandmark(map, 41.8781, -87.6298, "Chicago");
+  addLandmark(map, 34.0522, -118.2437, "Los Angeles");
 }
 
 function attachSearchFormSubmissionEvent() {
@@ -40,6 +43,19 @@ function getInitialContent() {
 }
 
 /**
+    Function for testing that adds articles with a custom title.
+ */
+function testAddArticles(title) {
+    const articleList = document.getElementById("articles-list");
+    while(articleList.firstChild) {
+        articleList.removeChild(articleList.firstChild);
+    }
+    for (i = 1; i <= 10; i++) {
+        addArticle(title + " " + i, "Publisher " + i, "Content " + i, "https://www.google.com");
+    }
+}
+
+/**
     Adds an article with the passed attributes to the article list.
  */
 function addArticle(title, publisher, content, link) {
@@ -59,6 +75,16 @@ function addArticle(title, publisher, content, link) {
     item.appendChild(publisherElement);
     item.appendChild(contentElement);
     articleList.appendChild(item);
+}
+
+/** Adds a marker that shows an info window when clicked. */
+function addLandmark(map, lat, lng, title) {
+  const marker = new google.maps.Marker(
+      {position: {lat: lat, lng: lng}, map: map, title: title});
+
+  marker.addListener('click', () => {
+    testAddArticles(title);
+  });
 }
 
 
@@ -325,4 +351,5 @@ function initMap() {
             }
             ]
     });
+    return map;
 }
