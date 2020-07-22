@@ -24,6 +24,37 @@ function doSearch(form) {
   // TODO implement the search
 }
 
+/**
+    Fetches the initial articles displayed on the page.
+ */
+function getInitialContent() {
+    for (i = 1; i <= 10; i++) {
+        addArticle("Title " + i, "Publisher " + i, "Content " + i, "www.google.com");
+    }
+}
+
+/**
+    Adds an article with the passed attributes to the article list.
+ */
+function addArticle(title, publisher, content, link) {
+    const articleList = document.getElementById("articles-list");
+    let item = document.createElement('li');
+    let titleElement = document.createElement('h2');
+    titleElement.innerText = title;
+    let publisherElement = document.createElement('h4');
+    publisherElement.innerText = publisher;
+    let contentElement = document.createElement('p'); 
+    contentElement.innerText = content + "\n";
+    let linkElement = document.createElement('a');
+    linkElement.innerText = "Read More"
+    linkElement.href = link;
+    contentElement.appendChild(linkElement);
+    item.appendChild(titleElement);
+    item.appendChild(publisherElement);
+    item.appendChild(contentElement);
+    articleList.appendChild(item);
+}
+
 
 /** Creates a map and adds it to the page. */
 function initMap() {
