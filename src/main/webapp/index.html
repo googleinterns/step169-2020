@@ -10,7 +10,7 @@
     <script src="script.js"></script>
 </head>
 
-  <body onload="initMap()">
+  <body onload="initMap(); getInitialContent()">
     <header>
       <!-- Navigation bar with search form -->
       <nav id="navbar">
@@ -32,57 +32,7 @@
       <!-- List of articles returned from the search -->
       <div id="article-list-container">
           <div id ="list">
-            <ul>
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
- 
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
- 
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>  
-                <li>
-                  <h2>Article Title</h2>
-                  <h4>Article Publisher</h4>
-                  <p>sample content</p>
-                </li>                                  
+            <ul id="articles-list">                             
             </ul>
           </div>
 
