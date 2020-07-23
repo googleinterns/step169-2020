@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+    Runs when the page is first loaded. Does the following:
+    - Sets up form submission event.
+    - Sets up map.
+    - For testing purposes right now adds hard coded landmarks to map.
+ */
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
   map = initMap();
@@ -21,6 +27,9 @@ function onPageLoad() {
   addLandmark(map, 34.0522, -118.2437, "Los Angeles");
 }
 
+/** 
+    Makes it so the search form uses our custom JS and not the default HTML functionality.
+ */
 function attachSearchFormSubmissionEvent() {
   const searchForm = document.getElementById('search-form');
   searchForm.addEventListener('submit', event => {
@@ -29,42 +38,78 @@ function attachSearchFormSubmissionEvent() {
   });
 }
 
+/**
+    Clears all previous children of the article list.
+ */
+function clearArticleList() {
+    const articleList = document.getElementById("articles-list");
+    while(articleList.firstChild) {
+        articleList.removeChild(articleList.firstChild);
+    }
+}
+
+/**
+    Starting point of a region search. Submits query to the servlet and then passes its responses to the getRegionArticles function.
+ */
 function doSearch(form) {
-  // TODO implement the search
+    let region = form.elements["region-search-field"];
+    let topic = form.elements["topic-search-field"];
+    let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
+    const response = fetch(fetchParameter);
+    response.then(getRegionArticles);
+}
+
+/**
+    Retrieves the json from the servlet response.
+ */
+function getRegionArticles(response) {
+    const json = response.json();
+    json.then(displayArticles);
+}
+
+/**
+    Displays the articles contained in the json to the webpage.
+ */
+function displayArticles(json) {
+    clearArticleList();
+    for (index in json) {
+        let articleObj = json[index];
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
+    }
 }
 
 /**
     Fetches the initial articles displayed on the page.
  */
 function getInitialContent() {
-    for (i = 1; i <= 10; i++) {
-        addArticle("Title " + i, "Publisher " + i, "Content " + i, "https://www.google.com");
-    }
+    const articleList = document.getElementById("articles-list");
+    let item = document.createElement('li');
+    let titleElement = document.createElement('h2');
+    titleElement.innerText = "Enter a state or city in the search bar above or click a pin on the map for articles relevant to that location.";
+    item.appendChild(titleElement);
+    articleList.appendChild(item);
 }
 
 /**
     Function for testing that adds articles with a custom title.
  */
 function testAddArticles(title) {
-    const articleList = document.getElementById("articles-list");
-    while(articleList.firstChild) {
-        articleList.removeChild(articleList.firstChild);
-    }
+    clearArticleList();
     for (i = 1; i <= 10; i++) {
-        addArticle(title + " " + i, "Publisher " + i, "Content " + i, "https://www.google.com");
+        addArticle(title + " " + i, "Publisher " + i, "Content " + i, "07/23/2020", "https://www.google.com");
     }
 }
 
 /**
     Adds an article with the passed attributes to the article list.
  */
-function addArticle(title, publisher, content, link) {
+function addArticle(title, publisher, content, date, link) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
     let publisherElement = document.createElement('h4');
-    publisherElement.innerText = publisher;
+    publisherElement.innerText = publisher + " - " + date;
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
     let linkElement = document.createElement('a');
