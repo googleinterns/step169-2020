@@ -3,13 +3,30 @@ package com.google.sps.servlets;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.time.Instant;
 import java.lang.IllegalArgumentException;
 
 class MockNewsService implements NewsService {
   @Override
   public List<Article> getWorldNews(int count) {
-    return new ArrayList<>();
+    String[] cities = {"Mountain View", "Los Angeles", "Chicago", "New York", "Austin", "Boston"};
+    int[] counts = {6, 2, 1, 10, 3, 7};
+    List<Article> articles = new ArrayList<>();
+    for (int i = 0; i < cities.length; i++) {
+        for (int j = 0; j < counts[i]; j++) {
+            Article article = new Article(cities[i] + " " + (j+1),
+            "First Provider",
+            Instant.parse("2007-12-03T10:15:30.00Z"),
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
+            "https://example.com/sample1",
+            "https://example.com/samplethumbnail1",
+            cities[i]);
+            articles.add(article);
+        }
+    }
+    Collections.shuffle(articles);
+    return articles;
   }
 
   @Override

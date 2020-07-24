@@ -18,13 +18,14 @@
     - Sets up map.
     - For testing purposes right now adds hard coded landmarks to map.
  */
+
+var sharedMap = null;
+
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
   map = initMap();
+  sharedMap = map;
   getInitialContent();
-  addLandmark(map, 40.7128, -74.0060, "New York City");
-  addLandmark(map, 41.8781, -87.6298, "Chicago");
-  addLandmark(map, 34.0522, -118.2437, "Los Angeles");
 }
 
 /** 
@@ -63,17 +64,64 @@ function doSearch(form) {
 }
 
 /**
-    Retrieves the json from the servlet response.
+    Retrieves the json from the region-news servlet response.
  */
 function getRegionArticles(response) {
     const json = response.json();
-    json.then(displayArticles);
+    json.then(displayArticlesFromJSON);
+}
+
+/**
+    Retrieves the json from the world-news servlet response.
+ */
+function getWorldArticles(response) {
+    const json = response.json();
+    json.then(configureWorldArticles);
+}
+
+/**
+    Sorts the world news articles, saves them and adds pins to the map for them.
+ */
+function configureWorldArticles(json) {
+    let articleMap = new Map();
+    for (index in json) {
+        let articleObj = json[index];
+        if (articleMap[articleObj.location] == null) {
+            articleMap[articleObj.location] = [articleObj];
+        } else {
+            articleMap[articleObj.location].push(articleObj);
+        }
+    }
+    for (key in articleMap) {
+        console.log(key, articleMap[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getJSONOfGeoCoding.bind(null, articleMap[key]));
+    }
+}
+
+/**
+    Prints the response.
+ */
+function getJSONOfGeoCoding(articles, response) {
+    const json = response.json();
+    return json.then(placeArticlesPinOnMap.bind(null, articles));
+}
+
+/**
+    Prints the response.
+ */
+function placeArticlesPinOnMap(articles, json) {
+    let lat = json.results[0].geometry.location.lat;
+    let long = json.results[0].geometry.location.lng;
+    let title = json.results[0].formatted_address;
+    addLandmark(sharedMap, lat, long, title, articles);
+    return json;
 }
 
 /**
     Displays the articles contained in the json to the webpage.
  */
-function displayArticles(json) {
+function displayArticlesFromJSON(json) {
     clearArticleList();
     for (index in json) {
         let articleObj = json[index];
@@ -85,12 +133,21 @@ function displayArticles(json) {
     Fetches the initial articles displayed on the page.
  */
 function getInitialContent() {
+    /**
+        Initial message telling the user to search or click a pin.
+     */
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
     titleElement.innerText = "Enter a state or city in the search bar above or click a pin on the map for articles relevant to that location.";
     item.appendChild(titleElement);
     articleList.appendChild(item);
+    /**
+        Fetches the world news, clusters it, and places the pins corresponding to its included locations.
+     */
+    let fetchParameter = "/world-news";
+    const response = fetch(fetchParameter);
+    response.then(getWorldArticles);
 }
 
 /**
@@ -100,6 +157,17 @@ function testAddArticles(title) {
     clearArticleList();
     for (i = 1; i <= 10; i++) {
         addArticle(title + " " + i, "Publisher " + i, "Content " + i, "07/23/2020", "https://www.google.com");
+    }
+}
+
+/**
+    Displays the passed list of articles.
+ */
+function displayArticles(articles) {
+    clearArticleList();
+    for (i = 0; i < articles.length; i++) {
+        articleObj = articles[i];
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
     }
 }
 
@@ -126,12 +194,12 @@ function addArticle(title, publisher, content, date, link) {
 }
 
 /** Adds a marker that shows an info window when clicked. */
-function addLandmark(map, lat, lng, title) {
+function addLandmark(map, lat, lng, title, articles) {
   const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, map: map, title: title});
 
   marker.addListener('click', () => {
-    testAddArticles(title);
+    displayArticles(articles);
   });
 }
 
