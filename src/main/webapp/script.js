@@ -52,11 +52,14 @@ function clearArticleList() {
     Starting point of a region search. Submits query to the servlet and then passes its responses to the getRegionArticles function.
  */
 function doSearch(form) {
-    let region = form.elements["region-search-field"];
-    let topic = form.elements["topic-search-field"];
-    let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
-    const response = fetch(fetchParameter);
-    response.then(getRegionArticles);
+    let region = form.elements["region-search-field"].value;
+    if (region != "") {
+        let topic = form.elements["topic-search-field"].value;
+        console.log("region: " + region + " topic: " + topic);
+        let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
+        const response = fetch(fetchParameter);
+        response.then(getRegionArticles);
+    } 
 }
 
 /**
