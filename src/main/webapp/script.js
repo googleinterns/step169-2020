@@ -394,3 +394,51 @@ function onPlaceChanged() {
         document.getElementById('region-search-field').placeholder = 'Enter a city';
     }
 }
+function openNav() {
+    document.getElementById("article-list-container").style.width = "30vw";
+}
+
+function closeNav() {
+    document.getElementById("article-list-container").style.width = "0";
+}
+
+function clearSearchRegion() {
+    const clearIcon = document.querySelector(".clear-region-icon");
+    const searchBar = document.querySelector(".searchRegion");
+
+    searchBar.addEventListener("keyup", () => {
+        if(searchBar.value && clearIcon.style.visibility != "visible"){
+        clearIcon.style.visibility = "visible";
+        } else if(!searchBar.value) {
+        clearIcon.style.visibility = "hidden";
+        }
+    });
+
+    clearIcon.addEventListener("click", () => {
+        searchBar.value = "";
+        clearIcon.style.visibility = "hidden";
+    })
+}
+function clearSearchTopic() {
+    const clearIcon = document.querySelector(".clear-topic-icon");
+    const searchBar = document.querySelector(".searchTopic");
+
+    searchBar.addEventListener("keyup", () => {
+        if(searchBar.value && clearIcon.style.visibility != "visible"){
+        clearIcon.style.visibility = "visible";
+        } else if(!searchBar.value) {
+        clearIcon.style.visibility = "hidden";
+        }
+    });
+
+    clearIcon.addEventListener("click", () => {
+        searchBar.value = "";
+        clearIcon.style.visibility = "hidden";
+    })
+}
+function disableTutorial(){
+    const tutorial = document.querySelector(".tutorial");
+    tutorial.addEventListener("click", () => {
+        tutorial.style.display = "none";
+    })
+}
