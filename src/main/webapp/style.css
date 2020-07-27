@@ -161,6 +161,14 @@ ul li:hover{
   
 }
 
+#article-list-container .closebtn:hover {
+  position: absolute;
+  top: 80px;
+  right: 25px;
+  font-size: 36px;
+  cursor: pointer;
+}
+
 @media screen and (max-height: 450px) {
   #article-list-container {padding-top: 15px;}
   #article-list-container a {font-size: 18px;}
