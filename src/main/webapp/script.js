@@ -284,7 +284,7 @@ function initMap() {
     zoom: 6,
     disableDefaultUI:true,
     zoomControl:true,
-
+    minZoom:3,
             styles: [
         {
             "elementType": "geometry",
