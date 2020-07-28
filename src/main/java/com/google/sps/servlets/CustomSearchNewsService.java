@@ -33,6 +33,7 @@ class CustomSearchNewsService implements NewsService {
   public static final String CUSTOM_SEARCH_API_URL = "https://www.googleapis.com/customsearch/v1";
   public static final String SEARCH_ENGINE_ID = "018391807022102648047:p8ac_1pp880";
   public static final String ENGLISH_LANGUAGE_CODE = "lang_en";
+  public static final String RECENT_DATE_BIAS = "date:d:s";
 
   private final Gson gson;
   private final String apiKey;
@@ -95,11 +96,12 @@ class CustomSearchNewsService implements NewsService {
   }
 
   private String queryCustomSearch(String searchQuery, int count, int offset) throws IOException {
-    String queryString = String.format("cx=%s&key=%s&q=%s&lr=%s", 
+    String queryString = String.format("cx=%s&key=%s&q=%s&lr=%s&sort=%s",
       SEARCH_ENGINE_ID, 
       apiKey, 
       searchQuery, 
-      ENGLISH_LANGUAGE_CODE);
+      ENGLISH_LANGUAGE_CODE,
+      RECENT_DATE_BIAS);
     String fullSearchUrl = String.format("%s?%s", CUSTOM_SEARCH_API_URL, queryString);
 
     try {
@@ -129,17 +131,17 @@ class CustomSearchNewsService implements NewsService {
   }
 
   private List<Article> parseResults(String json) {
+    List<Article> parsedArticles = new ArrayList<>();
     JsonObject results = gson.fromJson(json, JsonObject.class);
     JsonArray jsonArticles = results.getAsJsonArray("items");
     
-    List<Article> parsedArticles = new ArrayList<>();
     for (JsonElement article : jsonArticles) {
       try {
         parsedArticles.add(parseArticle(article.getAsJsonObject()));
       } catch (NullPointerException e) {
-         // Ignore this error, because we don't want the entire program 
-         // to halt because one article failed to parse.
-         // TODO add logging so that articles that fail to parse won't be missed.
+        // Ignore this error, because we don't want the entire program 
+        // to halt because one article failed to parse.
+        // TODO add logging so that articles that fail to parse won't be missed.
       }
     }
 
@@ -215,7 +217,7 @@ class CustomSearchNewsService implements NewsService {
     
     try {
       articleData.getAsJsonPrimitive("description")
-      .getAsString();
+        .getAsString();
     } catch (NullPointerException e) { }
 
     if (description == null) {
