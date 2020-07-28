@@ -11,7 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+    var map, places;
+    var autocomplete;
+    var countryRestrict = {'country': 'us'};
+    
+    
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
   map = initMap();
@@ -19,6 +23,8 @@ function onPageLoad() {
   addLandmark(map, 40.7128, -74.0060, "New York City");
   addLandmark(map, 41.8781, -87.6298, "Chicago");
   addLandmark(map, 34.0522, -118.2437, "Los Angeles");
+  initAuto();
+
 }
 
 function attachSearchFormSubmissionEvent() {
@@ -91,9 +97,12 @@ function addLandmark(map, lat, lng, title) {
 /** Creates a map and adds it to the page. */
 function initMap() {
     // Styles a map in night mode.
-    var map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.674, lng: -73.945},
     zoom: 6,
+    disableDefaultUI:true,
+    zoomControl:true,
+
     styles: [
             {
                 "elementType": "geometry",
@@ -350,6 +359,86 @@ function initMap() {
                 ]
             }
             ]
-    });
+        });
     return map;
+}
+
+function initAuto() {
+
+    // Create the autocomplete object and associate it with the UI input control.
+    // Restrict the search to the default country, and to place type "cities".
+    autocomplete = new google.maps.places.Autocomplete(
+        /** @type {!HTMLInputElement} */ (
+            document.getElementById('region-search-field')), {
+            types: ['(cities)'],
+            componentRestrictions: countryRestrict
+        });
+    places = new google.maps.places.PlacesService(map);
+
+    autocomplete.addListener('place_changed', onPlaceChanged);
+
+    // Add a DOM event listener to react when the user selects a country.
+    document.getElementById('country').addEventListener(
+        'change', setAutocompleteCountry);
+    }
+
+    // When the user selects a city, get the place details for the city and
+    // zoom the map in on the city.
+function onPlaceChanged() {
+    var place = autocomplete.getPlace();
+    if (place.geometry) {
+        map.panTo(place.geometry.location);
+        map.setZoom(10);
+        search();
+    } else {
+        document.getElementById('region-search-field').placeholder = 'Enter a city';
+    }
+}
+function openNav() {
+    document.getElementById("article-list-container").style.width = "30vw";
+}
+
+function closeNav() {
+    document.getElementById("article-list-container").style.width = "0";
+}
+
+function clearSearchRegion() {
+    const clearIcon = document.querySelector(".clear-region-icon");
+    const searchBar = document.querySelector(".searchRegion");
+
+    searchBar.addEventListener("keyup", () => {
+        if(searchBar.value && clearIcon.style.visibility != "visible"){
+        clearIcon.style.visibility = "visible";
+        } else if(!searchBar.value) {
+        clearIcon.style.visibility = "hidden";
+        }
+    });
+
+    clearIcon.addEventListener("click", () => {
+        searchBar.value = "";
+        clearIcon.style.visibility = "hidden";
+    })
+}
+function clearSearchTopic() {
+    const clearIcon = document.querySelector(".clear-topic-icon");
+    const searchBar = document.querySelector(".searchTopic");
+
+    searchBar.addEventListener("keyup", () => {
+        if(searchBar.value && clearIcon.style.visibility != "visible"){
+        clearIcon.style.visibility = "visible";
+        } else if(!searchBar.value) {
+        clearIcon.style.visibility = "hidden";
+        }
+    });
+
+    clearIcon.addEventListener("click", () => {
+        searchBar.value = "";
+        clearIcon.style.visibility = "hidden";
+    })
+}
+function disableTutorial(){
+    const tutorial = document.querySelector(".tutorial");
+    tutorial.addEventListener("click", () => {
+        tutorial.style.display = "none";
+    })
 }

@@ -1,24 +1,25 @@
-header { 
-    height: 50px;
+body{
+    margin:0;
 }
 #navbar {
     width: 100%;
-    height: auto;
-    background-color: #ffff;
+    height: 6vh;
     position: fixed;
     z-index: 100;
-    padding: 8px 20px;
     left: 0;
     top: 0;
-    overflow: auto;
+    overflow: hidden;
     text-align: center;
+    padding:12px;
 }
+
+/*
 #nav-toggle{
     color:black;
     float:left;
     font-size: 25px;
     line-height: 1.3;
-}
+} */
 #search-form {
   display: inline-table;
 }
@@ -32,7 +33,7 @@ header {
   outline: none;
   border:none;
   background-color: rgb(175, 175, 175, 0.2);
-  padding: 4px 8px;
+  padding: 8px 8px;
   box-shadow: 0 8px 14px -6px rgba(0, 0, 0, 0.2) inset;
 
 }
@@ -59,41 +60,34 @@ header {
   font-weight: bold;
 }
 
-#content {
-  padding: 2px 5px; 
-}
 
-#content::after {
-  content: "";
-  clear: both;
-  display: table;
-}
 
 #map-container {
-  width: 65vw;
-  height: 90vh;
-  float: left;
-  clear: left;
+  width: 100vw;
+  height: 100vh;
+  /* float: left;
+  clear: left; */
 }
 
-#article-list-container {
+/* #article-list-container {
   width:  30vw;
-  height: 87vh;
-  float: right;
-  clear: right;
-  background-color: rgba(241, 241, 241, 0.616);
+  height: 80vh;
+  position:fixed;
+  top:5vh;
+  right:10px;
+  background-color: rgba(241, 241, 241);
   padding: 1%;
   border-radius: 15px;
   box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   overflow-y: scroll;
 
-}
+} */
 #map {
   border: none;
   height: 100%;
   width: 100%;
-  border-radius:15px;
+  /* border-radius:15px; */
   display: -webkit-inline-box;
   outline: none;
 }
@@ -104,10 +98,140 @@ ul{
     padding: 2%;
 }
 ul li{
-    background-color: rgb(0,0,0,0.1);
+    background-color: rgb(202, 215, 231);
     border-radius: 15px;
     padding: 5px 20px;
     box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
+    z-index: 2;
+      transition: transform .2s; /* Animation */
+    width: 80%;
+    margin:5%
+}
+ul li:hover{
+  transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+
+}
+
+#logo{
+    width:5vw;
+    float: left;
+    margin-left:1vw;
+}
+
+#article-list-container {
+  height: 85%;
+  width: 0;
+  position: fixed;
+  z-index: 200;
+  top: 50px;
+  right: 0;
+  /* background-color: #111; */
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+#article-list-container a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+#article-list-container a:hover {
+  color: #f1f1f1;
+}
+
+#article-list-container .closebtn {
+  position: absolute;
+  top: 0px;
+  right: 25px;
+  font-size: 36px;
+}
+
+@media screen and (max-height: 500px) {
+  #article-list-container {padding-top: 15px;}
+  #article-list-container a {font-size: 18px;}
+}
+
+.wrapper {
+    position: relative;
+    display: inline-flex;
+    min-width: 100px;
+}
+
+.search-icon {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 14px;
+}
+
+.clear-region-icon {
+    position: absolute;
+    top: 13px;
+    right: 10px;
+    width: 10px;
+    cursor: pointer;
+    /* <!-- visibility: hidden; --> */
+}
+
+.searchRegion {
+    border: 1px solid grey;
+    border-radius: 25px;
+    height: 20px;
+    width: 100%;
+    padding: 7px 40px 7px 30px;
+    outline: 0;
+    background-color: #f5f5f5;
+}
+.searchRegion:hover, .search:focus {
+    border: 1.5px solid #009688;
+    background-color: white;
+}
+
+
+.clear-topic-icon {
+    position: absolute;
+    top: 13px;
+    right: 10px;
+    width: 10px;
+    cursor: pointer;
+    /* <!-- visibility: hidden; --> */
+}
+
+.searchTopic {
+    border: 1px solid grey;
+    border-radius: 25px;
+    height: 20px;
+    width: 100%;
+    padding: 7px 40px 7px 30px;
+    outline: 0;
+    background-color: #f5f5f5;
+}
+.searchTopic:hover, .search:focus {
+    border: 1.5px solid #009688;
+    background-color: white;
+}
+
+.tutorial{
+    width: 100vw;
+    height:100vh;
+    position: fixed;
+    top:0;
+    left:0;
+    z-index: 300;
+    cursor: pointer;
+    color:white;
+    text-align: center;
+}
+.tutorial h2{
+    position: relative;
+    top:40%;
+    font-size: 40px;
+    font-family: 'Roboto', sans-serif;
 
 }
