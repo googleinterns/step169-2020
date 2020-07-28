@@ -231,5 +231,7 @@ ul li:hover{
 .tutorial h2{
     position: relative;
     top:40%;
-    font-size: 25px;
+    font-size: 40px;
+    font-family: 'Roboto', sans-serif;
+
 }
