@@ -267,6 +267,6 @@ class CustomSearchNewsService implements NewsService {
 
   //TODO implement an actual location determination algorithm
   String getLocation(JsonObject article) {
-    return "Mountain View, California";
+    return "Unknown";
   }
 }
