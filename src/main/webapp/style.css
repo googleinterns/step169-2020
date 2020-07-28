@@ -2,15 +2,17 @@ body{
     margin:0;
 }
 #navbar {
-    width: 100%;
+    width: 80vw;
     height: 6vh;
     position: fixed;
-    z-index: 100;
+    z-index: 15;
     left: 0;
     top: 0;
     overflow: hidden;
     text-align: center;
-    padding:12px;
+    margin-left:150px;
+    margin-right: 150px;
+    margin-top:30px;
 }
 
 /*
@@ -114,9 +116,12 @@ ul li:hover{
 }
 
 #logo{
-    width:5vw;
-    float: left;
-    margin-left:1vw;
+    width:110px;
+    position: absolute;
+    top: 5px;
+    left:5px;
+    margin-left:10px;
+    z-index: 20;
 }
 
 #article-list-container {
@@ -227,6 +232,7 @@ ul li:hover{
     cursor: pointer;
     color:white;
     text-align: center;
+    background-color: rgba(73, 73, 73, 0.6);
 }
 .tutorial h2{
     position: relative;
