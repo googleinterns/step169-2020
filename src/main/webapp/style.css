@@ -107,7 +107,7 @@ ul li{
     box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
     z-index: 2;
-      transition: transform .1s; /* Animation */
+      transition: transform .2s; /* Animation */
     width: 80%;
     margin:5%
 }
@@ -127,11 +127,11 @@ ul li:hover{
 
 #article-list-container {
   height: 85%;
-  width: 0;
+  width: 25vw;
   position: fixed;
   z-index: 200;
   top: 50px;
-  right: 0;
+  right: -30vw;
   /* background-color: #111; */
   overflow-x: hidden;
   transition: 0.5s;
@@ -175,10 +175,11 @@ ul li:hover{
 
 .search-icon {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 2px;
+    right: 5px;
     width: 18px;
-    outline:none;
+    outline: none;
+    padding: 10px;
     border:none;
 }
 

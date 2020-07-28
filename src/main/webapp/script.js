@@ -512,12 +512,12 @@ function onPlaceChanged() {
 
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.width = "30vw";
+    document.getElementById("article-list-container").style.transform = "translateX(-30vw)";
 }
 
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.width = "0";
+    document.getElementById("article-list-container").style.transform = "translateX(0)";
 }
 
 function toggleNav() {
