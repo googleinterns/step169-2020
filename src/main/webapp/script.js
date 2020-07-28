@@ -540,10 +540,9 @@ function clearSearchRegion() {
         }
     });
 
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
+    
 }
 
 function clearSearchTopic() {
@@ -558,10 +557,9 @@ function clearSearchTopic() {
         }
     });
 
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
+    
 }
 
 function disableTutorial(){
