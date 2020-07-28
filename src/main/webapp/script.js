@@ -23,6 +23,7 @@ var sharedMap = null;
 var places;
 var autoComplete;
 var autoCompleteService;
+var articlesOpen = false;
 var countryRestrict = {'country': 'us'};
     
     
@@ -70,7 +71,11 @@ function doSearch(form) {
     let region = form.elements["region-search-field"].value;
     if (region != "") {
         let topic = form.elements["topic-search-field"].value;
-        request = {'input' : region};
+        /*
+        types: ['(cities)'],
+            componentRestrictions: countryRestrict
+        */
+        request = {'input' : region, 'types' : ['(cities)'], 'componentRestrictions' : countryRestrict};
         autoCompleteService.getPlacePredictions(request, ((predictions) => finishSearch(predictions, topic)));
     } else {
         /**
@@ -506,11 +511,21 @@ function onPlaceChanged() {
 }
 
 function openNav() {
+    articlesOpen = true;
     document.getElementById("article-list-container").style.width = "30vw";
 }
 
 function closeNav() {
+    articlesOpen = false;
     document.getElementById("article-list-container").style.width = "0";
+}
+
+function toggleNav() {
+    if (articlesOpen) {
+        closeNav();
+    } else {
+        openNav();
+    }
 }
 
 function clearSearchRegion() {
@@ -530,6 +545,7 @@ function clearSearchRegion() {
         clearIcon.style.visibility = "hidden";
     })
 }
+
 function clearSearchTopic() {
     const clearIcon = document.querySelector(".clear-topic-icon");
     const searchBar = document.querySelector(".searchTopic");
@@ -547,9 +563,8 @@ function clearSearchTopic() {
         clearIcon.style.visibility = "hidden";
     })
 }
+
 function disableTutorial(){
     const tutorial = document.querySelector(".tutorial");
-    tutorial.addEventListener("click", () => {
-        tutorial.style.display = "none";
-    })
+    tutorial.style.display = "none";
 }
