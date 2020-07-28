@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
@@ -37,12 +38,14 @@ class CustomSearchNewsService implements NewsService {
   private final String apiKey;
 
   CustomSearchNewsService() {
-    gson = new Gson();
+    gson = new GsonBuilder()
+      .setFieldNamingStrategy(f -> f.getName().toLowerCase())
+      .create();
     apiKey = getApiKey();
   }
 
   private static String getApiKey() {
-    return "AIzaSyB3irymU-RtS7Fajxnj08XNuwGtLaYHHnY";
+    return System.getenv("CSE_API_KEY");
   }
 
   @Override
@@ -131,7 +134,13 @@ class CustomSearchNewsService implements NewsService {
     
     List<Article> parsedArticles = new ArrayList<>();
     for (JsonElement article : jsonArticles) {
-      parsedArticles.add(parseArticle(article.getAsJsonObject()));
+      try {
+        parsedArticles.add(parseArticle(article.getAsJsonObject()));
+      } catch (NullPointerException e) {
+         // Ignore this error, because we don't want the entire program 
+         // to halt because one article failed to parse.
+         // TODO add logging so that articles that fail to parse won't be missed.
+      }
     }
 
     return parsedArticles;
