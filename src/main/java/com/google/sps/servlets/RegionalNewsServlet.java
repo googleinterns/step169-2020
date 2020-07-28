@@ -15,7 +15,7 @@ public class RegionalNewsServlet extends HttpServlet {
   private final Gson gson;
   
   public RegionalNewsServlet() {
-    newsService = new MockNewsService();
+    newsService = new CustomSearchNewsService();
     gson = new Gson();
   }
 
