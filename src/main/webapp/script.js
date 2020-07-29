@@ -231,7 +231,7 @@ function displayArticles(articles) {
     clearArticleList();
     for (i = 0; i < articles.length; i++) {
         articleObj = articles[i];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
     openNav();
 }
@@ -239,11 +239,14 @@ function displayArticles(articles) {
 /**
     Adds an article with the passed attributes to the article list.
  */
-function addArticle(title, publisher, content, date, link) {
+function addArticle(title, publisher, content, date, link, thumbnail) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
+    let picElement = document.createElement('img');
+    picElement.src = thumbnail;
+    picElement.style = 'width:50px;position:relative; top:20px; left: 10px;'
     let publisherElement = document.createElement('h4');
     publisherElement.innerText = publisher + " - " + date;
     let contentElement = document.createElement('p'); 
@@ -255,6 +258,7 @@ function addArticle(title, publisher, content, date, link) {
     item.appendChild(titleElement);
     item.appendChild(publisherElement);
     item.appendChild(contentElement);
+    item.appendChild(picElement);
     articleList.appendChild(item);
 }
 
@@ -277,7 +281,7 @@ function initMap() {
     zoom: 6,
     disableDefaultUI:true,
     zoomControl:true,
-
+    minZoom:3,
             styles: [
         {
             "elementType": "geometry",
@@ -505,12 +509,12 @@ function onPlaceChanged() {
 
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.width = "30vw";
+    document.getElementById("article-list-container").style.transform = "translateX(-30vw)";
 }
 
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.width = "0";
+    document.getElementById("article-list-container").style.transform = "translateX(0)";
 }
 
 function toggleNav() {
@@ -533,10 +537,9 @@ function clearSearchRegion() {
         }
     });
 
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
+    
 }
 
 function clearSearchTopic() {
@@ -551,10 +554,9 @@ function clearSearchTopic() {
         }
     });
 
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
+    
 }
 
 function disableTutorial(){
