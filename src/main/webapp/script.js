@@ -102,14 +102,16 @@ function doSearchNotFromForm() {
     Finishes the search using autocomplete suggested results.
  */
 function finishSearch(suggestions, topic) {
-    let region = suggestions[0].description;
-    document.getElementById("region-search-field").value = region;
-    console.log("region: " + region + " topic: " + topic);
-    let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
-    const response = fetch(fetchParameter);
-    response.then(getRegionArticles);
-    const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-    response2.then(getJSONOfGeoCoding);
+    if (suggestions && suggestions.length > 0) {
+        let region = suggestions[0].description;
+        document.getElementById("region-search-field").value = region;
+        console.log("region: " + region + " topic: " + topic);
+        let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
+        const response = fetch(fetchParameter);
+        response.then(getRegionArticles);
+        const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response2.then(getJSONOfGeoCoding);
+    }
 }
 
 /**
@@ -214,15 +216,6 @@ function placeArticlesPinOnMap(articles, json) {
     Fetches the initial articles displayed on the page.
  */
 function getInitialContent() {
-    /**
-        Initial message telling the user to search or click a pin.
-     */
-    const articleList = document.getElementById("articles-list");
-    let item = document.createElement('li');
-    let titleElement = document.createElement('h2');
-    titleElement.innerText = "Enter a state or city in the search bar above or click a pin on the map for articles relevant to that location.";
-    item.appendChild(titleElement);
-    articleList.appendChild(item);
     /**
         Fetches the world news, clusters it, and places the pins corresponding to its included locations.
      */
