@@ -26,7 +26,7 @@ body{
   display: inline-table;
 }
 
-#search-form > * {
+#search-form .wrapper {
   margin: 0 7px;
 }
 
@@ -174,13 +174,15 @@ ul li:hover{
 }
 
 .search-icon {
-    position: absolute;
-    top: 2px;
-    right: 5px;
     width: 18px;
     outline: none;
-    padding: 10px;
+    padding: 10px 24px;
     border:none;
+    position: relative;
+    top: 15px;
+    box-shadow: 3px 4px 10px 2px rgba(0, 0, 0, 0.2) inset;
+    border-radius: 5px;
+    background-color: rgb(220, 218, 226);
 }
 
 .clear-region-icon {
@@ -237,7 +239,6 @@ ul li:hover{
     border-radius: 20px;
     outline:none;
     border:none;
-    
 }
 
 .tutorial{
@@ -257,5 +258,14 @@ ul li:hover{
     top:40%;
     font-size: 40px;
     font-family: 'Roboto', sans-serif;
+}
 
+#hamburger{
+    font-size:50px;
+    cursor:pointer;
+    color:white;
+    position: absolute;
+    top:30px;
+    right:45px;
+    z-index: 350;
 }
