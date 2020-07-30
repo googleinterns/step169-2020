@@ -29,6 +29,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
 
+import com.joestelmach.natty.Parser;
+import com.joestelmach.natty.DateGroup;
 
 class CustomSearchNewsService implements NewsService {
 
@@ -236,17 +238,20 @@ class CustomSearchNewsService implements NewsService {
   private Instant getDate(JsonObject article) {
     String formattedDate = getFormattedDate(article);
     try {
-      parsedDate = parseDate(formattedDate);
-      System.out.printf("SUCCESS: %s\n", formattedDate);
-      return parsedDate;
+      return parseDate(formattedDate);
     } catch(DateTimeParseException e) {
-      System.out.printf("FAILURE: %s\n", formattedDate);
       return Instant.EPOCH;
     }
   }
 
   private Instant parseDate(String formattedDate) {
-    Instant parsedDate = Instant.parse(formattedDate);
+    Parser dateParser = new Parser();
+    List<DateGroup> dateGroups = dateParser.parse(formattedDate);
+    Instant parsedDate = dateGroups
+                    .get(0)
+                    .getDates()
+                    .get(0)
+                    .toInstant();
     return parsedDate;
   }
 
