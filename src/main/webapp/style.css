@@ -241,7 +241,7 @@ ul li:hover{
     border:none;
 }
 
-.tutorial{
+#tutorial{
     width: 100vw;
     height:100vh;
     position: fixed;
@@ -253,7 +253,7 @@ ul li:hover{
     text-align: center;
     background-color: rgba(73, 73, 73, 0.6);
 }
-.tutorial h2{
+#tutorial h2{
     position: relative;
     top:40%;
     font-size: 40px;
@@ -268,4 +268,53 @@ ul li:hover{
     top:30px;
     right:45px;
     z-index: 350;
+}
+#hamburger a{
+  text-decoration: none;
+  font-size: 30px;
+  font-weight: bold;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  padding: 10px 30px;
+  color: white;
+  position: relative;
+  top: -6px;
+}
+
+/* ****************************** LOGIN/LOGOUT BUTTON STYLES ******************************** */
+/* .log-frame{
+    width:60%;
+    height:250px;
+}
+#login{
+    z-index: 400;
+    background-color: #50505085;
+    position: absolute;
+    text-align: center;
+    width: 100vw;
+    height: 70vh;
+    padding-top: 30vh;
+}
+
+#login a{
+  color: rgb(29, 96, 151);
+  background-color:white;
+  box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.322);
+  text-align: center;
+  padding: 10px 30px;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  border-radius: 25px;
+}
+
+/* Add a hover effect if you want */
+/* #login a:hover {
+  opacity: 0.7;
+  background: rgb(169, 201, 228);
+  box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.2);
+} */
+
+#ham{
+    padding: 0 10px;
 }
