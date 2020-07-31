@@ -20,7 +20,7 @@ class MockNewsService implements NewsService {
             Instant.parse("2007-12-03T10:15:30.00Z"),
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
             "https://example.com/sample1",
-            "https://example.com/samplethumbnail1",
+            "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
             cities[i]);
             articles.add(article);
         }
@@ -40,21 +40,21 @@ class MockNewsService implements NewsService {
       Instant.parse("2007-12-03T10:15:30.00Z"),
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
       "https://example.com/sample1",
-      "https://example.com/samplethumbnail1",
+      "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
       "New York,NY,USA");
     Article secondArticle = new Article(region + " " + topic + " 2",
      "Second Provider",
       Instant.parse("2007-12-03T10:15:30.00Z"),
       "Etiam vitae augue eu felis euismod tempor id sed purus. Sed ut elit sollicitudin, rhoncus dolor eu, pellentesque nisi. Sed ultricies semper neque non accumsan. Ut interdum turpis purus, at tempor neque rhoncus quis.",
       "https://example.com/sample2",
-      "https://example.com/samplethumbnail2",
+      "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
       "New York,NY,USA");
     Article thirdArticle = new Article(region + " " + topic + " 3",
      "Third Provider",
       Instant.parse("2007-12-03T10:15:30.00Z"),
       "Proin sodales lacinia augue, non posuere purus suscipit vitae. Aliquam ultrices metus in magna pretium, ac vehicula nunc ultrices.",
       "https://example.com/sample3",
-      "https://example.com/samplethumbnail3",
+      "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
       "New York,NY,USA");
     return Arrays.asList(firstArticle, secondArticle, thirdArticle);
   }
