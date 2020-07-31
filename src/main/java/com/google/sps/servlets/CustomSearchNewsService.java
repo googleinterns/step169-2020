@@ -322,7 +322,7 @@ class CustomSearchNewsService implements NewsService {
     JsonObject pagemap = article.getAsJsonObject("pagemap");
 
     try {
-      pagemap.getAsJsonArray("cse_image")
+      thumbnailUrl = pagemap.getAsJsonArray("cse_image")
         .get(0)
         .getAsJsonObject()
         .getAsJsonPrimitive("src")
@@ -331,7 +331,7 @@ class CustomSearchNewsService implements NewsService {
 
     if (thumbnailUrl == null) {
       try {
-        pagemap.getAsJsonArray("cse_thumbnail")
+        thumbnailUrl = pagemap.getAsJsonArray("cse_thumbnail")
           .get(0)
           .getAsJsonObject()
           .getAsJsonPrimitive("src")
