@@ -9,14 +9,24 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlKFdxL2rShylt-FgSZJsI1262UzOmTCE&callback=initMap&libraries=places&callback=initAutocomplete">    
     </script>
     <script src="script.js"></script>
+    <script>showContent()</script>
   </head>
 
-  <body onload="onPageLoad()">
-    <div class="tutorial" onclick="disableTutorial()"><h2>Click anywhere to search for relevant news in a location</h2></div>
+  <body onload="onPageLoad();">
+
+    <div id="tutorial" onclick="disableTutorial()">
+        <h2>Click anywhere to search map for news</h2>
+    </div>
+
     <header>
       <!-- Navigation bar with search form -->
-      <img src="images/hublogo3.png" alt="Hub" id="logo"/>
-      <span id="hamburger" onclick="toggleNav()">&#9776;</span>
+      <img src="images/hublogo3.png" alt="Hub" id="logo"/>            
+
+      <div id="hamburger">
+          <span id="ham" onclick="toggleNav()">&#9776;</span>
+          <a id="logout"></a>
+          <a id="login"></a>
+      </div>
 
       <div id="navbar">
 

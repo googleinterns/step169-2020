@@ -146,7 +146,7 @@ function displayArticlesFromJSON(json) {
     clearArticleList();
     for (index in json) {
         let articleObj = json[index];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
     openNav();
 }
@@ -251,21 +251,37 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
+
     let picElement = document.createElement('img');
+    picElement.className="thumbnail";
     picElement.src = thumbnail;
-    picElement.style = 'width:50px;position:relative; top:20px; left: 10px;'
+    picElement.style = "width:100%;"
+    picElement.alt = 'pic';
     let publisherElement = document.createElement('h4');
     publisherElement.innerText = publisher + " - " + date;
+
+    // Style header
+    const divElement = document.createElement('div');
+    divElement.className = 'header-content'
+    const divThumbnailElement = document.createElement('div');
+    divThumbnailElement.className = 'thumbnail-content';
+    const divTitleElement = document.createElement('div');
+    divTitleElement.className = 'title-content';
+
+    divTitleElement.appendChild(titleElement);
+    divTitleElement.appendChild(publisherElement);
+    divThumbnailElement.appendChild(picElement);
+    divElement.appendChild(divTitleElement);
+    divElement.appendChild(divThumbnailElement);
+
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
     let linkElement = document.createElement('a');
     linkElement.innerText = "Read More"
     linkElement.href = link;
+    item.appendChild(divElement);
     contentElement.appendChild(linkElement);
-    item.appendChild(titleElement);
-    item.appendChild(publisherElement);
     item.appendChild(contentElement);
-    item.appendChild(picElement);
     articleList.appendChild(item);
 }
 
@@ -497,8 +513,7 @@ function initAutoComplete() {
     // Add a DOM event listener to react when the user selects a country.
     document.getElementById('country').addEventListener(
         'change', setAutoCompleteCountry);
-
-    }
+}
 
     // When the user selects a city, get the place details for the city and
     // zoom the map in on the city.
@@ -543,10 +558,8 @@ function clearSearchRegion() {
         clearIcon.style.visibility = "hidden";
         }
     });
-
     searchBar.value = "";
     clearIcon.style.visibility = "hidden";
-    
 }
 
 function clearSearchTopic() {
@@ -560,13 +573,45 @@ function clearSearchTopic() {
         clearIcon.style.visibility = "hidden";
         }
     });
-
     searchBar.value = "";
     clearIcon.style.visibility = "hidden";
-    
 }
 
 function disableTutorial(){
-    const tutorial = document.querySelector(".tutorial");
-    tutorial.style.display = "none";
+    document.getElementById('tutorial').style.display = "none";
+}
+
+// Retrieves login link from DataServletLogin.java
+function getInLink(){
+  fetch('/login').then(response => response.text()).then((log) => {
+    const logElement = document.getElementById('login');
+    logElement.href =log;
+    logElement.text = "LOGIN";
+ });
+}
+
+// Decides if the content of the screen should be shown or a link to login
+function showContent(){
+  fetch('/show').then(response => response.text()).then((show) => {
+    if (show.localeCompare("yes")){
+        document.getElementById('login').style.display = "-webkit-inline-box";
+        document.getElementById('logout').style.display = "none";
+        getInLink();
+    }
+    if (show.localeCompare("no")){
+        document.getElementById('login').style.display = "none";
+        document.getElementById('logout').style.display = "-webkit-inline-box";
+        getOutLink();
+    }
+  });
+}
+
+// Retrieves logout link from DataServletLogout.java
+function getOutLink(){
+  fetch('/logout').then(response => response.text()).then((log) => {
+    // Returns the element
+    const logElement = document.getElementById('logout');
+    logElement.href =log;
+    logElement.text = "LOGOUT";
+ });
 }
