@@ -255,7 +255,7 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
     picElement.src = thumbnail;
     picElement.style = 'width:50px;position:relative; top:20px; left: 10px;'
     let publisherElement = document.createElement('h4');
-    publisherElement.innerText = publisher + " - " + date;
+    publisherElement.innerText = publisher + " - " + formatTimestamp(date.seconds);
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
     let linkElement = document.createElement('a');
@@ -267,6 +267,13 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
     item.appendChild(contentElement);
     item.appendChild(picElement);
     articleList.appendChild(item);
+}
+
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp * 1000);
+  const dateFormat = new Intl.DateTimeFormat('en',
+   {month: 'long', day: 'numeric', year: 'numeric'});
+  return dateFormat.format(date);
 }
 
 /** Adds a marker that shows an info window when clicked. */
