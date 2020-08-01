@@ -11,6 +11,8 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 import java.lang.Math;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
@@ -160,6 +162,7 @@ class CustomSearchNewsService implements NewsService {
           // Ignore this error, because we don't want the entire program 
           // to halt because one article failed to parse.
           // TODO add logging so that articles that fail to parse won't be missed.
+          e.printStackTrace();
         }
       }
     } catch (NullPointerException e) {
@@ -182,7 +185,7 @@ class CustomSearchNewsService implements NewsService {
   private String getTitle(JsonObject article) {
     String title = null;
     try {
-      article.getAsJsonObject("pagemap")
+      title = article.getAsJsonObject("pagemap")
         .getAsJsonArray("newsarticle")
         .get(0)
         .getAsJsonObject()
@@ -204,54 +207,69 @@ class CustomSearchNewsService implements NewsService {
     JsonObject pagemap = article.getAsJsonObject("pagemap");
     String publisher = null;
     try {
-     pagemap.getAsJsonArray("organization")
+      publisher = pagemap.getAsJsonArray("metatags")
         .get(0)
         .getAsJsonObject()
-        .getAsJsonPrimitive("name")
+        .getAsJsonPrimitive("og:site_name")
         .getAsString();
     } catch (NullPointerException e) { }
 
     if (publisher == null) {
       try {
-        publisher = pagemap.getAsJsonArray("metatags")
+        publisher = pagemap.getAsJsonArray("organization")
           .get(0)
           .getAsJsonObject()
-          .getAsJsonPrimitive("og:site_name")
+          .getAsJsonPrimitive("name")
           .getAsString();
       } catch (NullPointerException e) { }
     }
-    
+
     if (publisher == null) {
       try {
-        publisher = pagemap.getAsJsonArray("metatags")
-          .get(0)
-          .getAsJsonObject()
-          .getAsJsonPrimitive("og:site_name")
-          .getAsString();
-      } catch (NullPointerException e) { }
+        //Use the site's host name as a fallback when no organization was supplied.
+        String url = getUrl(article);
+        publisher = getHostName(url);
+      } catch (NullPointerException | URISyntaxException e) { }
     }
 
     return publisher;
   }
 
-  //TODO implement an actual date parsing algorithm
+  private String getHostName(String url) throws URISyntaxException {
+    URI uri = new URI(url);
+    String hostName = uri.getHost();
+    // to provide faultproof result, check if not null then return only hostName, without www.
+    if (hostName != null) {
+        return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+    }
+    return hostName;
+  }
+
   private Instant getDate(JsonObject article) {
     String formattedDate = getFormattedDate(article);
-    try {
-      return parseDate(formattedDate);
-    } catch(DateTimeParseException e) {
-      return Instant.EPOCH;
+    Instant date;
+
+    if (formattedDate != null) {
+      try {
+        date = parseDate(formattedDate);
+      } catch(DateTimeParseException e) {
+        date = null;
+      }
+    } else {
+      date = null;
     }
+
+    return date;
   }
 
   private Instant parseDate(String formattedDate) {
     Parser dateParser = new Parser();
     List<DateGroup> dateGroups = dateParser.parse(formattedDate);
     Instant parsedDate = dateGroups
-                    .get(0)
-                    .getDates()
-                    .get(0)
-                    .toInstant();
+      .get(0)
+      .getDates()
+      .get(0)
+      .toInstant();
     return parsedDate;
   }
 
@@ -280,6 +298,7 @@ class CustomSearchNewsService implements NewsService {
           .getAsString();
       } catch (NullPointerException e) { }
     }
+
     return formattedDate;
   }
 
@@ -291,7 +310,7 @@ class CustomSearchNewsService implements NewsService {
     String description =  null; 
     
     try {
-      articleData.getAsJsonPrimitive("description")
+      description = articleData.getAsJsonPrimitive("description")
         .getAsString();
     } catch (NullPointerException e) { }
 
@@ -318,8 +337,9 @@ class CustomSearchNewsService implements NewsService {
   }
 
   String getThumbnailUrl(JsonObject article) {
-    String thumbnailUrl = null;
     JsonObject pagemap = article.getAsJsonObject("pagemap");
+
+    String thumbnailUrl = null;
 
     try {
       thumbnailUrl = pagemap.getAsJsonArray("cse_image")
