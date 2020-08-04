@@ -36,7 +36,14 @@ class CustomSearchNewsRequester {
   }
   
   private String getApiKey() {
-    return System.getenv("CSE_API_KEY");
+    BufferedReader reader = new BufferedReader(
+      new InputStreamReader(getClass().getResourceAsStream("/CSE_API_KEY.txt"))
+    );
+    try {
+      return reader.readLine();
+    } catch (IOException e) {
+      throw new NewsUnavailableException("Unable to read API key.", e);
+    }
   }
 
   List<String> request(String region, String topic, int count) {
