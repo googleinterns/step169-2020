@@ -173,6 +173,7 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
+    
     let articleMap = new Map();
     for (index in json) {
         let articleObj = json[index];
@@ -190,7 +191,7 @@ function configureWorldArticles(json) {
 }
 
 /**
-    Get the region response geo coding.
+    Get the world news response geo coding.
  */
 function getRegionJSONOfGeoCoding(articles, response) {
     const json = response.json();
