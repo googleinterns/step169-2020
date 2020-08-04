@@ -25,7 +25,9 @@ var autoComplete;
 var autoCompleteService;
 var articlesOpen = false;
 var countryRestrict = {'country': 'us'};
-    
+var cityMarkers = [];
+var subcountryMarkers = [];
+var countryMarkers = [];
     
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
@@ -171,38 +173,64 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-    let articleMap = new Map();
+    let articleMapCity = new Map();
+    let articleMapSubcountry = new Map();
+    let articleMapCountry = new Map();
+
+    // Creates and fills maps for each level of geographical divisions
     for (index in json) {
         let articleObj = json[index];
-        if (articleMap[articleObj.location] == null) {
-            articleMap[articleObj.location] = [articleObj];
+        if (articleMapCity[articleObj.location.city] == null) {
+            articleMapCity[articleObj.location.city] = [articleObj];
         } else {
-            articleMap[articleObj.location].push(articleObj);
+            articleMapCity[articleObj.location.city].push(articleObj);
+        }
+
+        if (articleMapSubcountry[articleObj.location.subcountry] == null) {
+            articleMapSubcountry[articleObj.location.subcountry] = [articleObj];
+        } else {
+            articleMapSubcountry[articleObj.location.subcountry].push(articleObj);
+        }
+
+        if (articleMapCountry[articleObj.location.country] == null) {
+            articleMapCountry[articleObj.location.country] = [articleObj];
+        } else {
+            articleMapCountry[articleObj.location.country].push(articleObj);
         }
     }
-    for (key in articleMap) {
-        console.log(key, articleMap[key].length);
+    for (key in articleMapCity) {
+        console.log(key, articleMapCity[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key]));
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
+    }
+    for (key in articleMapSubcountry) {
+        console.log(key, articleMapSubcountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
+    }
+    for (key in articleMapCountry) {
+        console.log(key, articleMapCountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
     }
 }
 
 /**
     Get the region response geo coding.
  */
-function getRegionJSONOfGeoCoding(articles, response) {
+function getRegionJSONOfGeoCoding(articles, response, label) {
     const json = response.json();
-    return json.then(placeArticlesPinOnMap.bind(null, articles));
+    return json.then(placeArticlesPinOnMap.bind(null, articles, label));
 }
 
 /**
     Prints the response.
  */
-function placeArticlesPinOnMap(articles, json) {
+function placeArticlesPinOnMap(articles, json, label) {
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;
-    addLandmark(sharedMap, lat, long, title, articles);
+    addLandmark(sharedMap, lat, long, title, articles, label);
     return json;
 }
 
@@ -297,15 +325,41 @@ function formatTimestamp(timestamp) {
 }
 
 /** Adds a marker that shows an info window when clicked. */
-function addLandmark(map, lat, lng, title, articles) {
+function addLandmark(map, lat, lng, title, articles, label) {
   const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, map: map, title: title});
+
+    if (label.localeCompare("city")){
+        cityMarkers.push(marker);
+    } else if (label.localeCompare("subcountry")){
+        subcountryMarkers.push(marker);
+    } else if (label.localeCompare("country")){
+        countryMarkers.push(marker);
+    }
 
   marker.addListener('click', () => {
     displayArticles(articles);
   });
+    showBasedOnZoom();
 }
 
+// Decides which articles to show depending on the zoom 
+function showBasedOnZoom(){
+    /* Change markers on zoom */
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        var zoom = map.getZoom();
+        // iterate over markers and call setVisible
+        for (i = 0; i < countryMarkers.length; i++) {
+            countryMarkers[i].setVisible(zoom <= 5);
+        }
+       for (i = 0; i < cityMarkers.length; i++) {
+            cityMarkers[i].setVisible(zoom > 12);
+        }
+        for (i = 0; i < subcountryMarkers.length; i++) {
+            subcountryMarkers[i].setVisible((zoom > 5) && (zoom <= 12));
+        }
+    });
+}
 
 /** Creates a map and adds it to the page. */
 function initMap() {
