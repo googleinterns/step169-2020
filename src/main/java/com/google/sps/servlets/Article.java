@@ -9,9 +9,9 @@ final class Article {
   final String description;
   final String url;
   final String thumbnailUrl;
-  final String location;
+  final Location location;
 
-  Article(String title, String publisher, Instant date, String description, String url, String thumbnailUrl, String location) {
+  Article(String title, String publisher, Instant date, String description, String url, String thumbnailUrl, Location location) {
     this.title = title;
     this.publisher = publisher;
     this.date = date;
