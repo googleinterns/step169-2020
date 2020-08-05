@@ -25,7 +25,9 @@ var autoComplete;
 var autoCompleteService;
 var articlesOpen = false;
 var countryRestrict = {'country': 'us'};
-    
+var cityMarkers = [];
+var subcountryMarkers = [];
+var countryMarkers = [];
     
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
@@ -146,7 +148,7 @@ function displayArticlesFromJSON(json) {
     clearArticleList();
     for (index in json) {
         let articleObj = json[index];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
     openNav();
 }
@@ -171,38 +173,64 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-    let articleMap = new Map();
+    let articleMapCity = new Map();
+    let articleMapSubcountry = new Map();
+    let articleMapCountry = new Map();
+
+    // Creates and fills maps for each level of geographical divisions
     for (index in json) {
         let articleObj = json[index];
-        if (articleMap[articleObj.location] == null) {
-            articleMap[articleObj.location] = [articleObj];
+        if (articleMapCity[articleObj.location.city] == null) {
+            articleMapCity[articleObj.location.city] = [articleObj];
         } else {
-            articleMap[articleObj.location].push(articleObj);
+            articleMapCity[articleObj.location.city].push(articleObj);
+        }
+
+        if (articleMapSubcountry[articleObj.location.subcountry] == null) {
+            articleMapSubcountry[articleObj.location.subcountry] = [articleObj];
+        } else {
+            articleMapSubcountry[articleObj.location.subcountry].push(articleObj);
+        }
+
+        if (articleMapCountry[articleObj.location.country] == null) {
+            articleMapCountry[articleObj.location.country] = [articleObj];
+        } else {
+            articleMapCountry[articleObj.location.country].push(articleObj);
         }
     }
-    for (key in articleMap) {
-        console.log(key, articleMap[key].length);
+    for (key in articleMapCity) {
+        console.log(key, articleMapCity[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key]));
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
+    }
+    for (key in articleMapSubcountry) {
+        console.log(key, articleMapSubcountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
+    }
+    for (key in articleMapCountry) {
+        console.log(key, articleMapCountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
     }
 }
 
 /**
     Get the region response geo coding.
  */
-function getRegionJSONOfGeoCoding(articles, response) {
+function getRegionJSONOfGeoCoding(articles, response, label) {
     const json = response.json();
-    return json.then(placeArticlesPinOnMap.bind(null, articles));
+    return json.then(placeArticlesPinOnMap.bind(null, articles, label));
 }
 
 /**
     Prints the response.
  */
-function placeArticlesPinOnMap(articles, json) {
+function placeArticlesPinOnMap(articles, json, label) {
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;
-    addLandmark(sharedMap, lat, long, title, articles);
+    addLandmark(sharedMap, lat, long, title, articles, label);
     return json;
 }
 
@@ -238,7 +266,7 @@ function displayArticles(articles) {
     clearArticleList();
     for (i = 0; i < articles.length; i++) {
         articleObj = articles[i];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url);
+        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
     openNav();
 }
@@ -246,35 +274,92 @@ function displayArticles(articles) {
 /**
     Adds an article with the passed attributes to the article list.
  */
-function addArticle(title, publisher, content, date, link) {
+function addArticle(title, publisher, content, date, link, thumbnail) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
+
+    let picElement = document.createElement('img');
+    picElement.className="thumbnail";
+    picElement.src = thumbnail;
+    picElement.style = "width:100%;"
+    picElement.alt = 'pic';
     let publisherElement = document.createElement('h4');
-    publisherElement.innerText = publisher + " - " + date;
+    publisherElement.innerText = publisher + " - " + formatTimestamp(date);
+
+    // Style header
+    const divElement = document.createElement('div');
+    divElement.className = 'header-content'
+    const divThumbnailElement = document.createElement('div');
+    divThumbnailElement.className = 'thumbnail-content';
+    const divTitleElement = document.createElement('div');
+    divTitleElement.className = 'title-content';
+
+    divTitleElement.appendChild(titleElement);
+    divTitleElement.appendChild(publisherElement);
+    divThumbnailElement.appendChild(picElement);
+    divElement.appendChild(divTitleElement);
+    divElement.appendChild(divThumbnailElement);
+
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
     let linkElement = document.createElement('a');
     linkElement.innerText = "Read More"
     linkElement.href = link;
+    item.appendChild(divElement);
     contentElement.appendChild(linkElement);
-    item.appendChild(titleElement);
-    item.appendChild(publisherElement);
     item.appendChild(contentElement);
     articleList.appendChild(item);
 }
 
+function formatTimestamp(timestamp) {
+  if (timestamp === undefined) {
+    return "Unknown Date";
+  }
+
+  const date = new Date(timestamp.seconds * 1000);
+  const dateFormat = new Intl.DateTimeFormat('en',
+   {month: 'long', day: 'numeric', year: 'numeric'});
+  return dateFormat.format(date);
+}
+
 /** Adds a marker that shows an info window when clicked. */
-function addLandmark(map, lat, lng, title, articles) {
+function addLandmark(map, lat, lng, title, articles, label) {
   const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, map: map, title: title});
+
+    if (label.localeCompare("city")){
+        cityMarkers.push(marker);
+    } else if (label.localeCompare("subcountry")){
+        subcountryMarkers.push(marker);
+    } else if (label.localeCompare("country")){
+        countryMarkers.push(marker);
+    }
 
   marker.addListener('click', () => {
     displayArticles(articles);
   });
+    showBasedOnZoom();
 }
 
+// Decides which articles to show depending on the zoom 
+function showBasedOnZoom(){
+    /* Change markers on zoom */
+    google.maps.event.addListener(map, 'zoom_changed', function() {
+        var zoom = map.getZoom();
+        // iterate over markers and call setVisible
+        for (i = 0; i < countryMarkers.length; i++) {
+            countryMarkers[i].setVisible(zoom <= 5);
+        }
+       for (i = 0; i < cityMarkers.length; i++) {
+            cityMarkers[i].setVisible(zoom > 12);
+        }
+        for (i = 0; i < subcountryMarkers.length; i++) {
+            subcountryMarkers[i].setVisible((zoom > 5) && (zoom <= 12));
+        }
+    });
+}
 
 /** Creates a map and adds it to the page. */
 function initMap() {
@@ -284,7 +369,7 @@ function initMap() {
     zoom: 6,
     disableDefaultUI:true,
     zoomControl:true,
-
+    minZoom:3,
             styles: [
         {
             "elementType": "geometry",
@@ -493,8 +578,7 @@ function initAutoComplete() {
     // Add a DOM event listener to react when the user selects a country.
     document.getElementById('country').addEventListener(
         'change', setAutoCompleteCountry);
-
-    }
+}
 
     // When the user selects a city, get the place details for the city and
     // zoom the map in on the city.
@@ -512,12 +596,12 @@ function onPlaceChanged() {
 
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.width = "30vw";
+    document.getElementById("article-list-container").style.transform = "translateX(-30vw)";
 }
 
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.width = "0";
+    document.getElementById("article-list-container").style.transform = "translateX(0)";
 }
 
 function toggleNav() {
@@ -539,11 +623,8 @@ function clearSearchRegion() {
         clearIcon.style.visibility = "hidden";
         }
     });
-
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
 }
 
 function clearSearchTopic() {
@@ -557,14 +638,45 @@ function clearSearchTopic() {
         clearIcon.style.visibility = "hidden";
         }
     });
-
-    clearIcon.addEventListener("click", () => {
-        searchBar.value = "";
-        clearIcon.style.visibility = "hidden";
-    })
+    searchBar.value = "";
+    clearIcon.style.visibility = "hidden";
 }
 
 function disableTutorial(){
-    const tutorial = document.querySelector(".tutorial");
-    tutorial.style.display = "none";
+    document.getElementById('tutorial').style.display = "none";
+}
+
+// Retrieves login link from DataServletLogin.java
+function getInLink(){
+  fetch('/login').then(response => response.text()).then((log) => {
+    const logElement = document.getElementById('login');
+    logElement.href =log;
+    logElement.text = "LOGIN";
+ });
+}
+
+// Decides if the content of the screen should be shown or a link to login
+function showContent(){
+  fetch('/show').then(response => response.text()).then((show) => {
+    if (show.localeCompare("yes")){
+        document.getElementById('login').style.display = "-webkit-inline-box";
+        document.getElementById('logout').style.display = "none";
+        getInLink();
+    }
+    if (show.localeCompare("no")){
+        document.getElementById('login').style.display = "none";
+        document.getElementById('logout').style.display = "-webkit-inline-box";
+        getOutLink();
+    }
+  });
+}
+
+// Retrieves logout link from DataServletLogout.java
+function getOutLink(){
+  fetch('/logout').then(response => response.text()).then((log) => {
+    // Returns the element
+    const logElement = document.getElementById('logout');
+    logElement.href =log;
+    logElement.text = "LOGOUT";
+ });
 }
