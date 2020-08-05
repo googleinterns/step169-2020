@@ -199,12 +199,12 @@ function configureWorldArticles(json) {
         }
     }
     for (key in articleMapCity) {
-        console.log(key, articleMapCity[key].length);
+        // console.log(key, articleMapCity[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
     }
     for (key in articleMapSubcountry) {
-        console.log(key, articleMapSubcountry[key].length);
+        // console.log(key, articleMapSubcountry[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
     }
@@ -218,15 +218,19 @@ function configureWorldArticles(json) {
 /**
     Get the region response geo coding.
  */
-function getRegionJSONOfGeoCoding(articles, response, label) {
+function getRegionJSONOfGeoCoding(articles, label, response) {
+    // console.log("Response is: " + response);
+    // console.log("label is : " + label);
+
     const json = response.json();
+
     return json.then(placeArticlesPinOnMap.bind(null, articles, label));
 }
 
 /**
     Prints the response.
  */
-function placeArticlesPinOnMap(articles, json, label) {
+function placeArticlesPinOnMap(articles, label, json) {
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;
@@ -329,13 +333,18 @@ function addLandmark(map, lat, lng, title, articles, label) {
   const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, map: map, title: title});
 
-    if (label.localeCompare("city")){
+           console.log(label);
+
+    if (label=="city"){
         cityMarkers.push(marker);
-    } else if (label.localeCompare("subcountry")){
+    } else if (label == "subcountry"){
         subcountryMarkers.push(marker);
-    } else if (label.localeCompare("country")){
+
+    } else if (label == "country"){
         countryMarkers.push(marker);
     }
+
+ 
 
   marker.addListener('click', () => {
     displayArticles(articles);
@@ -346,17 +355,18 @@ function addLandmark(map, lat, lng, title, articles, label) {
 // Decides which articles to show depending on the zoom 
 function showBasedOnZoom(){
     /* Change markers on zoom */
-    google.maps.event.addListener(map, 'zoom_changed', function() {
-        var zoom = map.getZoom();
+    google.maps.event.addListener(sharedMap, 'zoom_changed', function() {
+        var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
         for (i = 0; i < countryMarkers.length; i++) {
-            countryMarkers[i].setVisible(zoom <= 5);
+            countryMarkers[i].setVisible(zoom < 5);
         }
        for (i = 0; i < cityMarkers.length; i++) {
-            cityMarkers[i].setVisible(zoom > 12);
+            cityMarkers[i].setVisible(zoom > 8);
         }
         for (i = 0; i < subcountryMarkers.length; i++) {
-            subcountryMarkers[i].setVisible((zoom > 5) && (zoom <= 12));
+            subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
+
         }
     });
 }
