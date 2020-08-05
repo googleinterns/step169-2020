@@ -91,6 +91,7 @@ class CustomSearchNewsRequester {
       ENGLISH_LANGUAGE_CODE,
       buildSortParameter());
     String fullSearchUrl = String.format("%s?%s", CUSTOM_SEARCH_API_URL, queryString);
+    System.out.println(fullSearchUrl);
     return sendSearchGetRequest(fullSearchUrl);
   }
 
