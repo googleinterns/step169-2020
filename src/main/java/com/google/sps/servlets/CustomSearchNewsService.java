@@ -10,7 +10,7 @@ class CustomSearchNewsService implements NewsService {
 
   CustomSearchNewsService() {
     requester = new CustomSearchNewsRequester();
-    parser = new ManualCustomSearchNewsParser();
+    parser = new POJOCustomSearchNewsParser();
   }
 
   @Override

@@ -31,22 +31,30 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
     List<Article> parsedArticles = new ArrayList<>();
 
     for (String json : resultJsons) {
-      try {
-        JsonObject results = gson.fromJson(json, JsonObject.class);
-        JsonArray jsonArticles = results.getAsJsonArray("items");
+      parsedArticles.addAll(parseSingleResult(json));
+    }
 
-        for (JsonElement article : jsonArticles) {
-          try {
-            parsedArticles.add(parseArticle(article.getAsJsonObject()));
-          } catch (NullPointerException e) {
-            // Ignore this error, because we don't want the entire program 
-            // to halt because one article failed to parse.
-            // TODO add logging so that articles that fail to parse won't be missed.
-          }
+    return parsedArticles;
+  }
+
+  public List<Article> parseSingleResult(String resultJson) {
+    List<Article> parsedArticles = new ArrayList<>();
+
+    try {
+      JsonObject results = gson.fromJson(resultJson, JsonObject.class);
+      JsonArray jsonArticles = results.getAsJsonArray("items");
+
+      for (JsonElement article : jsonArticles) {
+        try {
+          parsedArticles.add(parseArticle(article.getAsJsonObject()));
+        } catch (NullPointerException e) {
+          // Ignore this error, because we don't want the entire program 
+          // to halt because one article failed to parse.
+          // TODO add logging so that articles that fail to parse won't be missed.
         }
-      } catch (NullPointerException e) {
-        throw new NewsUnavailableException("Failed to parse received json", e);
       }
+    } catch (NullPointerException e) {
+      throw new NewsUnavailableException("Failed to parse received json", e);
     }
 
     return parsedArticles;
