@@ -25,7 +25,9 @@ var autoComplete;
 var autoCompleteService;
 var articlesOpen = false;
 var countryRestrict = {'country': 'us'};
-    
+var cityMarkers = [];
+var subcountryMarkers = [];
+var countryMarkers = [];
     
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
@@ -173,39 +175,68 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-    
-    let articleMap = new Map();
+    let articleMapCity = new Map();
+    let articleMapSubcountry = new Map();
+    let articleMapCountry = new Map();
+
+    // Creates and fills maps for each level of geographical divisions
     for (index in json) {
         let articleObj = json[index];
-        if (articleMap[articleObj.location] == null) {
-            articleMap[articleObj.location] = [articleObj];
+        if (articleMapCity[articleObj.location.city] == null) {
+            articleMapCity[articleObj.location.city] = [articleObj];
         } else {
-            articleMap[articleObj.location].push(articleObj);
+            articleMapCity[articleObj.location.city].push(articleObj);
+        }
+
+        if (articleMapSubcountry[articleObj.location.subcountry] == null) {
+            articleMapSubcountry[articleObj.location.subcountry] = [articleObj];
+        } else {
+            articleMapSubcountry[articleObj.location.subcountry].push(articleObj);
+        }
+
+        if (articleMapCountry[articleObj.location.country] == null) {
+            articleMapCountry[articleObj.location.country] = [articleObj];
+        } else {
+            articleMapCountry[articleObj.location.country].push(articleObj);
         }
     }
-    for (key in articleMap) {
-        console.log(key, articleMap[key].length);
+    for (key in articleMapCity) {
+        // console.log(key, articleMapCity[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key]));
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
+    }
+    for (key in articleMapSubcountry) {
+        // console.log(key, articleMapSubcountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
+    }
+    for (key in articleMapCountry) {
+        console.log(key, articleMapCountry[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
     }
 }
 
 /**
     Get the world news response geo coding.
  */
-function getRegionJSONOfGeoCoding(articles, response) {
+function getRegionJSONOfGeoCoding(articles, label, response) {
+    // console.log("Response is: " + response);
+    // console.log("label is : " + label);
+
     const json = response.json();
-    return json.then(placeArticlesPinOnMap.bind(null, articles));
+
+    return json.then(placeArticlesPinOnMap.bind(null, articles, label));
 }
 
 /**
     Prints the response.
  */
-function placeArticlesPinOnMap(articles, json) {
+function placeArticlesPinOnMap(articles, label, json) {
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;
-    addLandmark(sharedMap, lat, long, title, articles);
+    addLandmark(sharedMap, lat, long, title, articles, label);
     return json;
 }
 
@@ -243,16 +274,20 @@ function displayArticles(articles) {
 function addArticle(title, publisher, content, date, link, thumbnail) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
+    let linkElement = document.createElement('a');
+
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
-
-    let picElement = document.createElement('img');
-    picElement.className="thumbnail";
-    picElement.src = thumbnail;
-    picElement.style = "width:100%;"
-    picElement.alt = 'pic';
+    let picElement;
+    if (thumbnail!==null && thumbnail!=undefined){
+        picElement = document.createElement('img');
+        picElement.className="thumbnail";
+        picElement.src = thumbnail;
+        picElement.style = "width:100%;"
+        picElement.alt = 'pic';
+    }
     let publisherElement = document.createElement('h4');
-    publisherElement.innerText = publisher + " - " + formatTimestamp(date.seconds);
+    publisherElement.innerText = publisher + " - " + formatTimestamp(date);
 
     // Style header
     const divElement = document.createElement('div');
@@ -261,41 +296,80 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
     divThumbnailElement.className = 'thumbnail-content';
     const divTitleElement = document.createElement('div');
     divTitleElement.className = 'title-content';
-
     divTitleElement.appendChild(titleElement);
     divTitleElement.appendChild(publisherElement);
-    divThumbnailElement.appendChild(picElement);
+    if (thumbnail!==null && thumbnail!=undefined){
+        divThumbnailElement.appendChild(picElement);
+    }
     divElement.appendChild(divTitleElement);
     divElement.appendChild(divThumbnailElement);
 
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
-    let linkElement = document.createElement('a');
-    linkElement.innerText = "Read More"
     linkElement.href = link;
+    linkElement.target = "_blank";
     item.appendChild(divElement);
-    contentElement.appendChild(linkElement);
     item.appendChild(contentElement);
-    articleList.appendChild(item);
+    linkElement.appendChild(item);
+    articleList.appendChild(linkElement);
 }
 
 function formatTimestamp(timestamp) {
-  const date = new Date(timestamp * 1000);
+  if (timestamp === undefined) {
+    return "Unknown Date";
+  }
+
+  const date = new Date(timestamp.seconds * 1000);
   const dateFormat = new Intl.DateTimeFormat('en',
    {month: 'long', day: 'numeric', year: 'numeric'});
   return dateFormat.format(date);
 }
 
 /** Adds a marker that shows an info window when clicked. */
-function addLandmark(map, lat, lng, title, articles) {
+function addLandmark(map, lat, lng, title, articles, label) {
   const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, map: map, title: title});
+
+           console.log(label);
+
+    if (label=="city"){
+        marker.setVisible(false);
+        cityMarkers.push(marker);
+    } else if (label == "subcountry"){
+        subcountryMarkers.push(marker);
+
+    } else if (label == "country"){
+        marker.setVisible(false);
+
+        countryMarkers.push(marker);
+    }
+
+ 
 
   marker.addListener('click', () => {
     displayArticles(articles);
   });
+    showBasedOnZoom();
 }
 
+// Decides which articles to show depending on the zoom 
+function showBasedOnZoom(){
+    /* Change markers on zoom */
+    google.maps.event.addListener(sharedMap, 'zoom_changed', function() {
+        var zoom = sharedMap.getZoom();
+        // iterate over markers and call setVisible
+        for (i = 0; i < countryMarkers.length; i++) {
+            countryMarkers[i].setVisible(zoom < 5);
+        }
+       for (i = 0; i < cityMarkers.length; i++) {
+            cityMarkers[i].setVisible(zoom > 8);
+        }
+        for (i = 0; i < subcountryMarkers.length; i++) {
+            subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
+
+        }
+    });
+}
 
 /** Creates a map and adds it to the page. */
 function initMap() {
