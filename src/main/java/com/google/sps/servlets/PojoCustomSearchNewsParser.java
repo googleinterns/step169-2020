@@ -26,7 +26,7 @@ class PojoCustomSearchNewsParser implements CustomSearchNewsParser {
     return parsedArticles;
   }
 
-  public List<Article> parseSingleResult(String resultJson) {
+  private List<Article> parseSingleResult(String resultJson) {
     List<Article> parsedArticles = new ArrayList<>();
     CustomSearchResults results = gson.fromJson(resultJson, CustomSearchResults.class);
     parsedArticles.addAll(results.getArticles());

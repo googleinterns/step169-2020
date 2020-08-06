@@ -37,7 +37,7 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
     return parsedArticles;
   }
 
-  public List<Article> parseSingleResult(String resultJson) {
+  private List<Article> parseSingleResult(String resultJson) {
     List<Article> parsedArticles = new ArrayList<>();
 
     try {
