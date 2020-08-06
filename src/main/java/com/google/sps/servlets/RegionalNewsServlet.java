@@ -33,8 +33,13 @@ public class RegionalNewsServlet extends HttpServlet {
         topic = ""; // No topic is acceptable, so we just replace it with an empty string to avoid NullPointerExceptions
       }
 
-      List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
-      response.getWriter().println(gson.toJson(retrievedArticles));
+      try {
+        List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
+        response.getWriter().println(gson.toJson(retrievedArticles));
+      } catch (NewsUnavailableException e) {
+        response.setStatus(400);
+        response.getWriter().println(e.getMessage());
+      }
     }
   }
 }
