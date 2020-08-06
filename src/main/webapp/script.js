@@ -281,14 +281,18 @@ function displayArticles(articles) {
 function addArticle(title, publisher, content, date, link, thumbnail) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
+    let linkElement = document.createElement('a');
+
     let titleElement = document.createElement('h2');
     titleElement.innerText = title;
-
-    let picElement = document.createElement('img');
-    picElement.className="thumbnail";
-    picElement.src = thumbnail;
-    picElement.style = "width:100%;"
-    picElement.alt = 'pic';
+    let picElement;
+    if (thumbnail!==null && thumbnail!=undefined){
+        picElement = document.createElement('img');
+        picElement.className="thumbnail";
+        picElement.src = thumbnail;
+        picElement.style = "width:100%;"
+        picElement.alt = 'pic';
+    }
     let publisherElement = document.createElement('h4');
     publisherElement.innerText = publisher + " - " + formatTimestamp(date);
 
@@ -299,22 +303,22 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
     divThumbnailElement.className = 'thumbnail-content';
     const divTitleElement = document.createElement('div');
     divTitleElement.className = 'title-content';
-
     divTitleElement.appendChild(titleElement);
     divTitleElement.appendChild(publisherElement);
-    divThumbnailElement.appendChild(picElement);
+    if (thumbnail!==null && thumbnail!=undefined){
+        divThumbnailElement.appendChild(picElement);
+    }
     divElement.appendChild(divTitleElement);
     divElement.appendChild(divThumbnailElement);
 
     let contentElement = document.createElement('p'); 
     contentElement.innerText = content + "\n";
-    let linkElement = document.createElement('a');
-    linkElement.innerText = "Read More"
     linkElement.href = link;
+    linkElement.target = "_blank";
     item.appendChild(divElement);
-    contentElement.appendChild(linkElement);
     item.appendChild(contentElement);
-    articleList.appendChild(item);
+    linkElement.appendChild(item);
+    articleList.appendChild(linkElement);
 }
 
 function formatTimestamp(timestamp) {
@@ -336,11 +340,14 @@ function addLandmark(map, lat, lng, title, articles, label) {
            console.log(label);
 
     if (label=="city"){
+        marker.setVisible(false);
         cityMarkers.push(marker);
     } else if (label == "subcountry"){
         subcountryMarkers.push(marker);
 
     } else if (label == "country"){
+        marker.setVisible(false);
+
         countryMarkers.push(marker);
     }
 
