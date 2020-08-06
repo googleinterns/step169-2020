@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-class POJOCustomSearchNewsParser implements CustomSearchNewsParser {
+class PojoCustomSearchNewsParser implements CustomSearchNewsParser {
 
   private final Gson gson;
 
-  POJOCustomSearchNewsParser() {
+  PojoCustomSearchNewsParser() {
     gson = new GsonBuilder()
       .serializeNulls()
       .create();
