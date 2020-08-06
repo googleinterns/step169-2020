@@ -75,29 +75,42 @@ public class ArticleLabeler {
     }
 
     private String[] getBestCandidate(Set<String> foundCities, Set<String> foundSubCountries, Set<String> foundCountries) {
+        Set<String> originalFoundSubCountries = new HashSet<String>(foundSubCountries);
+        Set<String> originalFoundCountries = new HashSet<String>(foundCountries);
         // Added all cities found to their respective subcountry.
         for (String city : foundCities) {
             for (String subCountry : cityToSubCountriesMap.get(city)) {
-                foundSubCountries.add(subCountry);
                 int multiplier = foundSubCountries.contains(subCountry) ? 3 : 1;
-                subCountryCounts.put(subCountry, (subCountryCounts.get(subCountry) * multiplier) + cityCounts.get(city));
+                foundSubCountries.add(subCountry);
+                subCountryCounts.put(subCountry, (subCountryCounts.get(subCountry) + cityCounts.get(city)) * multiplier);
             }
         }
         // Add all subcountries found to their respective countries.
         for (String subCountry : foundSubCountries) {
             for (String country : subCountriesToCountryMap.get(subCountry)) {
-                foundCountries.add(country);
                 int multiplier = foundCountries.contains(country) ? 3 : 1;
-                countryCounts.put(country, (countryCounts.get(country) * multiplier) + subCountryCounts.get(subCountry));
+                foundCountries.add(country);
+                countryCounts.put(country, (countryCounts.get(country) + subCountryCounts.get(subCountry)) * multiplier);
             }
         }
         // Iterate through all possible combinations and find one with highest score.
         String[] bestCandidate = {"unknown", "unknown", "unknown"};
-        int highScore = 0;
-        for (String city : foundCities) {
-            for (String subCountry : foundSubCountries) {
-                for (String country : foundCountries) {
+        int highScore = -1;
+        for (String country : foundCountries) {
+            for (String subCountry : countryToSubCountriesMap.get(country)) {
+                for (String city : subCountryToCitiesMap.get(subCountry)) {
                     int score = cityCounts.get(city) + subCountryCounts.get(subCountry) + countryCounts.get(country);
+                    /*
+                    if (originalFoundCountries.contains(country)) {
+                        score *= 3;
+                    }
+                    */
+                    /*
+                    if (city.equals(subCountry) || city.equals(country)) {
+                        score *= 0.75;
+                    }
+                    */
+                    //System.err.println(city + ", " + subCountry + ", " + country + " | Score " + score);
                     if (score > highScore) {
                         bestCandidate[0] = city;
                         bestCandidate[1] = subCountry;
@@ -123,41 +136,47 @@ public class ArticleLabeler {
     public synchronized String[] getMostLikelyLocation(String URL) {
         try {
             Document doc = Jsoup.connect(URL).get();
-            Elements elements = doc.select("p");
             Set<String> foundCities = new HashSet<String>();
             Set<String> foundSubCountries = new HashSet<String>();
             Set<String> foundCountries = new HashSet<String>();
-            for (Element e : elements) {
-                List<String> contents = getNormalizedWords(e.text());
-                for (int i = 0; i < contents.size(); i++) {
-                    for (int size = 1; size <= windowSize; size++) {
-                        if (i + size < contents.size()) {
-                            String searchTerm = "";
-                            for (int j = 0; j < size; j++) {
-                                searchTerm += contents.get(i + j);
-                                if (j < size - 1) {
-                                    searchTerm += " ";
+            Map<String, Integer> typeWeight = new HashMap<String, Integer>();
+            typeWeight.put("p", 1);
+            typeWeight.put("h1", 5);
+            typeWeight.put("div", 1);
+            for (String type : typeWeight.keySet()) {
+                Elements elements = doc.select(type);
+                for (Element e : elements) {
+                    List<String> contents = getNormalizedWords(e.text());
+                    for (int i = 0; i < contents.size(); i++) {
+                        for (int size = 1; size <= windowSize; size++) {
+                            if (i + size < contents.size()) {
+                                String searchTerm = "";
+                                for (int j = 0; j < size; j++) {
+                                    searchTerm += contents.get(i + j);
+                                    if (j < size - 1) {
+                                        searchTerm += " ";
+                                    }
                                 }
-                            }
-                            if (cityCounts.containsKey(searchTerm)) {
-                                cityCounts.put(searchTerm, cityCounts.get(searchTerm) + 1);
-                                foundCities.add(searchTerm);
-                            }
-                            if (subCountryCounts.containsKey(searchTerm)) {
-                                subCountryCounts.put(searchTerm, subCountryCounts.get(searchTerm) + 1);
-                                foundSubCountries.add(searchTerm);
-                            }
-                            if (countryCounts.containsKey(searchTerm)) {
-                                countryCounts.put(searchTerm, countryCounts.get(searchTerm) + 1);
-                                foundCountries.add(searchTerm);
+                                if (countryCounts.containsKey(searchTerm)) {
+                                    countryCounts.put(searchTerm, countryCounts.get(searchTerm) + typeWeight.get(type));
+                                    foundCountries.add(searchTerm);
+                                }
+                                if (subCountryCounts.containsKey(searchTerm)) {
+                                    subCountryCounts.put(searchTerm, subCountryCounts.get(searchTerm) + typeWeight.get(type));
+                                    foundSubCountries.add(searchTerm);
+                                }
+                                if (cityCounts.containsKey(searchTerm)) {
+                                    cityCounts.put(searchTerm, cityCounts.get(searchTerm) + typeWeight.get(type));
+                                    foundCities.add(searchTerm);
+                                }
                             }
                         }
                     }
                 }
             }
-            System.err.println(foundCities);
-            System.err.println(foundSubCountries);
-            System.err.println(foundCountries);
+            //System.err.println(foundCities);
+            //System.err.println(foundSubCountries);
+            //System.err.println(foundCountries);
             return getBestCandidate(foundCities, foundSubCountries, foundCountries);
         } catch(Exception e) {
             System.err.println(e);

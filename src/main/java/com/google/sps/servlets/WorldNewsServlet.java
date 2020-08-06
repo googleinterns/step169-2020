@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import com.google.sps.ArticleLabeler;
+import java.util.Scanner;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
@@ -20,21 +22,55 @@ public class WorldNewsServlet extends HttpServlet {
     gson = new Gson();
   }
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  private void runArticleLabelerTests(String sourcePath) {
     ArticleLabeler labeler = ArticleLabeler.getArticleLabeler(this.getServletContext(), "/WEB-INF/fullcitylist.csv");
-    String[] urls = {
-        "https://abcnews.go.com/Politics/fauci-warns-states-coronavirus-numbers-good/story?id=72059455&cid=clicksource_4380645_2_heads_hero_live_hero_hed",
-        "https://abcnews.go.com/Politics/read-president-barack-obamas-eulogy-rep-john-lewis/story?id=72081189&cid=clicksource_4380645_5_three_posts_card_image",
-        "https://abcnews.go.com/US/wireStory/philadelphia-trash-piles-pandemic-stymies-removal-72080100?cid=clicksource_4380645_2_heads_hero_live_headlines_hed"
-    };
-    for (String url : urls) {
-        String[] location = labeler.getMostLikelyLocation(url);
-        String out = "";
-        for (String loc : location) {
-            out += " " + loc;
+    System.err.println("-- BEGIN ARTICLE LABELER TESTS --\n-- LEFT SIDE IS CORRECT | RIGHT SIDE IS GUESS --");
+    try {
+        Scanner scanner = new Scanner(this.getServletContext().getResourceAsStream(sourcePath));
+        scanner.useDelimiter("\n");
+        int cityScore = 0;
+        int subCountryScore = 0;
+        int countryScore = 0;
+        int count = 0;
+        while (scanner.hasNext()) {
+            List<String> contents = new ArrayList<String>();
+            Scanner innerScanner = new Scanner(scanner.next());
+            innerScanner.useDelimiter(",");
+            while (innerScanner.hasNext()) {
+                String text = innerScanner.next();
+                contents.add(text);
+            }
+
+            if (contents.size() == 4) {
+                String city = contents.get(0);
+                String subCountry = contents.get(1);
+                String country = contents.get(2);
+                String url = contents.get(3);
+                String[] guess = labeler.getMostLikelyLocation(url);
+                if (guess != null) {
+                    count += 1;
+                    int ciScore = city.equals(guess[0]) ? 1 : 0;
+                    int scScore = subCountry.equals(guess[1]) ? 1 : 0;
+                    int coScore = country.equals(guess[2]) ? 1 : 0;
+                    int score = ciScore + scScore + coScore;
+                    cityScore += ciScore;
+                    subCountryScore += scScore;
+                    countryScore += coScore;
+                    if (guess.length == 3) {
+                        System.err.println("CITY : " + city + " | " + guess[0] + ", SUBCOUNTRY : " + subCountry + " | " + guess[1] + ", COUNTRY : " + country + " | " + guess[2] + " | SCORE : " + score +"/3" + " | URL: " + url);
+                    }
+                }
+            }
         }
-        System.err.println(url + out);
+        System.err.println("SCORES : CITY " + cityScore +"/" + count + " | SUBCOUNTRY " + subCountryScore + "/" + count + " | COUNTRY " + countryScore + "/" + count);
+    } catch (Exception e) {
+        System.err.println(e);
     }
+  }
+
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    this.runArticleLabelerTests("/WEB-INF/SearchTestCases.csv");
+
     response.setContentType("application/json;");
 
     List<Article> retrievedArticles = newsService.getWorldNews(-1);
