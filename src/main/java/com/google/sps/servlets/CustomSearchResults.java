@@ -13,7 +13,7 @@ import com.joestelmach.natty.Parser;
 import com.joestelmach.natty.DateGroup;
 
 class CustomSearchResults {
-  List<Result> items;
+  private List<Result> items;
 
   List<Article> getArticles() {
     List<Article> articles = new ArrayList<>();
@@ -24,6 +24,7 @@ class CustomSearchResults {
         // Ignore this error, because we don't want the entire program 
         // to halt because one article failed to parse.
         // TODO add logging so that articles that fail to parse won't be missed.
+        e.printStackTrace();
       }
     }
     return articles;
@@ -49,9 +50,17 @@ class CustomSearchResults {
 
     private String getTitle() {
       String title = null;
-      if (pageMap.newsArticles != null && !pageMap.newsArticles.isEmpty()) {
-        title = pageMap
-          .newsArticles
+
+      List<MetaTags> metaTags = pageMap.metaTags;
+      if (metaTags != null && !metaTags.isEmpty()) {
+        title = metaTags
+          .get(0)
+          .ogTitle;
+      }
+
+      List<NewsArticle> newsArticles = pageMap.newsArticles;
+      if (title == null && newsArticles != null && !newsArticles.isEmpty()) {
+        title = newsArticles
           .get(0)
           .headline;
       }
@@ -65,16 +74,16 @@ class CustomSearchResults {
 
     private String getPublisher() {
       String publisher = null;
-      if (pageMap.metaTags != null && !pageMap.metaTags.isEmpty()) {
-        publisher = pageMap
-          .metaTags
+      List<MetaTags> metaTags = pageMap.metaTags;
+      if (metaTags != null && !metaTags.isEmpty()) {
+        publisher = metaTags
           .get(0)
           .ogSiteName;
       }
 
-      if (publisher == null && pageMap.organizations != null && !pageMap.organizations.isEmpty()) {
-        publisher = pageMap
-          .organizations
+      List<Organization> organizations = pageMap.organizations;
+      if (publisher == null && organizations != null && !organizations.isEmpty()) {
+        publisher = organizations
           .get(0)
           .name;
       }
@@ -122,7 +131,22 @@ class CustomSearchResults {
 
       if (newsArticles != null && !newsArticles.isEmpty()) {
         NewsArticle article = newsArticles.get(0);
-        String[] potentialDates = {article.datePublished, article.datePosted, article.dateCreated, article.dateModified};
+        String[] potentialDates = {article.datePublished, article.datePosted,
+         article.dateCreated, article.dateModified};
+        for (String date : potentialDates) {
+          formattedDate = date;
+          if (formattedDate != null) {
+            break;
+          }
+        }
+      }
+
+      List<MetaTags> metaTags = pageMap.metaTags;
+
+      if (formattedDate == null && metaTags != null && !metaTags.isEmpty()) {
+        MetaTags tags = metaTags.get(0);
+        String[] potentialDates = {tags.articlePublishedTime, tags.dateToday,
+         tags.articleModifiedtime, tags.lastModified};
         for (String date : potentialDates) {
           formattedDate = date;
           if (formattedDate != null) {
@@ -156,8 +180,15 @@ class CustomSearchResults {
 
     private String getDescription() {
       String description = null;
-      List<NewsArticle> newsArticles = pageMap.newsArticles;
+      
+      List<MetaTags> metaTags = pageMap.metaTags;
+      if (metaTags != null && !metaTags.isEmpty()) {
+        description = metaTags
+          .get(0)
+          .ogDescription;
+      }
 
+      List<NewsArticle> newsArticles = pageMap.newsArticles;
       if (newsArticles != null && !newsArticles.isEmpty()) {
         NewsArticle article = newsArticles.get(0);
         String[] potentialDescriptions = {article.description, article.articleBody};
@@ -172,20 +203,42 @@ class CustomSearchResults {
       if (description == null) {
         description = snippet;
       }
+
       return description;
     }
 
     private String getUrl() {
-      return link;
+      String url = link;
+
+      List<MetaTags> metaTags = pageMap.metaTags;
+      if (url == null && metaTags != null && !metaTags.isEmpty()) {
+        url = metaTags
+          .get(0)
+          .ogUrl;
+      }
+
+      return url;
     }
 
     private String getThumbnailUrl() {
       String thumbnailUrl = null;
-      if (pageMap.cseImages != null && !pageMap.cseImages.isEmpty()) {
-        thumbnailUrl = pageMap.cseImages.get(0).src;
+      List<MetaTags> metaTags = pageMap.metaTags;
+      if (metaTags != null && !metaTags.isEmpty()) {
+        thumbnailUrl = metaTags
+          .get(0)
+          .ogImage;
       }
-      if (pageMap.cseThumbnails != null && !pageMap.cseThumbnails.isEmpty()) {
-        thumbnailUrl = pageMap.cseThumbnails.get(0).src;
+      List<Thumbnail> cseImages = pageMap.cseImages;
+      if (cseImages != null && !cseImages.isEmpty()) {
+        thumbnailUrl = cseImages
+          .get(0)
+          .src;
+      }
+      List<Thumbnail> cseThumbnails = pageMap.cseThumbnails;
+      if (cseThumbnails != null && !cseThumbnails.isEmpty()) {
+        thumbnailUrl = cseThumbnails
+          .get(0)
+          .src;
       }
       return thumbnailUrl;
     }
@@ -229,6 +282,22 @@ class CustomSearchResults {
   private class MetaTags {
     @SerializedName("og:site_name")
     String ogSiteName;
+    @SerializedName("og:title")
+    String ogTitle;
+    @SerializedName("og:description")
+    String ogDescription;
+    @SerializedName("og:image")
+    String ogImage;
+    @SerializedName("og:url")
+    String ogUrl;
+    @SerializedName(value = "article:published_time", alternate = {"og:article:published_time"})
+    String articlePublishedTime;    
+    @SerializedName(value = "article:modified_time", alternate = {"og:article:modified_time"})
+    String articleModifiedtime;
+    @SerializedName("last-modified")
+    String lastModified;
+    @SerializedName(value = "datetoday", alternate = {"dateToday", "DateToday", "Datetoday"})
+    String dateToday;
   }
 
   private class Organization {

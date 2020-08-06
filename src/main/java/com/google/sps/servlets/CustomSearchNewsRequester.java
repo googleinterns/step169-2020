@@ -101,7 +101,7 @@ class CustomSearchNewsRequester {
     ZoneId utc = ZoneId.of("UTC");
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(utc);
     String ISOFormattedDate = formatter.format(lowerBound);
-    return String.format("date:d:s,date:r:%s:", ISOFormattedDate);
+    return String.format("%s,date:r:%s:", RECENT_DATE_BIAS, ISOFormattedDate);
   }
 
   private String sendSearchGetRequest(String searchUrl) {
