@@ -14,15 +14,14 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
-
 
 // Servlet which logs the user into their google account
 @WebServlet("/login")
@@ -35,14 +34,13 @@ public class DataServletLogin extends HttpServlet {
     PrintWriter out = response.getWriter();
 
     UserService userService = UserServiceFactory.getUserService();
-    if (userService.isUserLoggedIn()){
-        // Redirect back to the HTML page.
-        response.sendRedirect("/index.html");
-    }
-    else{
-        // Return login link
-        String loginUrl = userService.createLoginURL("/login");
-        out.println(loginUrl);
+    if (userService.isUserLoggedIn()) {
+      // Redirect back to the HTML page.
+      response.sendRedirect("/index.html");
+    } else {
+      // Return login link
+      String loginUrl = userService.createLoginURL("/login");
+      out.println(loginUrl);
     }
   }
 }

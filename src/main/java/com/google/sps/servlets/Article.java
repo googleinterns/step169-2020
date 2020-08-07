@@ -11,7 +11,8 @@ final class Article {
   final String thumbnailUrl;
   final Location location;
 
-  Article(String title, String publisher, Instant date, String description, String url, String thumbnailUrl, Location location) {
+  Article(String title, String publisher, Instant date, String description, String url, 
+      String thumbnailUrl, Location location) {
     this.title = title;
     this.publisher = publisher;
     this.date = date;

@@ -10,6 +10,7 @@ class Location {
     this.subcountry = subcountry;
     this.country = country;
   }
+  
   @Override
   public String toString() {
     return String.format("%s, %s, %s", city, subcountry, country);
