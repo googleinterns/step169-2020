@@ -14,34 +14,33 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import java.io.IOException;
+import java.io.PrintWriter;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
 
 // Servlet which logs the user out of their google account
 @WebServlet("/logout")
 public class DataServletLogout extends HttpServlet {
   
-//   Fetch logout link is user is logged in
+  // Fetch logout link is user is logged in
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html");
     PrintWriter out = response.getWriter();
     
     UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()){
-        // Redirect back to the HTML page.
-        response.sendRedirect("/index.html");
-    }
-    else{
-        // Return logout link
-        String logoutUrl = userService.createLogoutURL("/logout");
-        out.println(logoutUrl);
+    if (!userService.isUserLoggedIn()) {
+      // Redirect back to the HTML page.
+      response.sendRedirect("/index.html");
+    } else {
+      // Return logout link
+      String logoutUrl = userService.createLogoutURL("/logout");
+      out.println(logoutUrl);
     }
   }
 

@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
-import java.util.List;
 import java.lang.IllegalArgumentException;
+import java.util.List;
 
 class CustomSearchNewsService implements NewsService {
 

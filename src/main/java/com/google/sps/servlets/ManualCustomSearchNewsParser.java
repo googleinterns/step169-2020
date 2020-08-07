@@ -1,23 +1,22 @@
 package com.google.sps.servlets;
 
-import java.util.List;
-import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonPrimitive;
-
-import com.joestelmach.natty.Parser;
-import com.joestelmach.natty.DateGroup;
+import java.util.List;
 
 class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
 
@@ -127,7 +126,7 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
     URI uri = new URI(url);
     String hostName = uri.getHost();
     if (hostName != null) {
-        return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+      return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
     }
     return hostName;
   }
@@ -139,7 +138,7 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
     if (formattedDate != null) {
       try {
         date = parseDate(formattedDate);
-      } catch(DateTimeParseException e) {
+      } catch (DateTimeParseException e) {
         date = null;
       }
     } else {

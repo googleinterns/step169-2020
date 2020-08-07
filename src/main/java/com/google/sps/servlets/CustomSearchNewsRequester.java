@@ -1,24 +1,24 @@
 package com.google.sps.servlets;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
-import java.lang.StringBuilder;
 import java.lang.Math;
+import java.lang.StringBuilder;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 class CustomSearchNewsRequester {
 
@@ -37,7 +37,7 @@ class CustomSearchNewsRequester {
   
   private String getApiKey() {
     BufferedReader reader = new BufferedReader(
-      new InputStreamReader(getClass().getResourceAsStream("/CSE_API_KEY.txt"))
+        new InputStreamReader(getClass().getResourceAsStream("/CSE_API_KEY.txt"))
     );
     try {
       return reader.readLine();
@@ -57,7 +57,8 @@ class CustomSearchNewsRequester {
       return URLEncoder.encode(searchQuery, StandardCharsets.UTF_8.toString());
     } catch (UnsupportedEncodingException e) {
       String errorMessage = 
-        String.format("Could not encode search query for region \"%s\" and topic\" %s\"", region, topic);
+          String.format("Could not encode search query for region \"%s\" and topic\" %s\"",
+          region, topic);
       throw new IllegalArgumentException(errorMessage);
     }
   }
@@ -73,11 +74,13 @@ class CustomSearchNewsRequester {
   private List<String> getResults(String encodedSearchQuery, int count) {
     List<String> results = new ArrayList<>();
     for (int i = 0; i < Math.ceil((float) count / MAX_ARTICLES_PER_REQUEST); i++) {
-      int articlesRemaining = count - MAX_ARTICLES_PER_REQUEST*i;
+      int articlesRemaining = count - MAX_ARTICLES_PER_REQUEST * i;
       int numberOfArticlesForNextRequest = 
-        (articlesRemaining < MAX_ARTICLES_PER_REQUEST) ? articlesRemaining : MAX_ARTICLES_PER_REQUEST;
+          (articlesRemaining < MAX_ARTICLES_PER_REQUEST) 
+          ? articlesRemaining : MAX_ARTICLES_PER_REQUEST;
       int offset = MAX_ARTICLES_PER_REQUEST * i;
-      String response = queryCustomSearch(encodedSearchQuery, numberOfArticlesForNextRequest, offset);
+      String response = queryCustomSearch(encodedSearchQuery, numberOfArticlesForNextRequest,
+          offset);
       results.add(response);
     }
     return results;
@@ -85,11 +88,11 @@ class CustomSearchNewsRequester {
 
   private String queryCustomSearch(String searchQuery, int count, int offset) {
     String queryString = String.format("cx=%s&key=%s&q=%s&lr=%s&sort=%s",
-      SEARCH_ENGINE_ID, 
-      apiKey, 
-      searchQuery, 
-      ENGLISH_LANGUAGE_CODE,
-      buildSortParameter());
+        SEARCH_ENGINE_ID, 
+        apiKey, 
+        searchQuery, 
+        ENGLISH_LANGUAGE_CODE,
+        buildSortParameter());
     String fullSearchUrl = String.format("%s?%s", CUSTOM_SEARCH_API_URL, queryString);
     System.out.println(fullSearchUrl);
     return sendSearchGetRequest(fullSearchUrl);
@@ -100,8 +103,8 @@ class CustomSearchNewsRequester {
     Instant lowerBound = now.minusSeconds(MAXIMUM_ARTICLE_AGE.getSeconds());
     ZoneId utc = ZoneId.of("UTC");
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(utc);
-    String ISOFormattedDate = formatter.format(lowerBound);
-    return String.format("%s,date:r:%s:", RECENT_DATE_BIAS, ISOFormattedDate);
+    String isoFormattedDate = formatter.format(lowerBound);
+    return String.format("%s,date:r:%s:", RECENT_DATE_BIAS, isoFormattedDate);
   }
 
   private String sendSearchGetRequest(String searchUrl) {
@@ -129,7 +132,8 @@ class CustomSearchNewsRequester {
           throw new NewsUnavailableException("Failed to read API response.", e);
         }
       } else {
-        throw new NewsUnavailableException(String.format("Response code %d from API", responseCode));
+        throw new NewsUnavailableException(String.format("Response code %d from API", 
+            responseCode));
       }
     } catch (IOException e) {
       throw new NewsUnavailableException("Failed to get data from API.", e);

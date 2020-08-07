@@ -1,17 +1,16 @@
 package com.google.sps.servlets;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-
-import com.joestelmach.natty.Parser;
-import com.joestelmach.natty.DateGroup;
+import java.util.List;
 
 class CustomSearchResults {
   final List<Result> items;
@@ -115,7 +114,7 @@ class CustomSearchResults {
       URI uri = new URI(url);
       String hostName = uri.getHost();
       if (hostName != null) {
-          return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+        return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
       }
       return hostName;
     }
@@ -127,7 +126,7 @@ class CustomSearchResults {
       if (formattedDate != null) {
         try {
           date = parseDate(formattedDate);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
           date = null;
         }
       } else {
@@ -144,7 +143,7 @@ class CustomSearchResults {
       if (newsArticles != null && !newsArticles.isEmpty()) {
         NewsArticle article = newsArticles.get(0);
         String[] potentialDates = {article.datePublished, article.datePosted,
-         article.dateCreated, article.dateModified};
+          article.dateCreated, article.dateModified};
         for (String date : potentialDates) {
           formattedDate = date;
           if (formattedDate != null) {
@@ -158,7 +157,7 @@ class CustomSearchResults {
       if (formattedDate == null && metaTags != null && !metaTags.isEmpty()) {
         MetaTags tags = metaTags.get(0);
         String[] potentialDates = {tags.articlePublishedTime, tags.dateToday,
-         tags.articleModifiedtime, tags.lastModified, tags.ogUpdatedTime};
+          tags.articleModifiedtime, tags.lastModified, tags.ogUpdatedTime};
         for (String date : potentialDates) {
           formattedDate = date;
           if (formattedDate != null) {
@@ -262,9 +261,11 @@ class CustomSearchResults {
   }
 
   class PageMap {
-    @SerializedName(value = "newsarticle", alternate = {"newsArticle", "NewsArticle", "Newsarticle"})
+    @SerializedName(value = "newsarticle", 
+        alternate = {"newsArticle", "NewsArticle", "Newsarticle"})
     final List<NewsArticle> newsArticles;
-    @SerializedName(value = "metatags", alternate = {"metaTags", "MetaTags", "Metatags"})
+    @SerializedName(value = "metatags", 
+        alternate = {"metaTags", "MetaTags", "Metatags"})
     final List<MetaTags> metaTags;
     @SerializedName(value = "organization", alternate = {"Organization"})
     final List<Organization> organizations;
@@ -273,8 +274,9 @@ class CustomSearchResults {
     @SerializedName("cse_thumbnail")
     final List<Thumbnail> cseThumbnails;
 
-    PageMap(List<NewsArticle> newsArticles, List<MetaTags> metaTags, List<Organization> organizations, 
-        List<Thumbnail> cseImages, List<Thumbnail> cseThumbnails) {
+    PageMap(List<NewsArticle> newsArticles, List<MetaTags> metaTags, 
+        List<Organization> organizations, List<Thumbnail> cseImages, 
+        List<Thumbnail> cseThumbnails) {
       this.newsArticles = Collections.unmodifiableList(newsArticles);
       this.metaTags = Collections.unmodifiableList(metaTags);
       this.organizations = Collections.unmodifiableList(organizations);
@@ -286,18 +288,24 @@ class CustomSearchResults {
   class NewsArticle {
     @SerializedName(value = "headline", alternate = {"Headline"})
     final String headline;
-    @SerializedName(value = "datepublished", alternate = {"datePublished", "DatePublished", "Datepublished"})
+    @SerializedName(value = "datepublished", 
+        alternate = {"datePublished", "DatePublished", "Datepublished"})
     final String datePublished;
-    @SerializedName(value = "datecreated", alternate = {"dateCreated", "DateCreated", "Datecreated"})
+    @SerializedName(value = "datecreated", 
+        alternate = {"dateCreated", "DateCreated", "Datecreated"})
     final String dateCreated;
-    @SerializedName(value = "datemodified", alternate = {"dateModified", "DateModified", "Datemodified"})
+    @SerializedName(value = "datemodified", 
+        alternate = {"dateModified", "DateModified", "Datemodified"})
     final String dateModified;
-    @SerializedName(value = "dateposted", alternate = {"datePosted", "DatePosted", "Dateposted"})
+    @SerializedName(value = "dateposted", 
+        alternate = {"datePosted", "DatePosted", "Dateposted"})
     final String datePosted;
     @SerializedName(value = "description", alternate = {"Description"})
     final String description;
-    @SerializedName(value = "articlebody", alternate = {"articleBody", "ArticleBody", "Articlebody"})
+    @SerializedName(value = "articlebody", 
+        alternate = {"articleBody", "ArticleBody", "Articlebody"})
     final String articleBody;
+
     NewsArticle(String headline, String datePublished, String dateCreated, String dateModified,
         String datePosted, String description, String articleBody) {
       this.headline = headline;
@@ -333,8 +341,8 @@ class CustomSearchResults {
     final String dateToday;
 
     MetaTags(String ogSiteName, String ogTitle, String ogDescription, String ogImage,
-       String ogUrl, String ogUpdatedTime, String articlePublishedTime,
-       String articleModifiedtime, String lastModified, String dateToday) {
+        String ogUrl, String ogUpdatedTime, String articlePublishedTime,
+        String articleModifiedtime, String lastModified, String dateToday) {
       this.ogSiteName = ogSiteName;
       this.ogTitle = ogTitle;
       this.ogDescription = ogDescription;
