@@ -28,6 +28,7 @@ class CustomSearchResults {
         // Ignore this error, because we don't want the entire program 
         // to halt because one article failed to parse.
         // TODO add logging so that articles that fail to parse won't be missed.
+        System.err.println("Failed to parse an article");
         e.printStackTrace();
       }
     }
@@ -104,7 +105,18 @@ class CustomSearchResults {
           //Use the site's host name as a fallback when no organization was supplied.
           String url = getUrl();
           publisher = getHostName(url);
-        } catch (NullPointerException | URISyntaxException e) { }
+        } catch (NullPointerException e) { 
+          System.err.println(
+              "Could not parse publisher from URL because getURL() returned null"
+          );
+          e.printStackTrace();
+        } catch (URISyntaxException e) {
+          System.err.println(
+              "Could not parse publisher from URL because a URISyntaxException occured"
+          );
+          e.printStackTrace();
+        }
+
       }
 
       return publisher;
@@ -127,6 +139,8 @@ class CustomSearchResults {
         try {
           date = parseDate(formattedDate);
         } catch (NullPointerException e) {
+          System.err.printf("Failed to parse date %s\n", formattedDate);
+          e.printStackTrace();
           date = null;
         }
       } else {
