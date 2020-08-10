@@ -5,12 +5,14 @@ import java.util.List;
 
 class CustomSearchNewsService implements NewsService {
 
-  private final CustomSearchNewsRequester requester;
+  private final Requester requester;
   private final CustomSearchNewsParser parser;
+  private final NewsApiArticleAdapter adapter;
 
   CustomSearchNewsService() {
     requester = new CustomSearchNewsRequester();
     parser = new PojoCustomSearchNewsParser();
+    adapter = new NewsApiArticleAdapter();
   }
 
   @Override

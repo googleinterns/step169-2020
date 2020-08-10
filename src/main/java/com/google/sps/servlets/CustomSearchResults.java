@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-class CustomSearchResults {
+final class CustomSearchResults {
   final List<Result> items;
 
   CustomSearchResults(List<Result> items) {
@@ -35,7 +35,7 @@ class CustomSearchResults {
     return articles;
   }
 
-  class Result {
+  final class Result {
     final String title;
     @SerializedName("pagemap")
     final PageMap pageMap; 
@@ -274,7 +274,7 @@ class CustomSearchResults {
     }
   }
 
-  class PageMap {
+  final class PageMap {
     @SerializedName(value = "newsarticle", 
         alternate = {"newsArticle", "NewsArticle", "Newsarticle"})
     final List<NewsArticle> newsArticles;
@@ -299,7 +299,7 @@ class CustomSearchResults {
     }
   }
 
-  class NewsArticle {
+  final class NewsArticle {
     @SerializedName(value = "headline", alternate = {"Headline"})
     final String headline;
     @SerializedName(value = "datepublished", 
@@ -332,7 +332,7 @@ class CustomSearchResults {
     }
   }
   
-  class MetaTags {
+  final class MetaTags {
     @SerializedName("og:site_name")
     final String ogSiteName;
     @SerializedName("og:title")
@@ -370,7 +370,7 @@ class CustomSearchResults {
     }
   }
 
-  class Organization {
+  final class Organization {
     @SerializedName(value = "name", alternate = {"Name"})
     String name;
 
@@ -379,7 +379,7 @@ class CustomSearchResults {
     }
   }
 
-  class Thumbnail {
+  final class Thumbnail {
     final String src;
 
     Thumbnail(String src) {

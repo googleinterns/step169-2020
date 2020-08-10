@@ -8,8 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
 import java.lang.Math;
 import java.lang.StringBuilder;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-class CustomSearchNewsRequester {
+class CustomSearchNewsRequester implements Requester {
 
   private static final int MAX_ARTICLES_PER_REQUEST = 10;
   private static final String CUSTOM_SEARCH_API_URL = "https://www.googleapis.com/customsearch/v1";
@@ -30,23 +28,24 @@ class CustomSearchNewsRequester {
   private static final Duration MAXIMUM_ARTICLE_AGE = Duration.ofDays(7);  
 
   private final String apiKey;
+  private final HttpRequestHandler requestHandler;
 
   CustomSearchNewsRequester() {
     this.apiKey = getApiKey();
+    this.requestHandler = new HttpRequestHandler();
   }
   
   private String getApiKey() {
-    BufferedReader reader = new BufferedReader(
-        new InputStreamReader(getClass().getResourceAsStream("/CSE_API_KEY.txt"))
-    );
-    try {
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(getClass().getResourceAsStream("/keys/CSE_API_KEY.txt"))
+    )) {
       return reader.readLine();
     } catch (IOException e) {
       throw new NewsUnavailableException("Unable to read API key.", e);
     }
   }
 
-  List<String> request(String region, String topic, int count) {
+  public List<String> request(String region, String topic, int count) {
     String encodedSearchQuery = buildEncodedSearchQuery(region, topic);
     return getResults(encodedSearchQuery, count);
   }
@@ -57,7 +56,7 @@ class CustomSearchNewsRequester {
       return URLEncoder.encode(searchQuery, StandardCharsets.UTF_8.toString());
     } catch (UnsupportedEncodingException e) {
       String errorMessage = 
-          String.format("Could not encode search query for region \"%s\" and topic\" %s\"",
+          String.format("Could not encode search query for region \"%s\" and topic\"%s\"",
           region, topic);
       throw new IllegalArgumentException(errorMessage);
     }
@@ -94,8 +93,7 @@ class CustomSearchNewsRequester {
         ENGLISH_LANGUAGE_CODE,
         buildSortParameter());
     String fullSearchUrl = String.format("%s?%s", CUSTOM_SEARCH_API_URL, queryString);
-    System.out.printf("Sending request to %s\n", fullSearchUrl);
-    return sendSearchGetRequest(fullSearchUrl);
+    return requestHandler.getRequest(fullSearchUrl);
   }
 
   private String buildSortParameter() {
@@ -105,40 +103,5 @@ class CustomSearchNewsRequester {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd").withZone(utc);
     String isoFormattedDate = formatter.format(lowerBound);
     return String.format("%s,date:r:%s:", RECENT_DATE_BIAS, isoFormattedDate);
-  }
-
-  private String sendSearchGetRequest(String searchUrl) {
-    try {
-      URL requestUrl = new URL(searchUrl);
-      HttpURLConnection conn = (HttpURLConnection) requestUrl.openConnection();
-      return extractResultsFromConnection(conn);
-    } catch (IOException e) {
-      throw new NewsUnavailableException("Could not connect to API.", e);
-    }
-  }
-
-  private String extractResultsFromConnection(HttpURLConnection conn) {
-    StringBuilder response = new StringBuilder(); 
-
-    try {
-      conn.setRequestMethod("GET");
-      int responseCode = conn.getResponseCode();
-      if (responseCode == HttpURLConnection.HTTP_OK) {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-          for (String line = in.readLine(); line != null; line = in.readLine()) {
-            response.append(line);
-          } 
-        } catch (IOException e) {
-          throw new NewsUnavailableException("Failed to read API response.", e);
-        }
-      } else {
-        throw new NewsUnavailableException(String.format("Response code %d from API", 
-            responseCode));
-      }
-    } catch (IOException e) {
-      throw new NewsUnavailableException("Failed to get data from API.", e);
-    }
-
-    return response.toString();
   }
 }

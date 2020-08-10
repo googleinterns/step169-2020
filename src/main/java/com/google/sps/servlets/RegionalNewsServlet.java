@@ -14,7 +14,7 @@ public class RegionalNewsServlet extends HttpServlet {
   private final Gson gson;
   
   public RegionalNewsServlet() {
-    newsService = new CustomSearchNewsService();
+    newsService = new NewsApiNewsService();
     gson = new Gson();
   }
 
@@ -38,7 +38,8 @@ public class RegionalNewsServlet extends HttpServlet {
         List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
         response.getWriter().println(gson.toJson(retrievedArticles));
       } catch (NewsUnavailableException e) {
-        response.setStatus(400);
+        e.printStackTrace();
+        response.setStatus(500);
         response.getWriter().println(e.getMessage());
       }
     }
