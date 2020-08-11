@@ -59,7 +59,8 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
       getDescription(article),
       getUrl(article),
       getThumbnailUrl(article),
-      getLocation(article));
+      getLocation(article),
+      getTheme(article));
   }
 
   private String getTitle(JsonObject article) {
@@ -260,5 +261,9 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
   //TODO implement an actual location determination algorithm
   private Location getLocation(JsonObject article) {
     return new Location("City", "State", "Country");
+  }
+  //TODO implement an actual location determination algorithm
+  private String getTheme(JsonObject article) {
+    return "miscellaneous";
   }
 }

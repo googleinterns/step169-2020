@@ -5,6 +5,7 @@
     <title>Hub</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Comfortaa" />
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlKFdxL2rShylt-FgSZJsI1262UzOmTCE&callback=initMap&libraries=places&callback=initAutocomplete">    
     </script>
@@ -49,18 +50,21 @@
       <!-- Map of the world with relevant labels -->
       <div id="map-container">
           <div id="map"></div>
-          </div>
+        </div>
 
       <!-- List of articles returned from the search -->
       <div id="article-list-container">
-       
-
         <div id ="list">
           <ul id="articles-list">                             
           </ul>
         </div>
       </div>
-
+    </div>
+    <div class="themes">
+        <input type="checkbox" id="polbutton" onClick="showPol()">Politics</input>
+        <input type="checkbox" id="busbutton" onClick="showBus()">Business</input>
+        <input type="checkbox" id="busbutton" onClick="showSports()">Sports</input>
+        <input type="checkbox" id="miscbutton" onClick="showMisc()">Misc</input>
     </div>
   </body>
 </html>

@@ -10,8 +10,9 @@ final class Article {
   final String url;
   final String thumbnailUrl;
   final Location location;
+  final String theme;
 
-  Article(String title, String publisher, Instant date, String description, String url, String thumbnailUrl, Location location) {
+  Article(String title, String publisher, Instant date, String description, String url, String thumbnailUrl, Location location, String theme) {
     this.title = title;
     this.publisher = publisher;
     this.date = date;
@@ -19,5 +20,6 @@ final class Article {
     this.url = url;
     this.thumbnailUrl = thumbnailUrl;
     this.location = location;
+    this.theme = theme;
   }
 }
