@@ -1,13 +1,12 @@
 package com.google.sps.servlets;
 
+import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-
-import com.google.gson.Gson;
 
 @WebServlet("/region-news")
 public class RegionalNewsServlet extends HttpServlet {
@@ -30,11 +29,18 @@ public class RegionalNewsServlet extends HttpServlet {
     } else {
       String topic = request.getParameter("topic");
       if (topic == null) {
-        topic = ""; // No topic is acceptable, so we just replace it with an empty string to avoid NullPointerExceptions
+        topic = ""; 
+        // No topic is acceptable, so we replace 
+        // it with an empty string to avoid NullPointerExceptions
       }
 
-      List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
-      response.getWriter().println(gson.toJson(retrievedArticles));
+      try {
+        List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
+        response.getWriter().println(gson.toJson(retrievedArticles));
+      } catch (NewsUnavailableException e) {
+        response.setStatus(400);
+        response.getWriter().println(e.getMessage());
+      }
     }
   }
 }

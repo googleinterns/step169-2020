@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
-import java.util.List;
 import java.lang.IllegalArgumentException;
+import java.util.List;
 
 class CustomSearchNewsService implements NewsService {
 
@@ -10,7 +10,7 @@ class CustomSearchNewsService implements NewsService {
 
   CustomSearchNewsService() {
     requester = new CustomSearchNewsRequester();
-    parser = new ManualCustomSearchNewsParser();
+    parser = new PojoCustomSearchNewsParser();
   }
 
   @Override
