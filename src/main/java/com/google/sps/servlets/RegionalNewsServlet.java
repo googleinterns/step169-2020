@@ -1,6 +1,7 @@
 package com.google.sps.servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
@@ -15,7 +16,9 @@ public class RegionalNewsServlet extends HttpServlet {
   
   public RegionalNewsServlet() {
     newsService = new NewsApiNewsService();
-    gson = new Gson();
+    gson = new GsonBuilder()
+        .disableHtmlEscaping()
+        .create();
   }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

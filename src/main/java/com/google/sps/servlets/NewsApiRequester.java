@@ -16,7 +16,8 @@ class NewsApiRequester implements Requester {
   private final String apiKey;
   private final HttpRequestHandler requestHandler;
   private final static String API_KEY_HEADER = "X-Api-Key";
-  
+  private final String ENGLISH_LANGUAGE_CODE = "en";
+
   NewsApiRequester() {
     this.apiKey = getApiKey();
     this.requestHandler = new HttpRequestHandler();
@@ -34,6 +35,7 @@ class NewsApiRequester implements Requester {
   }
 
   public List<String> request(String region, String topic, int count) {
+    // News API returns all of the matching articles at once, so we can ignore the "count" parameter.
     String encodedSearchQuery = buildEncodedSearchQuery(region, topic);
     String url = buildUrl(encodedSearchQuery);
     Map<String, String> headers = new HashMap<>();
@@ -62,7 +64,8 @@ class NewsApiRequester implements Requester {
   }
 
   private String buildUrl(String encodedSearchQuery) {
-    return String.format("https://newsapi.org/v2/everything?q=%s",
-        encodedSearchQuery);
+    return String.format("https://newsapi.org/v2/everything?q=%s&language=%s",
+        encodedSearchQuery,
+        ENGLISH_LANGUAGE_CODE);
   }
 }
