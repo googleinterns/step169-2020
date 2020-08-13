@@ -28,14 +28,37 @@ var countryRestrict = {'country': 'us'};
 var cityMarkers = [];
 var subcountryMarkers = [];
 var countryMarkers = [];
-var sportsMarkers = [];
-var politicsMarkers = [];
-var businessMarkers = [];
-var miscMarkers = [];
+var sportsMarkersCountry = [];
+var sportsMarkersSubcountry = [];
+var sportsMarkersCity = [];
+var politicsMarkersCountry = [];
+var politicsMarkersSubcountry = [];
+var politicsMarkersCity = [];
+var businessMarkersCountry = [];
+var businessMarkersSubcountry = [];
+var businessMarkersCity = [];
+var miscMarkersCountry = [];
+var miscMarkersSubcountry = [];
+var miscMarkersCity = [];
 var showpol =false;
 var showmisc =false;
 var showbus =false;
 var showsports =false;
+let articleMapCity = new Map();
+let articleMapSubcountry = new Map();
+let articleMapCountry = new Map();
+let articleMapSportsCountry = new Map();
+let articleMapSportsSubcountry = new Map();
+let articleMapSportsCity = new Map();
+let articleMapBusinessCountry = new Map();
+let articleMapBusinessSubcountry = new Map();
+let articleMapBusinessCity = new Map();
+let articleMapPoliticsCountry = new Map();
+let articleMapPoliticsSubcountry = new Map();
+let articleMapPoliticsCity = new Map();
+let articleMapMiscCountry = new Map();
+let articleMapMiscSubcountry = new Map();
+let articleMapMiscCity = new Map();
 
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
@@ -181,103 +204,65 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-    let articleMapCity = new Map();
-    let articleMapSubcountry = new Map();
-    let articleMapCountry = new Map();
-    let articleMapSports = new Map();
-    let articleMapBusiness = new Map();
-    let articleMapPolitics = new Map();
-    let articleMapMisc = new Map();
+
 
     // Creates and fills maps for each level of geographical divisions
     for (index in json) {
         let articleObj = json[index];
-        if (articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
-            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
-        } else {
-            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
-        }
-
-        if (articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
-            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
-        } else {
-            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
-        }
-
-        if (articleMapCountry[articleObj.location.country] == null) {
-            articleMapCountry[articleObj.location.country] = [articleObj];
-        } else {
-            articleMapCountry[articleObj.location.country].push(articleObj);
-        }
-        
+        fillArticleMaps(articleMapCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+        fillArticleMaps(articleMapSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+        fillArticleMaps(articleMapCountry, articleObj.location.country, articleObj);
+       
         // CATEGORIZATION FEATURE 
-        for(key in mapList)
         if (articleObj.theme == "sports"){
-            if (articleMapSports[articleObj.location.country] == null) {
-                articleMapSports[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapSports[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapSportsCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "politics"){
-            if (articleMapPolitics[articleObj.location.country] == null) {
-                articleMapPolitics[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapPolitics[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapPoliticsCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "miscellaneous"){
-            if (articleMapMisc[articleObj.location.country] == null) {
-                articleMapMisc[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapMisc[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapMiscCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "business"){
-            if (articleMapBusiness[articleObj.location.country] == null) {
-                articleMapBusiness[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapBusiness[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapBusinessCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessCity, articleObj.location.country, articleObj);
         }
     }
-    for (key in articleMapCity) {
-        // console.log(key, articleMapCity[key].length);
+
+    fetchAddressGeocode(articleMapCity, "city");
+    fetchAddressGeocode(articleMapSubcountry, "subcountry");
+    fetchAddressGeocode(articleMapCountry, "country");
+    fetchAddressGeocode(articleMapSportsCountry, "sportscountry");
+    fetchAddressGeocode(articleMapSportsSubcountry, "sportssubcountry");
+    fetchAddressGeocode(articleMapSportsCity, "sportscity");
+    fetchAddressGeocode(articleMapBusinessCountry, "businesscountry");
+    fetchAddressGeocode(articleMapBusinessSubcountry, "businesssubcountry");
+    fetchAddressGeocode(articleMapBusinessCity, "businesscity");
+    fetchAddressGeocode(articleMapPoliticsCountry, "politicscountry");
+    fetchAddressGeocode(articleMapPoliticsSubcountry, "politicssubcountry");
+    fetchAddressGeocode(articleMapPoliticsCity, "politicscity");
+    fetchAddressGeocode(articleMapMiscCountry, "misccountry");
+    fetchAddressGeocode(articleMapMiscSubcountry, "miscsubcountry");
+    fetchAddressGeocode(articleMapMiscCity, "misccity");
+}
+
+
+function fetchAddressGeocode(articleMap, label){
+    for (key in articleMap) {
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key], label));
     }
+}
 
-    for (key in articleMapSubcountry) {
-        // console.log(key, articleMapSubcountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
-    }
-
-    for (key in articleMapCountry) {
-        // console.log(key, articleMapCountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
-    }    
-
-    for (key in articleMapSports) {
-        // console.log(key, articleMapSports[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSports[key], "sports"));
-    }
-
-    for (key in articleMapBusiness) {
-        // console.log(key, articleMapBusiness[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapBusiness[key], "business"));
-    }
-
-    for (key in articleMapPolitics) {
-        // console.log(key, articleMapPolitics[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapPolitics[key], "politics"));
-    }
-
-    for (key in articleMapMisc) {
-        // console.log(key, articleMapMisc[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapMisc[key], "misc"));
+function fillArticleMaps(articleMap, key, articles){
+    if (articleMap[key] == null) {
+        articleMap[key] = [articles];
+    } else {
+        articleMap[key].push(articles);
     }
 }
 
@@ -407,17 +392,41 @@ function addLandmark(map, lat, lng, title, articles, label) {
     } else if (label == "country"){
         newMarker(map, lat, lng, title, "red", countryMarkers, articles);
     }
-    else if (label == "sports"){        
-        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers, articles);
+    else if (label == "sportscountry"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCountry, articles);
+    }    
+    else if (label == "sportssubcountry"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersSubcountry, articles);
+    }    
+    else if (label == "sportscity"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCity, articles);
     }
-    else if (label == "business"){
-        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers, articles);
+    else if (label == "businesscountry"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCountry, articles);
+    }    
+    else if (label == "businesscsubcountry"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersSubcountry, articles);
     }
-    else if (label == "politics"){
-        newMarker(map, lat, lng, title, "green", politicsMarkers, articles);
+    else if (label == "businesscity"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCity, articles);
     }
-    else if (label == "misc"){
-        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkers, articles);
+    else if (label == "politicscountry"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersCountry, articles);
+    }
+    else if (label == "politicssubcountry"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersSubcountry, articles);
+    }
+    else if (label == "politicscity"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersCity, articles);
+    }
+    else if (label == "misccountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCountry, articles);
+    }
+    else if (label == "miscsubcountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersSubcountry, articles);
+    }
+    else if (label == "misccity"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCity, articles);
     }
     showBasedOnZoom();
 }
@@ -446,35 +455,70 @@ function showBasedOnZoom(){
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
         if (!showpol && !showbus && !showmisc && !showsports){
-            for (i = 0; i < countryMarkers.length; i++) {
-                countryMarkers[i].setVisible(zoom < 5);
-            }
-            for (i = 0; i < cityMarkers.length; i++) {
-                cityMarkers[i].setVisible(zoom > 8);
-            }
-            for (i = 0; i < subcountryMarkers.length; i++) {
-                subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
-            }
+            zoomVisibility(countryMarkers, (zoom < 5));
+            zoomVisibility(cityMarkers, (zoom > 8));
+            zoomVisibility(subcountryMarkers, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showpol) {
+            zoomVisibility(politicsMarkersCountry, (zoom < 5));
+            zoomVisibility(politicsMarkersCity, (zoom > 8));
+            zoomVisibility(politicsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showbus) {
+            zoomVisibility(businessMarkersCountry, (zoom < 5));
+            zoomVisibility(businessMarkersCity, (zoom > 8));
+            zoomVisibility(businessMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showmisc) {
+            zoomVisibility(miscMarkersCountry, (zoom < 5));
+            zoomVisibility(miscMarkersCity, (zoom > 8));
+            zoomVisibility(miscMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showsports) {
+            zoomVisibility(sportsMarkersCountry, (zoom < 5));
+            zoomVisibility(sportsMarkersCity, (zoom > 8));
+            zoomVisibility(sportsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
         }
     });
 }
-
+function zoomVisibility(markerSet, visible){
+    for (i = 0; i < markerSet.length; i++) {
+        markerSet[i].setVisible(visible);
+    }
+}
 function showPol(){
     showpol = !showpol;
-    displayRelevant(politicsMarkers, showpol);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(politicsMarkersCountry, showpol && (zoom < 5));
+    displayRelevant(politicsMarkersSubcountry, showpol && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(politicsMarkersCity, showpol && (zoom > 8));
 }
 function showMisc(){
     showmisc = !showmisc;
-    displayRelevant(miscMarkers, showmisc);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(miscMarkersCountry, showmisc && (zoom < 5));
+    displayRelevant(miscMarkersSubcountry, showmisc && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(miscMarkersCity, showmisc && (zoom > 8));
 }
 function showBus(){
     showbus = !showbus;
-    displayRelevant(businessMarkers, showbus);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(businessMarkersCountry, showbus && (zoom < 5));
+    displayRelevant(businessMarkersSubcountry, showbus && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(businessMarkersCity, showbus && (zoom > 8));
 }
 function showSports(){
     showsports = !showsports;
-    displayRelevant(sportsMarkers, showsports);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(sportsMarkersCountry, showsports && (zoom < 5));
+    displayRelevant(sportsMarkersSubcountry, showsports && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(sportsMarkersCity, showsports && (zoom > 8));
 }
+
 function displayRelevant(markerSet, visible){
     if (showpol || showbus || showmisc || showsports){
         for (i = 0; i < countryMarkers.length; i++) {

@@ -69,7 +69,6 @@ public class CategoryArticleRetrieval extends HttpServlet {
   }
 
   public void mockData(){
-
     String title = "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's";
     String publisher = "Barron's";
     String date = "2020-08-11T18:08:00Z";
@@ -79,7 +78,6 @@ public class CategoryArticleRetrieval extends HttpServlet {
     String location = "England";
     String theme = "business";
     storeArticle(title, publisher, date, description, url, thumbnailUrl, location, theme);
-    
   }
 
 

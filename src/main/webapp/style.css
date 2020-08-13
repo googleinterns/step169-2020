@@ -110,7 +110,8 @@ ul li:hover{
 }
 
 #article-list-container {
-  height: 85%;
+  height: auto;
+  max-height: 85%;
   width: 25vw;
   min-width:300px;
   position: fixed;
