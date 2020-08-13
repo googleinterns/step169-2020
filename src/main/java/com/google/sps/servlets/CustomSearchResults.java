@@ -56,7 +56,7 @@ class CustomSearchResults {
         getDescription(),
         getUrl(),
         getThumbnailUrl(),
-        getLocation()
+        getLocation(),"miscellaneous"
       );
     }
 
