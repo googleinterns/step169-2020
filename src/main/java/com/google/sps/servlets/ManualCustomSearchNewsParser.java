@@ -31,30 +31,22 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
     List<Article> parsedArticles = new ArrayList<>();
 
     for (String json : resultJsons) {
-      parsedArticles.addAll(parseSingleResult(json));
-    }
+      try {
+        JsonObject results = gson.fromJson(json, JsonObject.class);
+        JsonArray jsonArticles = results.getAsJsonArray("items");
 
-    return parsedArticles;
-  }
-
-  public List<Article> parseSingleResult(String resultJson) {
-    List<Article> parsedArticles = new ArrayList<>();
-
-    try {
-      JsonObject results = gson.fromJson(resultJson, JsonObject.class);
-      JsonArray jsonArticles = results.getAsJsonArray("items");
-
-      for (JsonElement article : jsonArticles) {
-        try {
-          parsedArticles.add(parseArticle(article.getAsJsonObject()));
-        } catch (NullPointerException e) {
-          // Ignore this error, because we don't want the entire program 
-          // to halt because one article failed to parse.
-          // TODO add logging so that articles that fail to parse won't be missed.
+        for (JsonElement article : jsonArticles) {
+          try {
+            parsedArticles.add(parseArticle(article.getAsJsonObject()));
+          } catch (NullPointerException e) {
+            // Ignore this error, because we don't want the entire program 
+            // to halt because one article failed to parse.
+            // TODO add logging so that articles that fail to parse won't be missed.
+          }
         }
+      } catch (NullPointerException e) {
+        throw new NewsUnavailableException("Failed to parse received json", e);
       }
-    } catch (NullPointerException e) {
-      throw new NewsUnavailableException("Failed to parse received json", e);
     }
 
     return parsedArticles;
@@ -67,7 +59,8 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
       getDescription(article),
       getUrl(article),
       getThumbnailUrl(article),
-      getLocation(article));
+      getLocation(article),
+      getTheme(article));
   }
 
   private String getTitle(JsonObject article) {
@@ -268,5 +261,9 @@ class ManualCustomSearchNewsParser implements CustomSearchNewsParser {
   //TODO implement an actual location determination algorithm
   private Location getLocation(JsonObject article) {
     return new Location("City", "State", "Country");
+  }
+  //TODO implement an actual location determination algorithm
+  private String getTheme(JsonObject article) {
+    return "miscellaneous";
   }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/articles</url>
+    <target>beta</target>
+    <description>Article list update</description>
+    <schedule>every 3 hours</schedule>
+  </cron>
+</cronentries>

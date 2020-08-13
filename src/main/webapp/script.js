@@ -28,7 +28,15 @@ var countryRestrict = {'country': 'us'};
 var cityMarkers = [];
 var subcountryMarkers = [];
 var countryMarkers = [];
-    
+var sportsMarkers = [];
+var politicsMarkers = [];
+var businessMarkers = [];
+var miscMarkers = [];
+var showpol =false;
+var showmisc =false;
+var showbus =false;
+var showsports =false;
+
 function onPageLoad() {
   attachSearchFormSubmissionEvent();
   map = initMap();
@@ -186,26 +194,57 @@ function configureWorldArticles(json) {
     let articleMapCity = new Map();
     let articleMapSubcountry = new Map();
     let articleMapCountry = new Map();
+    let articleMapSports = new Map();
+    let articleMapBusiness = new Map();
+    let articleMapPolitics = new Map();
+    let articleMapMisc = new Map();
 
     // Creates and fills maps for each level of geographical divisions
     for (index in json) {
         let articleObj = json[index];
-        if (articleMapCity[articleObj.location.city] == null) {
-            articleMapCity[articleObj.location.city] = [articleObj];
+        if (articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
+            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
         } else {
-            articleMapCity[articleObj.location.city].push(articleObj);
+            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
         }
 
-        if (articleMapSubcountry[articleObj.location.subcountry] == null) {
-            articleMapSubcountry[articleObj.location.subcountry] = [articleObj];
+        if (articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
+            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
         } else {
-            articleMapSubcountry[articleObj.location.subcountry].push(articleObj);
+            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
         }
 
         if (articleMapCountry[articleObj.location.country] == null) {
             articleMapCountry[articleObj.location.country] = [articleObj];
         } else {
             articleMapCountry[articleObj.location.country].push(articleObj);
+        }
+        
+        // CATEGORIZATION FEATURE 
+        if (articleObj.theme == "sports"){
+            if (articleMapSports[articleObj.location.country] == null) {
+                articleMapSports[articleObj.location.country] = [articleObj];
+            } else {
+                articleMapSports[articleObj.location.country].push(articleObj);
+            }
+        } else if (articleObj.theme == "politics"){
+            if (articleMapPolitics[articleObj.location.country] == null) {
+                articleMapPolitics[articleObj.location.country] = [articleObj];
+            } else {
+                articleMapPolitics[articleObj.location.country].push(articleObj);
+            }
+        } else if (articleObj.theme == "miscellaneous"){
+            if (articleMapMisc[articleObj.location.country] == null) {
+                articleMapMisc[articleObj.location.country] = [articleObj];
+            } else {
+                articleMapMisc[articleObj.location.country].push(articleObj);
+            }
+        } else if (articleObj.theme == "business"){
+            if (articleMapBusiness[articleObj.location.country] == null) {
+                articleMapBusiness[articleObj.location.country] = [articleObj];
+            } else {
+                articleMapBusiness[articleObj.location.country].push(articleObj);
+            }
         }
     }
     for (key in articleMapCity) {
@@ -219,9 +258,29 @@ function configureWorldArticles(json) {
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
     }
     for (key in articleMapCountry) {
-        console.log(key, articleMapCountry[key].length);
+        // console.log(key, articleMapCountry[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
+    }    
+    for (key in articleMapSports) {
+        // console.log(key, articleMapSports[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSports[key], "sports"));
+    }
+    for (key in articleMapBusiness) {
+        // console.log(key, articleMapBusiness[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapBusiness[key], "business"));
+    }
+    for (key in articleMapPolitics) {
+        // console.log(key, articleMapPolitics[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapPolitics[key], "politics"));
+    }
+    for (key in articleMapMisc) {
+        // console.log(key, articleMapMisc[key].length);
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapMisc[key], "misc"));
     }
 }
 
@@ -335,29 +394,43 @@ function formatTimestamp(timestamp) {
 
 /** Adds a marker that shows an info window when clicked. */
 function addLandmark(map, lat, lng, title, articles, label) {
-  const marker = new google.maps.Marker(
-      {position: {lat: lat, lng: lng}, map: map, title: title});
-
-           console.log(label);
-
     if (label=="city"){
-        marker.setVisible(false);
-        cityMarkers.push(marker);
+        newMarker(map, lat, lng, title, "red", cityMarkers, articles);
     } else if (label == "subcountry"){
-        subcountryMarkers.push(marker);
-
+        newMarker(map, lat, lng, title, "red", subcountryMarkers, articles);
     } else if (label == "country"){
-        marker.setVisible(false);
-
-        countryMarkers.push(marker);
+        newMarker(map, lat, lng, title, "red", countryMarkers, articles);
     }
-
- 
-
-  marker.addListener('click', () => {
-    displayArticles(articles);
-  });
+    else if (label == "sports"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers, articles);
+    }
+    else if (label == "business"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers, articles);
+    }
+    else if (label == "politics"){
+        newMarker(map, lat, lng, title, "green", politicsMarkers, articles);
+    }
+    else if (label == "misc"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkers, articles);
+    }
     showBasedOnZoom();
+}
+
+function newMarker(map, lat, lng, title, color, markerSet, articles){
+    let url = "https://maps.google.com/mapfiles/ms/icons/";
+    url += color + "-dot.png";
+    const marker = new google.maps.Marker(
+      {position: {lat: lat, lng: lng}, 
+      map: map, 
+      title: title,
+      icon: { url: url}
+        });
+
+    markerSet.push(marker);
+    marker.addListener('click', () => {
+        displayArticles(articles);
+  });
+  marker.setVisible(false);
 }
 
 // Decides which articles to show depending on the zoom 
@@ -366,17 +439,63 @@ function showBasedOnZoom(){
     google.maps.event.addListener(sharedMap, 'zoom_changed', function() {
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
-        for (i = 0; i < countryMarkers.length; i++) {
-            countryMarkers[i].setVisible(zoom < 5);
-        }
-       for (i = 0; i < cityMarkers.length; i++) {
-            cityMarkers[i].setVisible(zoom > 8);
-        }
-        for (i = 0; i < subcountryMarkers.length; i++) {
-            subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
-
+        if (!showpol && !showbus && !showmisc && !showsports){
+            for (i = 0; i < countryMarkers.length; i++) {
+                countryMarkers[i].setVisible(zoom < 5);
+            }
+            for (i = 0; i < cityMarkers.length; i++) {
+                cityMarkers[i].setVisible(zoom > 8);
+            }
+            for (i = 0; i < subcountryMarkers.length; i++) {
+                subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
+            }
         }
     });
+}
+
+function showPol(){
+    showpol = !showpol;
+    displayRelevant(politicsMarkers, showpol);
+}
+function showMisc(){
+    showmisc = !showmisc;
+    displayRelevant(miscMarkers, showmisc);
+}
+function showBus(){
+    showbus = !showbus;
+    displayRelevant(businessMarkers, showbus);
+}
+function showSports(){
+    showsports = !showsports;
+    displayRelevant(sportsMarkers, showsports);
+}
+function displayRelevant(markerSet, visible){
+    if (showpol || showbus || showmisc || showsports){
+        for (i = 0; i < countryMarkers.length; i++) {
+            countryMarkers[i].setVisible(false);
+        }
+       for (i = 0; i < cityMarkers.length; i++) {
+            cityMarkers[i].setVisible(false);
+        }
+        for (i = 0; i < subcountryMarkers.length; i++) {
+            subcountryMarkers[i].setVisible(false);
+        }  
+    }
+    else {
+        for (i = 0; i < countryMarkers.length; i++) {
+            countryMarkers[i].setVisible(true);
+        }
+       for (i = 0; i < cityMarkers.length; i++) {
+            cityMarkers[i].setVisible(false);
+        }
+        for (i = 0; i < subcountryMarkers.length; i++) {
+            subcountryMarkers[i].setVisible(false);
+        }  
+    }
+
+    for (i = 0; i < markerSet.length; i++) {
+        markerSet[i].setVisible(visible);
+    }   
 }
 
 /** Creates a map and adds it to the page. */
@@ -614,7 +733,7 @@ function onPlaceChanged() {
 
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.transform = "translateX(-30vw)";
+    document.getElementById("article-list-container").style.transform = "translateX(-36vw)";
 }
 
 function closeNav() {

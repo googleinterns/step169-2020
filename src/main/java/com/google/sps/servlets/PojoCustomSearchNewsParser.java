@@ -1,10 +1,9 @@
 package com.google.sps.servlets;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 class PojoCustomSearchNewsParser implements CustomSearchNewsParser {
 
@@ -26,7 +25,7 @@ class PojoCustomSearchNewsParser implements CustomSearchNewsParser {
     return parsedArticles;
   }
 
-  public List<Article> parseSingleResult(String resultJson) {
+  private List<Article> parseSingleResult(String resultJson) {
     List<Article> parsedArticles = new ArrayList<>();
     CustomSearchResults results = gson.fromJson(resultJson, CustomSearchResults.class);
     parsedArticles.addAll(results.getArticles());

@@ -1,19 +1,23 @@
 package com.google.sps.servlets;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
-import java.util.ArrayList;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-
-import com.joestelmach.natty.Parser;
-import com.joestelmach.natty.DateGroup;
+import java.util.List;
 
 class CustomSearchResults {
-  private List<Result> items;
+  final List<Result> items;
+
+  CustomSearchResults(List<Result> items) {
+    this.items = Collections.unmodifiableList(items);
+  }
 
   List<Article> getArticles() {
     List<Article> articles = new ArrayList<>();
@@ -24,18 +28,26 @@ class CustomSearchResults {
         // Ignore this error, because we don't want the entire program 
         // to halt because one article failed to parse.
         // TODO add logging so that articles that fail to parse won't be missed.
+        System.err.println("Failed to parse an article");
         e.printStackTrace();
       }
     }
     return articles;
   }
 
-  private class Result {
-    String title;
+  class Result {
+    final String title;
     @SerializedName("pagemap")
-    PageMap pageMap; 
-    String snippet;
-    String link;
+    final PageMap pageMap; 
+    final String snippet;
+    final String link;
+
+    Result(String title, PageMap pageMap, String snippet, String link) {
+      this.title = title;
+      this.pageMap = pageMap;
+      this.snippet = snippet;
+      this.link = link;
+    }
 
     Article getArticle() {
       return new Article(getTitle(),
@@ -44,7 +56,7 @@ class CustomSearchResults {
         getDescription(),
         getUrl(),
         getThumbnailUrl(),
-        getLocation()
+        getLocation(),"miscellaneous"
       );
     }
 
@@ -93,7 +105,18 @@ class CustomSearchResults {
           //Use the site's host name as a fallback when no organization was supplied.
           String url = getUrl();
           publisher = getHostName(url);
-        } catch (NullPointerException | URISyntaxException e) { }
+        } catch (NullPointerException e) { 
+          System.err.println(
+              "Could not parse publisher from URL because getURL() returned null"
+          );
+          e.printStackTrace();
+        } catch (URISyntaxException e) {
+          System.err.println(
+              "Could not parse publisher from URL because a URISyntaxException occured"
+          );
+          e.printStackTrace();
+        }
+
       }
 
       return publisher;
@@ -103,7 +126,7 @@ class CustomSearchResults {
       URI uri = new URI(url);
       String hostName = uri.getHost();
       if (hostName != null) {
-          return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
+        return hostName.startsWith("www.") ? hostName.substring(4) : hostName;
       }
       return hostName;
     }
@@ -115,7 +138,9 @@ class CustomSearchResults {
       if (formattedDate != null) {
         try {
           date = parseDate(formattedDate);
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
+          System.err.printf("Failed to parse date %s\n", formattedDate);
+          e.printStackTrace();
           date = null;
         }
       } else {
@@ -132,7 +157,7 @@ class CustomSearchResults {
       if (newsArticles != null && !newsArticles.isEmpty()) {
         NewsArticle article = newsArticles.get(0);
         String[] potentialDates = {article.datePublished, article.datePosted,
-         article.dateCreated, article.dateModified};
+          article.dateCreated, article.dateModified};
         for (String date : potentialDates) {
           formattedDate = date;
           if (formattedDate != null) {
@@ -146,7 +171,7 @@ class CustomSearchResults {
       if (formattedDate == null && metaTags != null && !metaTags.isEmpty()) {
         MetaTags tags = metaTags.get(0);
         String[] potentialDates = {tags.articlePublishedTime, tags.dateToday,
-         tags.articleModifiedtime, tags.lastModified};
+          tags.articleModifiedtime, tags.lastModified, tags.ogUpdatedTime};
         for (String date : potentialDates) {
           formattedDate = date;
           if (formattedDate != null) {
@@ -249,63 +274,116 @@ class CustomSearchResults {
     }
   }
 
-  private class PageMap {
-    @SerializedName(value = "newsarticle", alternate = {"newsArticle", "NewsArticle", "Newsarticle"})
-    List<NewsArticle> newsArticles;
-    @SerializedName(value = "metatags", alternate = {"metaTags", "MetaTags", "Metatags"})
-    List<MetaTags> metaTags;
+  class PageMap {
+    @SerializedName(value = "newsarticle", 
+        alternate = {"newsArticle", "NewsArticle", "Newsarticle"})
+    final List<NewsArticle> newsArticles;
+    @SerializedName(value = "metatags", 
+        alternate = {"metaTags", "MetaTags", "Metatags"})
+    final List<MetaTags> metaTags;
     @SerializedName(value = "organization", alternate = {"Organization"})
-    List<Organization> organizations;
+    final List<Organization> organizations;
     @SerializedName("cse_image")
-    List<Thumbnail> cseImages;
+    final List<Thumbnail> cseImages;
     @SerializedName("cse_thumbnail")
-    List<Thumbnail> cseThumbnails;
+    final List<Thumbnail> cseThumbnails;
+
+    PageMap(List<NewsArticle> newsArticles, List<MetaTags> metaTags, 
+        List<Organization> organizations, List<Thumbnail> cseImages, 
+        List<Thumbnail> cseThumbnails) {
+      this.newsArticles = Collections.unmodifiableList(newsArticles);
+      this.metaTags = Collections.unmodifiableList(metaTags);
+      this.organizations = Collections.unmodifiableList(organizations);
+      this.cseImages = Collections.unmodifiableList(cseImages);
+      this.cseThumbnails = Collections.unmodifiableList(cseThumbnails);
+    }
   }
 
-  private class NewsArticle {
+  class NewsArticle {
     @SerializedName(value = "headline", alternate = {"Headline"})
-    String headline;
-    @SerializedName(value = "datepublished", alternate = {"datePublished", "DatePublished", "Datepublished"})
-    String datePublished;
-    @SerializedName(value = "datecreated", alternate = {"dateCreated", "DateCreated", "Datecreated"})
-    String dateCreated;
-    @SerializedName(value = "datemodified", alternate = {"dateModified", "DateModified", "Datemodified"})
-    String dateModified;
-    @SerializedName(value = "dateposted", alternate = {"datePosted", "DatePosted", "Dateposted"})
-    String datePosted;
+    final String headline;
+    @SerializedName(value = "datepublished", 
+        alternate = {"datePublished", "DatePublished", "Datepublished"})
+    final String datePublished;
+    @SerializedName(value = "datecreated", 
+        alternate = {"dateCreated", "DateCreated", "Datecreated"})
+    final String dateCreated;
+    @SerializedName(value = "datemodified", 
+        alternate = {"dateModified", "DateModified", "Datemodified"})
+    final String dateModified;
+    @SerializedName(value = "dateposted", 
+        alternate = {"datePosted", "DatePosted", "Dateposted"})
+    final String datePosted;
     @SerializedName(value = "description", alternate = {"Description"})
-    String description;
-    @SerializedName(value = "articlebody", alternate = {"articleBody", "ArticleBody", "Articlebody"})
-    String articleBody;
+    final String description;
+    @SerializedName(value = "articlebody", 
+        alternate = {"articleBody", "ArticleBody", "Articlebody"})
+    final String articleBody;
+
+    NewsArticle(String headline, String datePublished, String dateCreated, String dateModified,
+        String datePosted, String description, String articleBody) {
+      this.headline = headline;
+      this.datePublished = datePublished;
+      this.dateCreated = dateCreated;
+      this.dateModified = dateModified;
+      this.datePosted = datePosted;
+      this.description = description;
+      this.articleBody = articleBody;
+    }
   }
   
-  private class MetaTags {
+  class MetaTags {
     @SerializedName("og:site_name")
-    String ogSiteName;
+    final String ogSiteName;
     @SerializedName("og:title")
-    String ogTitle;
+    final String ogTitle;
     @SerializedName("og:description")
-    String ogDescription;
+    final String ogDescription;
     @SerializedName("og:image")
-    String ogImage;
+    final String ogImage;
     @SerializedName("og:url")
-    String ogUrl;
+    final String ogUrl;
+    @SerializedName("og:updated_time")
+    final String ogUpdatedTime;
     @SerializedName(value = "article:published_time", alternate = {"og:article:published_time"})
-    String articlePublishedTime;    
+    final String articlePublishedTime;    
     @SerializedName(value = "article:modified_time", alternate = {"og:article:modified_time"})
-    String articleModifiedtime;
+    final String articleModifiedtime;
     @SerializedName("last-modified")
-    String lastModified;
+    final String lastModified;
     @SerializedName(value = "datetoday", alternate = {"dateToday", "DateToday", "Datetoday"})
-    String dateToday;
+    final String dateToday;
+
+    MetaTags(String ogSiteName, String ogTitle, String ogDescription, String ogImage,
+        String ogUrl, String ogUpdatedTime, String articlePublishedTime,
+        String articleModifiedtime, String lastModified, String dateToday) {
+      this.ogSiteName = ogSiteName;
+      this.ogTitle = ogTitle;
+      this.ogDescription = ogDescription;
+      this.ogImage = ogImage;
+      this.ogUrl = ogUrl;
+      this.ogUpdatedTime = ogUpdatedTime;
+      this.articlePublishedTime = articlePublishedTime;
+      this.articleModifiedtime = articleModifiedtime;
+      this.lastModified = lastModified;
+      this.dateToday = dateToday;
+    }
   }
 
-  private class Organization {
+  class Organization {
     @SerializedName(value = "name", alternate = {"Name"})
     String name;
+
+    Organization(String name) {
+      this.name = name;
+    }
   }
 
-  private class Thumbnail {
-    String src;
+  class Thumbnail {
+    final String src;
+
+    Thumbnail(String src) {
+      this.src = src;
+    }
   }
 }
