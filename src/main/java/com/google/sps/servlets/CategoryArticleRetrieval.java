@@ -45,27 +45,41 @@ public class CategoryArticleRetrieval extends HttpServlet {
   //   Sends array of previous recent entries to be fetched
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    storeArticle();
+    mockData();
     response.setContentType("application/json;");
     response.getWriter().println();
   }
 
   //   Stores the user's comments in the datastore service
-  public void storeArticle(){
+  public void storeArticle(String title, String publisher, String date, String description, String url, String thumbnailUrl, String location, String theme){
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
     Entity article = new Entity("Article");
-    article.setProperty("title", "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's");
-    article.setProperty("publisher","Barron's");
-    article.setProperty("date", "2020-08-11T18:08:00Z");
-    article.setProperty("description", "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…");    
-    article.setProperty("url", "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795");
-    article.setProperty("thumbnailUrl", "https://images.barrons.com/im-219399/social");
-    article.setProperty("location", "England");
-    article.setProperty("theme", "business");    
+    article.setProperty("title", title);
+    article.setProperty("publisher",publisher);
+    article.setProperty("date", date);
+    article.setProperty("description", description);    
+    article.setProperty("url", url);
+    article.setProperty("thumbnailUrl", thumbnailUrl);
+    article.setProperty("location", location);
+    article.setProperty("theme", theme);    
 
     datastore.put(article);
+  }
+
+  public void mockData(){
+
+    String title = "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's";
+    String publisher = "Barron's";
+    String date = "2020-08-11T18:08:00Z";
+    String description = "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…";
+    String url = "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795";
+    String thumbnailUrl = "https://images.barrons.com/im-219399/social";
+    String location = "England";
+    String theme = "business";
+    storeArticle(title, publisher, date, description, url, thumbnailUrl, location, theme);
+    
   }
 
 

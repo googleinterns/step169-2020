@@ -211,6 +211,7 @@ function configureWorldArticles(json) {
         }
         
         // CATEGORIZATION FEATURE 
+        for(key in mapList)
         if (articleObj.theme == "sports"){
             if (articleMapSports[articleObj.location.country] == null) {
                 articleMapSports[articleObj.location.country] = [articleObj];
@@ -242,31 +243,37 @@ function configureWorldArticles(json) {
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
     }
+
     for (key in articleMapSubcountry) {
         // console.log(key, articleMapSubcountry[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
     }
+
     for (key in articleMapCountry) {
         // console.log(key, articleMapCountry[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
     }    
+
     for (key in articleMapSports) {
         // console.log(key, articleMapSports[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSports[key], "sports"));
     }
+
     for (key in articleMapBusiness) {
         // console.log(key, articleMapBusiness[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapBusiness[key], "business"));
     }
+
     for (key in articleMapPolitics) {
         // console.log(key, articleMapPolitics[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapPolitics[key], "politics"));
     }
+
     for (key in articleMapMisc) {
         // console.log(key, articleMapMisc[key].length);
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
