@@ -38,6 +38,7 @@ class HttpRequestHandler {
       if (responseCode == HttpURLConnection.HTTP_OK) {
         return readApiResponse(conn);
       } else {
+        System.err.printf("Bad API Response: %s\n", readApiResponse(conn));
         throw new NewsUnavailableException(String.format("Response code %d from API", 
             responseCode));
       }

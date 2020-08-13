@@ -77,7 +77,7 @@ function doSearch(form) {
         types: ['(cities)'],
             componentRestrictions: countryRestrict
         */
-        request = {'input' : region, 'types' : ['(cities)'], 'componentRestrictions' : countryRestrict};
+        request = {'input' : region, 'types' : ['(cities)']/*, 'componentRestrictions' : countryRestrict*/};
         autoCompleteService.getPlacePredictions(request, ((predictions) => finishSearch(predictions, topic)));
     } else {
         /**
@@ -584,8 +584,8 @@ function initAutoComplete() {
     autoComplete = new google.maps.places.Autocomplete(
         /** @type {!HTMLInputElement} */ (
             document.getElementById('region-search-field')), {
-            types: ['(cities)'],
-            componentRestrictions: countryRestrict
+            types: ['(cities)']/*,
+            componentRestrictions: countryRestrict*/
         });
     places = new google.maps.places.PlacesService(map);
     autoCompleteService = new google.maps.places.AutocompleteService();

@@ -22,13 +22,13 @@ public class RegionalNewsServlet extends HttpServlet {
   }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("application/json;");
+    response.setContentType("application/json; charset=utf-8");
 
     String region = request.getParameter("region");
 
     if (region == null) {
       response.setStatus(400);
-      response.getWriter().println("Requests must contain a region parameter");
+      response.getWriter().write("Requests must contain a region parameter");
     } else {
       String topic = request.getParameter("topic");
       if (topic == null) {
@@ -38,12 +38,12 @@ public class RegionalNewsServlet extends HttpServlet {
       }
 
       try {
-        List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 5);
-        response.getWriter().println(gson.toJson(retrievedArticles));
+        List<Article> retrievedArticles = newsService.getRegionalNews(region, topic, 100);
+        response.getWriter().write(gson.toJson(retrievedArticles));
       } catch (NewsUnavailableException e) {
         e.printStackTrace();
         response.setStatus(500);
-        response.getWriter().println(e.getMessage());
+        response.getWriter().write(e.getMessage());
       }
     }
   }
