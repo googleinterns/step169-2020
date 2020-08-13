@@ -3,7 +3,7 @@
   <cron>
     <url>/articles</url>
     <target>beta</target>
-    <description>daily summary job</description>
-    <schedule>every 24 hours</schedule>
+    <description>Article list update</description>
+    <schedule>every 3 hours</schedule>
   </cron>
 </cronentries>

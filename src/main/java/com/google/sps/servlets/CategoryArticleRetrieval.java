@@ -45,76 +45,27 @@ public class CategoryArticleRetrieval extends HttpServlet {
   //   Sends array of previous recent entries to be fetched
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String articles = retrieveArticles();
-    // storeComment();
-    response.setContentType("application/json;");
-    response.getWriter().println(articles);
-  }
-
-  // Retrieves comment entry and stores it in the datastore service
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
-    storeComment();
-    // Respond with the result.
+    storeArticle();
     response.setContentType("application/json;");
     response.getWriter().println();
   }
-  
-  /**
-   * @return the request parameter, or the default value if the parameter
-   *         was not specified by the client
-   */
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null || value.length() == 0) {
-      return defaultValue;
-    }
-    return value;
-  }
-    
-  //  Retrieves the user's comments from the datastore service and returns it as a Json String of their name and the comment
-  public String retrieveArticles(){
-    //   sort entries by most recent
-    Query query = new Query("Article");
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    PreparedQuery results = datastore.prepare(query);
-
-    ArrayList<Article> articles = new ArrayList<Article>();
-    for (Entity entity : results.asIterable()) {
-      articles.add(
-    new Article(
-      (String) entity.getProperty("title"),
-      (String) entity.getProperty("publisher"),
-      Instant.parse((String)entity.getProperty("date")),
-      (String) entity.getProperty("description"),
-      (String) entity.getProperty("url"),
-      (String) entity.getProperty("thumbnailUrl"), 
-      (new Location(null, null, (String) entity.getProperty("location"))), 
-      (String) entity.getProperty("theme"))
-      );
-      System.out.println((String) entity.getProperty("description"));
-    }
-    
-    return convertToJson(articles);
-  }
 
   //   Stores the user's comments in the datastore service
-  public void storeComment(){
+  public void storeArticle(){
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
-    Entity userComments = new Entity("Article");
-    userComments.setProperty("title", "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's");
-    userComments.setProperty("publisher","Barron's");
-    userComments.setProperty("date", "2020-08-11T18:08:00Z");
-    userComments.setProperty("description", "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…");    
-    userComments.setProperty("url", "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795");
-    userComments.setProperty("thumbnailUrl", "https://images.barrons.com/im-219399/social");
-    userComments.setProperty("location", "England");
-    userComments.setProperty("theme", "business");    
+    Entity article = new Entity("Article");
+    article.setProperty("title", "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's");
+    article.setProperty("publisher","Barron's");
+    article.setProperty("date", "2020-08-11T18:08:00Z");
+    article.setProperty("description", "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…");    
+    article.setProperty("url", "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795");
+    article.setProperty("thumbnailUrl", "https://images.barrons.com/im-219399/social");
+    article.setProperty("location", "England");
+    article.setProperty("theme", "business");    
 
-    datastore.put(userComments);
+    datastore.put(article);
   }
 
 
