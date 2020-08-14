@@ -93,8 +93,7 @@ ul li{
     margin-bottom: 20px;
     z-index: 2;
       transition: transform .2s; /* Animation */
-    width: 80%;
-    margin:5%
+    width: 100%;
 }
 ul li:hover{
   transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
@@ -111,17 +110,21 @@ ul li:hover{
 }
 
 #article-list-container {
-  height: 85%;
+  height: auto;
+  max-height: 85%;
   width: 25vw;
-  min-width:250px;
+  min-width:300px;
   position: fixed;
   z-index: 200;
   top: 100px;
-  right: -30vw;
+  right: -35vw;
   /* background-color: #111; */
   overflow-x: hidden;
   transition: 0.5s;
   padding-top: 60px;
+  padding-left: 20px;
+  padding-right:55px;
+  /* font-family: Comfortaa; */
 }
 
 #list{
@@ -129,9 +132,10 @@ ul li:hover{
 }
 
 #article-list-container a {
-  padding: 8px 8px 8px 32px;
+  padding: 0;
+  margin:0;
   text-decoration: none;
-  font-size: 25px;
+  font-size: 17px;
   color: black;
   display: block;
   transition: 0.3s;
@@ -154,8 +158,8 @@ ul li:hover{
 }
 
 @media screen and (max-height: 500px) {
-  #article-list-container {padding-top: 15px;}
-  #article-list-container a {font-size: 18px;}
+  #article-list-container {padding-top: 10px;}
+  #article-list-container a {font-size: 12px;}
 }
 
 .wrapper {
@@ -260,6 +264,7 @@ ul li:hover{
     right:45px;
     z-index: 350;
 }
+
 #hamburger a{
   text-decoration: none;
   font-size: 30px;
@@ -280,8 +285,12 @@ ul li:hover{
 } */
 
 .thumbnail-content{
-    width: 20%;
-    min-width: 60px;
+    width: 30%;
+    height: 50%;
+    min-width: 10px;
+    max-width:70px;
+
+    max-height:50px;
     float: left;
     margin-top: -2px;
     display: inline-flex;
@@ -289,4 +298,17 @@ ul li:hover{
 }
 #ham{
     padding: 0 10px;
+}
+#polbutton{
+    z-index: 500;
+}
+
+.themes{
+    position: absolute;
+    bottom:25px;
+    left:5px;
+    font-family: Comfortaa;
+    font-size:20px;
+    color:white;
+    font-weight: bold;
 }
