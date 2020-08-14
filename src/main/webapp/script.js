@@ -113,6 +113,7 @@ function doSearchNotFromForm() {
         const response = fetch(fetchParameter);
         response.then(getRegionArticles);
     } 
+    testNLP();
 }
 
 /**
@@ -129,7 +130,7 @@ function finishSearch(suggestions, topic) {
         const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
         response2.then(getJSONOfGeoCoding);
     }
-    testNLP()
+    testNLP();
 }
 
 /**
@@ -822,7 +823,7 @@ function getOutLink(){
     Makes call to the NLP testing servlet.
  */
 function testNLP() {
-    console.log("-- BEGIN ARTICLE LABELER TESTS --\n-- CORRECT | NLP GUESS | HARD CODE GUESS --\n");
+    console.log("-- BEGIN ARTICLE LABELER TESTS --\n-- CORRECT | NLP GUESS --\n");
     for (i = 0; i < labelerTestCases.length; i++) {
         var loc = labelerTestCases[i];
         let fetchParameter = "/nlp-test?url=" + loc.url;
