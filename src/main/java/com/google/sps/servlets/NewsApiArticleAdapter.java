@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jsoup.Jsoup;
@@ -16,9 +17,18 @@ class NewsApiArticleAdapter {
         .toFormatter();
 
   List<Article> buildArticlesFrom(NewsApiResults results) {
-    return results.articles.stream()
-        .map(result -> buildSingleArticleFrom(result))
-        .collect(Collectors.toList());
+    List<Article> articles = new ArrayList<>();
+    int i = 0;
+    for (NewsApiResults.Result result : results.articles) {
+      try {
+        articles.add(buildSingleArticleFrom(result));
+      } catch (NullPointerException e) {
+        System.err.printf("Failed to parse article %d\n", i);
+      }
+      i++;
+    }
+
+    return articles;
   }
 
   private Article buildSingleArticleFrom(NewsApiResults.Result result) {
@@ -49,8 +59,13 @@ class NewsApiArticleAdapter {
     }
   }
 
-  private String removeHtmlTags(String html) {
-    return Jsoup.parse(html).text();
+  private String removeHtmlTags(String text) {
+    try {
+      return Jsoup.parse(text).text();
+    } catch (NullPointerException e) {
+      System.out.printf("Failed to remove HTML from text %s", text);
+      return text;
+    }
   }
 
   // TODO implement Max's location script.

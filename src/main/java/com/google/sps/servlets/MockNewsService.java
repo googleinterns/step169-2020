@@ -9,7 +9,7 @@ import java.util.List;
 
 class MockNewsService implements NewsService {
   @Override
-  public List<Article> getWorldNews(int count) {
+  public List<Article> getWorldNews(String category, int count) {
     Location[] cities = {
       new Location("Mountain View", "CA", "USA"), 
       new Location("Los Angeles", "CA", "USA"),
