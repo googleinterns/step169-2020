@@ -1,2 +1,6 @@
 target/
+<<<<<<< HEAD
 src/main/resources/keys/
+=======
+src/main/resources/keys
+>>>>>>> dylan

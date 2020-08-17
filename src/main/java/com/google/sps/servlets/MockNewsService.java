@@ -80,6 +80,29 @@ class MockNewsService implements NewsService {
       (String) entity.getProperty("theme"))
       );
       System.out.println((String) entity.getProperty("description"));
+
+  public List<Article> getWorldNews(String category, int count) {
+    Location[] cities = {
+      new Location("Mountain View", "CA", "USA"), 
+      new Location("Los Angeles", "CA", "USA"),
+      new Location("Chicago", "IL", "USA"),
+      new Location("New York", "NY", "USA"),
+      new Location("Austin", "TX", "USA"),
+      new Location("Boston", "MA", "USA")
+    };
+    int[] counts = {6, 2, 1, 10, 3, 7};
+    List<Article> articles = new ArrayList<>();
+    for (int i = 0; i < cities.length; i++) {
+      for (int j = 0; j < counts[i]; j++) {
+        Article article = new Article(cities[i].toString() + " " + (j + 1),
+            "First Provider",
+            Instant.parse("2007-12-03T10:15:30.00Z"),
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
+            "https://example.com/sample1",
+            "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
+            cities[i]);
+        articles.add(article);
+      }
     }
     Collections.shuffle(articles);
     return articles;
