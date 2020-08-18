@@ -38,7 +38,8 @@ class MockNewsService implements NewsService {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
             "https://example.com/sample1",
             "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
-            cities[i]);
+            cities[i],
+            "miscellaneous");
         articles.add(article);
       }
     }

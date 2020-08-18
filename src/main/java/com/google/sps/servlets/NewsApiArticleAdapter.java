@@ -39,7 +39,8 @@ class NewsApiArticleAdapter {
         removeHtmlTags(result.description),
         result.url,
         result.urlToImage,
-        getLocation(result)
+        getLocation(result),
+        "miscellaneous"
     );
   }
 
@@ -70,6 +71,6 @@ class NewsApiArticleAdapter {
 
   // TODO implement Max's location script.
   private Location getLocation(NewsApiResults.Result result) {
-    return new Location("City", "Subcountry", "Country");
+    return null;
   }
 }
