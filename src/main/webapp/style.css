@@ -424,4 +424,7 @@ body{
         z-index: -1;
         background:none;
     }
+    #article-list-container {
+        width:90vw;
+    }
 }
