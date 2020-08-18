@@ -13,6 +13,9 @@ body{
     margin-left:150px;
     margin-right: 150px;
     margin-top:30px;
+    display: grid;
+    place-items: start center;
+    padding-bottom:5px; 
 }
 
 /*
@@ -40,7 +43,7 @@ body{
 }
 
 #search-button{
-    border-radius:5px;
+    border-radius:50%;
     outline: none;
     border:none;
     padding: 2px 10px;
@@ -117,7 +120,7 @@ body{
   position: fixed;
   z-index: 200;
   top: 100px;
-  right: -35vw;
+  right: -1000px;
   /* background-color: #111; */
   overflow-x: hidden;
   transition: 0.5s;
@@ -170,17 +173,17 @@ body{
 .search-icon {
     /* outline: none; */
     border:none;
-    box-shadow: 3px 4px 10px 2px rgba(0, 0, 0, 0.2) inset;
-    border-radius: 5px;
-    padding:10px 20px;
-    background-color: rgba(159, 167, 172, 0.965);
+    box-shadow: 3px 4px 10px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    padding: 20px 25px;
+    background-color: rgba(252, 254, 255, 0.561);
 
     cursor: pointer;
 
 }
 .search-icon:hover {
-    background-color: rgba(128, 137, 149, 0.596);
-
+    background-color: rgba(128, 137, 149, 0.945);
+    border: 1.5px solid #009688;
 }
 .clear-region-icon {
     position: absolute;
@@ -196,7 +199,6 @@ body{
     left: 10px;
     width: 12px;
     cursor: pointer;
-    color:red;
     /* <!-- visibility: hidden; --> */
 }
 
@@ -248,7 +250,7 @@ body{
     position: fixed;
     top:0;
     left:0;
-    z-index: 300;
+    z-index: 1000;
     cursor: pointer;
     color:white;
     text-align: center;
@@ -263,7 +265,7 @@ body{
     cursor:pointer;
     color:white;
     position: absolute;
-    top:30px;
+    top:17px;
     right:45px;
     z-index: 200;
 }
@@ -327,8 +329,7 @@ body{
 }
 .themes ul{
     list-style-type:none;
-    margin: 0;
-    background-color: rgba(218, 233, 252, 0.062);
+    background-color: rgba(96, 100, 105, 0.575);
     /* background-color: rgb(139 151 160 / 26%); */
     color: white;
     transition: transform .2s; /* Animation */
@@ -346,5 +347,81 @@ body{
 .themes ul:hover{
   transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
   background-color: rgba(85, 89, 95, 0.664);
+}
+#small-screen-display, .search-expand {
+    display: none;
+}
 
+
+@media only screen and (max-width: 1200px) {
+    #search-form{
+        display: none;
+    }
+
+    #small-screen-display{
+        display: grid;
+        place-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 300;
+        height: 100vh;
+        width: 100vw;
+    }
+    .search-expand{
+        display: block;
+        position:absolute;
+        left:10px;
+        top:130px;
+        /* outline: none; */
+        border:none;
+        box-shadow: 3px 4px 10px 2px rgba(0, 0, 0, 0.2);
+        border-radius: 50%;
+        padding: 20px 25px;
+        background-color: rgba(255, 255, 255, 0.691);
+        z-index: 400;
+
+        cursor: pointer;
+    }
+    .themes{
+        display: none;
+    }
+    #small-search-form {
+        display: inline-table;
+    }
+    #small-screen-display-form{
+        background-color: rgba(218, 233, 252, 0.062);
+        /* background-color: rgb(139 151 160 / 26%); */
+        color: rgb(255, 255, 255);
+        transition: transform .2s; /* Animation */
+        box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
+        border-radius: 15px;
+        padding: 20px;
+        margin:10px;
+
+    }
+    #small-screen-display-form ul{
+        font-family: Comfortaa;
+        list-style-type:none;
+
+    }
+    #small-screen-display-form:hover{
+        transform: scale(1.1); 
+        background-color: rgba(85, 89, 95, 0.664);
+    }
+    #small-search-form .wrapper {
+        margin: 0 7px;
+    }
+    .small-screen-close{
+        position: relative;
+        right:5px;
+        top:5px;
+    }
+    #exit-small-form-listener{
+        height: 100vh;
+        width: 100vw;
+        position: absolute;
+        z-index: -1;
+        background:none;
+    }
 }
