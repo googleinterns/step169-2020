@@ -86,10 +86,14 @@ function attachSearchFormSubmissionEvent() {
     doSearch(event.target);
   });
 }
+
+/** 
+    Makes it so the search form uses our custom JS and not the default HTML functionality. On small screen
+ */
 function attachSmallSearchFormSubmissionEvent() {
-  const searchForm = document.getElementById('small-search-form');
+  const smallSearchForm = document.getElementById('small-search-form');
   document.getElementById("small-screen-display").style.display = "none";
-  searchForm.addEventListener('submit', event => {
+  smallSearchForm.addEventListener('submit', event => {
     event.preventDefault();
     doSearch(event.target);
     document.getElementById("small-screen-display").style.display = "none";
@@ -320,7 +324,7 @@ function getInitialContent() {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
-    titleElement.innerText = "Enter a state or city in the search bar above or click a pin on the map for articles relevant to that location.";
+    titleElement.innerText = "Enter a state or city in the search bar or click a pin on the map for articles relevant to that location.";
     item.appendChild(titleElement);
     articleList.appendChild(item);
     /**
@@ -814,19 +818,22 @@ function onPlaceChanged() {
     }
 }
 
+// Open Article list nav
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.transform = "translateX(-1000px)";
+    document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
 }
 
+// Close Article list nav
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.transform = "translateX(1000px)";
+    document.getElementById("article-list-container").style.transform = "translateX(1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
 
 }
 
+// Open or close nav depending on current state
 function toggleNav() {
     if (articlesOpen) {
         closeNav();
@@ -835,13 +842,15 @@ function toggleNav() {
     }
 }
 
+// open search mini form 
 function expandSearch() {
     closeNav();
     document.getElementById("small-screen-display").style.display = "grid";
     document.getElementById("search-expand").style.display = "none";
     smallSearch=true;
-    
 }
+
+// Closes small form if user clicks away
 function endSearch() {
     document.getElementById("small-screen-display").style.display = "none";
     document.getElementById("search-expand").style.display = "block";
