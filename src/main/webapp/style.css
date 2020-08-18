@@ -37,7 +37,6 @@ body{
   background-color: rgb(175, 175, 175, 0.2);
   padding: 8px 8px;
   box-shadow: 0 8px 14px -6px rgba(0, 0, 0, 0.2) inset;
-
 }
 
 #search-button{
@@ -50,7 +49,6 @@ body{
     font-weight: bold;
     font-size:80%;
     color: white;
-
 }
 
 /* Change the color of links on hover */
@@ -80,13 +78,14 @@ body{
   outline: none;
 }
 
-ul{
+#list ul{
     list-style-type:none;
     margin: 0;
     padding: 2%;
 }
-ul li{
-    background-color: rgba(190, 219, 255, 0.853);
+#list ul li{
+    background-color: rgba(85, 90, 95, 0.561);
+    color: white;
     border-radius: 15px;
     padding: 5px 20px;
     box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
@@ -95,8 +94,9 @@ ul li{
       transition: transform .2s; /* Animation */
     width: 100%;
 }
-ul li:hover{
+#list ul li:hover{
   transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  background-color: rgba(85, 90, 95, 0.904);
 
 }
 
@@ -143,7 +143,6 @@ ul li:hover{
 
 #article-list-container a:hover {
   color: white;
-  background-color: rgba(0,0,0,0);
 }
 
 #article-list-container .closebtn {
@@ -169,17 +168,20 @@ ul li:hover{
 }
 
 .search-icon {
-    width: 18px;
-    outline: none;
-    padding: 10px 24px;
+    /* outline: none; */
     border:none;
-    position: relative;
-    top: 15px;
     box-shadow: 3px 4px 10px 2px rgba(0, 0, 0, 0.2) inset;
     border-radius: 5px;
-    background-color: rgb(220, 218, 226);
-}
+    padding:10px 20px;
+    background-color: rgba(159, 167, 172, 0.965);
 
+    cursor: pointer;
+
+}
+.search-icon:hover {
+    background-color: rgba(128, 137, 149, 0.596);
+
+}
 .clear-region-icon {
     position: absolute;
     top: 16px;
@@ -194,6 +196,7 @@ ul li:hover{
     left: 10px;
     width: 12px;
     cursor: pointer;
+    color:red;
     /* <!-- visibility: hidden; --> */
 }
 
@@ -205,15 +208,14 @@ ul li:hover{
     padding: 3px 40px 3px 30px;
     font-size: 16px;
     outline: 0;
-    background-color: #f5f5f5;
+    background-color: #f5f5f542;
+    color:white;
+
 }
 .searchRegion:hover, .search:focus {
     border: 1.5px solid #009688;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.315);
 }
-
-
-
 
 .searchTopic {
     border: 1px solid grey;
@@ -223,11 +225,15 @@ ul li:hover{
     padding: 3px 40px 3px 30px;
     font-size: 16px;
     outline: 0;
-    background-color: #f5f5f5;
+    background-color: #f5f5f542;
+    color:white;
 }
 .searchTopic:hover, .search:focus {
     border: 1.5px solid #009688;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.404);
+}
+.searchTopic::placeholder, .searchRegion::placeholder {
+    color:white;
 }
 
 #form-search-button {
@@ -259,7 +265,7 @@ ul li:hover{
     position: absolute;
     top:30px;
     right:45px;
-    z-index: 350;
+    z-index: 200;
 }
 
 #hamburger a{
@@ -295,6 +301,16 @@ ul li:hover{
 }
 #ham{
     padding: 0 10px;
+    background: none;
+    color:white;
+    /* outline: none; */
+    border:none;
+    font-size: 40px;
+    margin:10px;
+    cursor:pointer;
+}
+#ham:hover, #logout:hover, #login:hover {
+    color:rgba(185, 185, 185, 0.835);
 }
 #polbutton{
     z-index: 500;
@@ -302,10 +318,33 @@ ul li:hover{
 
 .themes{
     position: absolute;
-    bottom:25px;
+    top:110px;
     left:5px;
     font-family: Comfortaa;
-    font-size:20px;
+    font-size:15px;
     color:white;
     font-weight: bold;
+}
+.themes ul{
+    list-style-type:none;
+    margin: 0;
+    background-color: rgba(218, 233, 252, 0.062);
+    /* background-color: rgb(139 151 160 / 26%); */
+    color: white;
+    transition: transform .2s; /* Animation */
+    box-shadow: 0 8px 14px -2px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 20px;
+    margin:10px;
+}
+.themes ul li{
+    padding: 2px 10px;
+    margin-bottom: 10px;
+    z-index: 2;
+    width: 100%;
+}
+.themes ul:hover{
+  transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  background-color: rgba(85, 89, 95, 0.664);
+
 }
