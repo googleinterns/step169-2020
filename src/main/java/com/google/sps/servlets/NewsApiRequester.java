@@ -31,7 +31,7 @@ class NewsApiRequester {
     this.apiKey = getApiKey();
 
     Map<String, String> temporaryHeaders = new HashMap<>();
-    temporaryHeaders.put("X-Api-Key", apiKey);
+    temporaryHeaders.put(API_KEY_HEADER, apiKey);
     this.headers = Collections.unmodifiableMap(temporaryHeaders);
   }
 
