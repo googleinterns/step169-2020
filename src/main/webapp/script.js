@@ -823,6 +823,7 @@ function openNav() {
     articlesOpen = true;
     document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+    endSearch();
 }
 
 // Close Article list nav
