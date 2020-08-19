@@ -24,25 +24,59 @@ var places;
 var autoComplete;
 var autoCompleteService;
 var articlesOpen = false;
+var smallSearch = false;
 var countryRestrict = {'country': 'us'};
+
+// marker collections
 var cityMarkers = [];
 var subcountryMarkers = [];
 var countryMarkers = [];
-var sportsMarkers = [];
-var politicsMarkers = [];
-var businessMarkers = [];
-var miscMarkers = [];
+var sportsMarkersCountry = [];
+var sportsMarkersSubcountry = [];
+var sportsMarkersCity = [];
+var politicsMarkersCountry = [];
+var politicsMarkersSubcountry = [];
+var politicsMarkersCity = [];
+var businessMarkersCountry = [];
+var businessMarkersSubcountry = [];
+var businessMarkersCity = [];
+var miscMarkersCountry = [];
+var miscMarkersSubcountry = [];
+var miscMarkersCity = [];
+
+// boolean to set visibility 
 var showpol =false;
 var showmisc =false;
 var showbus =false;
 var showsports =false;
 
+// Article lists for each category
+let articleMapCity = new Map();
+let articleMapSubcountry = new Map();
+let articleMapCountry = new Map();
+let articleMapSportsCountry = new Map();
+let articleMapSportsSubcountry = new Map();
+let articleMapSportsCity = new Map();
+let articleMapBusinessCountry = new Map();
+let articleMapBusinessSubcountry = new Map();
+let articleMapBusinessCity = new Map();
+let articleMapPoliticsCountry = new Map();
+let articleMapPoliticsSubcountry = new Map();
+let articleMapPoliticsCity = new Map();
+let articleMapMiscCountry = new Map();
+let articleMapMiscSubcountry = new Map();
+let articleMapMiscCity = new Map();
+
+
 function onPageLoad() {
+  window.addEventListener("resize", clearSmallForm);
   attachSearchFormSubmissionEvent();
+  attachSmallSearchFormSubmissionEvent();
   map = initMap();
   sharedMap = map;
   getInitialContent();
   initAutoComplete();
+
 }
 
 /**
@@ -60,6 +94,22 @@ function attachSearchFormSubmissionEvent() {
   searchForm.addEventListener('submit', event => {
     event.preventDefault();
     doSearch(event.target);
+  });
+}
+
+/** 
+    Makes it so the search form uses our custom JS and not the default HTML functionality. On small screen
+ */
+function attachSmallSearchFormSubmissionEvent() {
+  const smallSearchForm = document.getElementById('small-search-form');
+  document.getElementById("small-screen-display").style.display = "none";
+  smallSearchForm.addEventListener('submit', event => {
+    event.preventDefault();
+    doSearch(event.target);
+    document.getElementById("small-screen-display").style.display = "none";
+    document.getElementById("search-expand").style.display = "block";
+    smallSearch = false;
+    openNav();
   });
 }
 
@@ -192,96 +242,65 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-    let articleMapCity = new Map();
-    let articleMapSubcountry = new Map();
-    let articleMapCountry = new Map();
-    let articleMapSports = new Map();
-    let articleMapBusiness = new Map();
-    let articleMapPolitics = new Map();
-    let articleMapMisc = new Map();
 
-    // Creates and fills maps for each level of geographical divisions
+
+    // Creates and fills maps for each level of geographical divisions and each category
     for (index in json) {
         let articleObj = json[index];
-        if (articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
-            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
-        } else {
-            articleMapCity[articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
-        }
-
-        if (articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] == null) {
-            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country] = [articleObj];
-        } else {
-            articleMapSubcountry[articleObj.location.subcountry + ", " + articleObj.location.country].push(articleObj);
-        }
-
-        if (articleMapCountry[articleObj.location.country] == null) {
-            articleMapCountry[articleObj.location.country] = [articleObj];
-        } else {
-            articleMapCountry[articleObj.location.country].push(articleObj);
-        }
-        
+        fillArticleMaps(articleMapCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+        fillArticleMaps(articleMapSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+        fillArticleMaps(articleMapCountry, articleObj.location.country, articleObj);
+       
         // CATEGORIZATION FEATURE 
         if (articleObj.theme == "sports"){
-            if (articleMapSports[articleObj.location.country] == null) {
-                articleMapSports[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapSports[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapSportsCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "politics"){
-            if (articleMapPolitics[articleObj.location.country] == null) {
-                articleMapPolitics[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapPolitics[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapPoliticsCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "miscellaneous"){
-            if (articleMapMisc[articleObj.location.country] == null) {
-                articleMapMisc[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapMisc[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapMiscCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscCity, articleObj.location.country, articleObj);
         } else if (articleObj.theme == "business"){
-            if (articleMapBusiness[articleObj.location.country] == null) {
-                articleMapBusiness[articleObj.location.country] = [articleObj];
-            } else {
-                articleMapBusiness[articleObj.location.country].push(articleObj);
-            }
+            fillArticleMaps(articleMapBusinessCountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessSubcountry, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessCity, articleObj.location.country, articleObj);
         }
     }
-    for (key in articleMapCity) {
-        // console.log(key, articleMapCity[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
+
+    fetchAddressGeocode(articleMapCity, "city");
+    fetchAddressGeocode(articleMapSubcountry, "subcountry");
+    fetchAddressGeocode(articleMapCountry, "country");
+    fetchAddressGeocode(articleMapSportsCountry, "sportscountry");
+    fetchAddressGeocode(articleMapSportsSubcountry, "sportssubcountry");
+    fetchAddressGeocode(articleMapSportsCity, "sportscity");
+    fetchAddressGeocode(articleMapBusinessCountry, "businesscountry");
+    fetchAddressGeocode(articleMapBusinessSubcountry, "businesssubcountry");
+    fetchAddressGeocode(articleMapBusinessCity, "businesscity");
+    fetchAddressGeocode(articleMapPoliticsCountry, "politicscountry");
+    fetchAddressGeocode(articleMapPoliticsSubcountry, "politicssubcountry");
+    fetchAddressGeocode(articleMapPoliticsCity, "politicscity");
+    fetchAddressGeocode(articleMapMiscCountry, "misccountry");
+    fetchAddressGeocode(articleMapMiscSubcountry, "miscsubcountry");
+    fetchAddressGeocode(articleMapMiscCity, "misccity");
+}
+
+
+function fetchAddressGeocode(articleMap, label){
+    for (key in articleMap) {
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key], label));
     }
-    for (key in articleMapSubcountry) {
-        // console.log(key, articleMapSubcountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
-    }
-    for (key in articleMapCountry) {
-        // console.log(key, articleMapCountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
-    }    
-    for (key in articleMapSports) {
-        // console.log(key, articleMapSports[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSports[key], "sports"));
-    }
-    for (key in articleMapBusiness) {
-        // console.log(key, articleMapBusiness[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapBusiness[key], "business"));
-    }
-    for (key in articleMapPolitics) {
-        // console.log(key, articleMapPolitics[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapPolitics[key], "politics"));
-    }
-    for (key in articleMapMisc) {
-        // console.log(key, articleMapMisc[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMapMisc[key], "misc"));
+}
+
+function fillArticleMaps(articleMap, key, articles){
+    if (articleMap[key] == null) {
+        articleMap[key] = [articles];
+    } else {
+        articleMap[key].push(articles);
     }
 }
 
@@ -289,9 +308,6 @@ function configureWorldArticles(json) {
     Get the world news response geo coding.
  */
 function getRegionJSONOfGeoCoding(articles, label, response) {
-    // console.log("Response is: " + response);
-    // console.log("label is : " + label);
-
     const json = response.json();
 
     return json.then(placeArticlesPinOnMap.bind(null, articles, label));
@@ -317,6 +333,16 @@ function placeArticlesPinOnMap(articles, label, json) {
     Fetches the initial articles displayed on the page.
  */
 function getInitialContent() {
+    /**
+=======
+        Initial message telling the user to search or click a pin.
+     */
+    const articleList = document.getElementById("articles-list");
+    let item = document.createElement('li');
+    let titleElement = document.createElement('h2');
+    titleElement.innerText = "Enter a state or city in the search bar or click a pin on the map for articles relevant to that location.";
+    item.appendChild(titleElement);
+    articleList.appendChild(item);
     /**
         Fetches the world news, clusters it, and places the pins corresponding to its included locations.
      */
@@ -394,8 +420,10 @@ function formatTimestamp(timestamp) {
   return dateFormat.format(date);
 }
 
-/** Adds a marker that shows an info window when clicked. */
+// Adds a landmark based on its corresponding label
 function addLandmark(map, lat, lng, title, articles, label) {
+
+    // Varies marker color based on label
     if (label=="city"){
         newMarker(map, lat, lng, title, "red", cityMarkers, articles);
     } else if (label == "subcountry"){
@@ -403,21 +431,48 @@ function addLandmark(map, lat, lng, title, articles, label) {
     } else if (label == "country"){
         newMarker(map, lat, lng, title, "red", countryMarkers, articles);
     }
-    else if (label == "sports"){        
-        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers, articles);
+    else if (label == "sportscountry"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCountry, articles);
+    }    
+    else if (label == "sportssubcountry"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersSubcountry, articles);
+    }    
+    else if (label == "sportscity"){        
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCity, articles);
     }
-    else if (label == "business"){
-        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers, articles);
+    else if (label == "businesscountry"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCountry, articles);
+    }    
+    else if (label == "businesscsubcountry"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersSubcountry, articles);
     }
-    else if (label == "politics"){
-        newMarker(map, lat, lng, title, "green", politicsMarkers, articles);
+    else if (label == "businesscity"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCity, articles);
     }
-    else if (label == "misc"){
-        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkers, articles);
+    else if (label == "politicscountry"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersCountry, articles);
     }
-    showBasedOnZoom();
+    else if (label == "politicssubcountry"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersSubcountry, articles);
+    }
+    else if (label == "politicscity"){
+        newMarker(map, lat, lng, title, "green", politicsMarkersCity, articles);
+    }
+    else if (label == "misccountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCountry, articles);
+    }
+    else if (label == "miscsubcountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersSubcountry, articles);
+    }
+    else if (label == "misccity"){
+        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCity, articles);
+    }
+
+    // Determine visibility
+    showBasedOnZoom(); 
 }
 
+/** Adds a marker that shows an info window when clicked. */
 function newMarker(map, lat, lng, title, color, markerSet, articles){
     let url = "https://maps.google.com/mapfiles/ms/icons/";
     url += color + "-dot.png";
@@ -442,35 +497,81 @@ function showBasedOnZoom(){
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
         if (!showpol && !showbus && !showmisc && !showsports){
-            for (i = 0; i < countryMarkers.length; i++) {
-                countryMarkers[i].setVisible(zoom < 5);
-            }
-            for (i = 0; i < cityMarkers.length; i++) {
-                cityMarkers[i].setVisible(zoom > 8);
-            }
-            for (i = 0; i < subcountryMarkers.length; i++) {
-                subcountryMarkers[i].setVisible((zoom >= 5) && (zoom <= 8));
-            }
+            zoomVisibility(countryMarkers, (zoom < 5));
+            zoomVisibility(cityMarkers, (zoom > 8));
+            zoomVisibility(subcountryMarkers, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showpol) {
+            zoomVisibility(politicsMarkersCountry, (zoom < 5));
+            zoomVisibility(politicsMarkersCity, (zoom > 8));
+            zoomVisibility(politicsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showbus) {
+            zoomVisibility(businessMarkersCountry, (zoom < 5));
+            zoomVisibility(businessMarkersCity, (zoom > 8));
+            zoomVisibility(businessMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showmisc) {
+            zoomVisibility(miscMarkersCountry, (zoom < 5));
+            zoomVisibility(miscMarkersCity, (zoom > 8));
+            zoomVisibility(miscMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        }
+        if (showsports) {
+            zoomVisibility(sportsMarkersCountry, (zoom < 5));
+            zoomVisibility(sportsMarkersCity, (zoom > 8));
+            zoomVisibility(sportsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
         }
     });
 }
 
+// Sets visibility on true or false
+function zoomVisibility(markerSet, visible){
+    for (i = 0; i < markerSet.length; i++) {
+        markerSet[i].setVisible(visible);
+    }
+}
+
+// Shows or hides markers about politics on select or unselect respectively
 function showPol(){
     showpol = !showpol;
-    displayRelevant(politicsMarkers, showpol);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(politicsMarkersCountry, showpol && (zoom < 5));
+    displayRelevant(politicsMarkersSubcountry, showpol && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(politicsMarkersCity, showpol && (zoom > 8));
 }
+
+// Shows or hides markers about miscellaneous on select or unselect respectively
 function showMisc(){
     showmisc = !showmisc;
-    displayRelevant(miscMarkers, showmisc);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(miscMarkersCountry, showmisc && (zoom < 5));
+    displayRelevant(miscMarkersSubcountry, showmisc && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(miscMarkersCity, showmisc && (zoom > 8));
 }
+
+// Shows or hides markers about business on select or unselect respectively
 function showBus(){
     showbus = !showbus;
-    displayRelevant(businessMarkers, showbus);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(businessMarkersCountry, showbus && (zoom < 5));
+    displayRelevant(businessMarkersSubcountry, showbus && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(businessMarkersCity, showbus && (zoom > 8));
 }
+
+// Shows or hides markers about sports on select or unselect respectively
 function showSports(){
     showsports = !showsports;
-    displayRelevant(sportsMarkers, showsports);
+    var zoom = sharedMap.getZoom();
+
+    displayRelevant(sportsMarkersCountry, showsports && (zoom < 5));
+    displayRelevant(sportsMarkersSubcountry, showsports && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(sportsMarkersCity, showsports && (zoom > 8));
 }
+
+// Shows or hides relevant markers on select or unselect respectively of the categories
 function displayRelevant(markerSet, visible){
     if (showpol || showbus || showmisc || showsports){
         for (i = 0; i < countryMarkers.length; i++) {
@@ -733,16 +834,24 @@ function onPlaceChanged() {
     }
 }
 
+// Open Article list nav
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.transform = "translateX(-36vw)";
+    document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
+    document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+    if (smallSearch)
+    endSearch();
 }
 
+// Close Article list nav
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.transform = "translateX(0)";
+    document.getElementById("article-list-container").style.transform = "translateX(1200px)";
+    document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+
 }
 
+// Open or close nav depending on current state
 function toggleNav() {
     if (articlesOpen) {
         closeNav();
@@ -751,6 +860,37 @@ function toggleNav() {
     }
 }
 
+// open search mini form 
+function expandSearch() {
+    closeNav();
+    
+    document.getElementById("small-screen-display").style.display = "grid";
+    document.getElementById("search-expand").style.display = "none";
+    smallSearch=true;
+}
+
+// Closes small form if user clicks away
+function endSearch() {
+    document.getElementById("small-screen-display").style.display = "none";
+    // console.log(document.getElementsByClassName("themes").style);
+    // if (document.getElementById("themes").style.display === "none"){
+    document.getElementById("search-expand").style.display = "block";
+    smallSearch=false;
+}
+
+function clearSmallForm() {
+  var scrWidth = document.documentElement.clientWidth;
+  if (scrWidth>1200){
+    document.getElementById("small-screen-display").style.display = "none";
+    document.getElementById("search-expand").style.display = "none";
+  }
+  else{
+    document.getElementById("search-expand").style.display = "block";
+    document.getElementById("small-screen-display").style.display = "none";
+  }
+}
+
+// Resets the region search bar
 function clearSearchRegion() {
     const clearIcon = document.querySelector(".clear-region-icon");
     const searchBar = document.querySelector(".searchRegion");
@@ -766,6 +906,7 @@ function clearSearchRegion() {
     clearIcon.style.visibility = "hidden";
 }
 
+// Resets the topic search bar
 function clearSearchTopic() {
     const clearIcon = document.querySelector(".clear-topic-icon");
     const searchBar = document.querySelector(".searchTopic");
@@ -781,6 +922,7 @@ function clearSearchTopic() {
     clearIcon.style.visibility = "hidden";
 }
 
+// Toggles initial user message upon entry
 function disableTutorial(){
     document.getElementById('tutorial').style.display = "none";
 }
