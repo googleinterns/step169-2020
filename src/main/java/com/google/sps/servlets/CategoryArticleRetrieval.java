@@ -192,18 +192,6 @@ public class CategoryArticleRetrieval extends HttpServlet {
     return null;
   }
 
-  public void mockData(){
-    String title = "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's";
-    String publisher = "Barron's";
-    String date = "2020-08-11T18:08:00Z";
-    String description = "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…";
-    String url = "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795";
-    String thumbnailUrl = "https://images.barrons.com/im-219399/social";
-    String location = "England";
-    String theme = "business";
-    storeArticle(title, publisher, date, description, url, thumbnailUrl, location, theme);
-  }
-
 /**
    * Converts a  instance into a JSON string using manual String concatentation.
    */

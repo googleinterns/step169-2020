@@ -334,7 +334,6 @@ function placeArticlesPinOnMap(articles, label, json) {
  */
 function getInitialContent() {
     /**
-=======
         Initial message telling the user to search or click a pin.
      */
     const articleList = document.getElementById("articles-list");
