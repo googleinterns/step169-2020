@@ -18,6 +18,7 @@ import com.google.appengine.api.users.UserServiceFactory;
 
 
 class MockNewsService implements NewsService {
+    /*
   @Override
   public List<Article> getWorldNews(int count) {
     // Location[] cities = {
@@ -80,6 +81,7 @@ class MockNewsService implements NewsService {
       (String) entity.getProperty("theme"))
       );
       System.out.println((String) entity.getProperty("description"));
+*/
 
   public List<Article> getWorldNews(String category, int count) {
     Location[] cities = {
@@ -100,7 +102,8 @@ class MockNewsService implements NewsService {
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque porttitor odio nisl, sit amet sollicitudin metus eleifend eu. Praesent quis mauris sollicitudin, pretium nisl at, commodo lacus. In hac habitasse platea dictumst. ",
             "https://example.com/sample1",
             "https://interactive-examples.mdn.mozilla.net/media/examples/grapefruit-slice-332-332.jpg",
-            cities[i]);
+            cities[i],
+            "miscellaneous");
         articles.add(article);
       }
     }

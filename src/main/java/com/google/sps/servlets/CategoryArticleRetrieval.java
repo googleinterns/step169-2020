@@ -39,45 +39,158 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import com.google.cloud.translate.*;
 import com.google.sps.ArticleLabeler;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import java.util.Arrays;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.MonitoredResource;
+import com.google.cloud.logging.LogEntry;
+import com.google.cloud.logging.Logging;
+import com.google.cloud.logging.LoggingOptions;
+import com.google.cloud.logging.Payload.StringPayload;
+import com.google.cloud.logging.Severity;
+import java.util.Collections;
 
 
 // Servlet which retrieves client String comment entries, stores them on server, and displays them on wall 
 @WebServlet("/articles")
 public class CategoryArticleRetrieval extends HttpServlet {
+
+  private static final List<String> ALLOWED_TOPICS = Arrays.asList(
+      "business", "entertainment", "health", "science", "sports", "technology", "general"
+  );
+  private final NewsService newsService;
+
+  public CategoryArticleRetrieval() {
+    newsService = new NewsApiNewsService();
+  }
   
-  //   Sends array of previous recent entries to be fetched
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    storeArticle();
+    getFreshWorldNews();
     response.setContentType("application/json;");
     response.getWriter().println();
   }
 
-  //   Stores the user's comments in the datastore service
-  public void storeArticle(){
-
+  private void getFreshWorldNews() {
+    ServletLogger.logText("Start getFreshWorldNews()");
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
-    Entity article = new Entity("Article");
-    article.setProperty("title", "Nikola Sells 2,500 Garbage Trucks. It’s Not the Badger, but It’s a Better Deal. - Barron's");
-    article.setProperty("publisher","Barron's");
-    article.setProperty("date", "2020-08-11T18:08:00Z");
-    article.setProperty("description", "Nikola\r\n shares were trading lower Tuesday, after a 22% bounce on Monday following the announcement of an order for 2,500 battery-powered trucks from waste hauler\r\n Republic Services.Investors were h…");    
-    article.setProperty("url", "https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795");
-    article.setProperty("thumbnailUrl", "https://images.barrons.com/im-219399/social");
-    article.setProperty("languageTest", inEnglish("test"));
-    String[] location = getBestLocationGuess("https://www.barrons.com/articles/nikola-battery-trucks-republic-services-binding-order-51597158795");
-    String loc = "";
-    if (location != null) {
-        loc = location[0] + "," + location[1] + "," + location[2];
-    } else {
-        loc = "NOT FOUND";
-    }
-    article.setProperty("location", loc);
-    article.setProperty("theme", "business");    
-    datastore.put(article);
+    String backFacingEntityName = getBackFacingEntityName(datastore);
+    deleteOldEntites(datastore, backFacingEntityName);
+    int countOfArticlesStored = getAndStoreArticles(datastore, backFacingEntityName);
+    updateFrontFacingEntity(datastore, backFacingEntityName, countOfArticlesStored);
+    ServletLogger.logText("End getFreshWorldNews()");
   }
 
+/** 
+    Gets and stores all the valid articles for all of the categories.
+*/
+  private int getAndStoreArticles(DatastoreService datastore, String backFacingEntityName) {
+    int count = 0;
+    ServletLogger.logText("Start getAndStoreArticles()");
+    for (String topic : ALLOWED_TOPICS) {
+        List<Article> topicArticles = retrieveTopic(topic);
+        if (topicArticles != null) {
+            for (Article article : topicArticles) {
+              if (article != null) {
+                ServletLogger.logText("Getting Correct Location For : " + article.title);
+                Article finalArticleVersion = getArticleWithCorrectLocation(article, topic);
+                ServletLogger.logText("Done Getting Correct Location For : " + article.title);
+                if (finalArticleVersion != null) {
+                ServletLogger.logText("Storing: " + finalArticleVersion.title);
+                  if (storeArticle(datastore, backFacingEntityName, finalArticleVersion)) {
+                    count += 1;
+                  }
+                }
+              }
+            }
+        } else {
+            count = -1;
+        }
+    }
+    ServletLogger.logText("End getAndStoreArticles() | Count " + count);
+    return count;
+  }
+
+  private void updateFrontFacingEntity(DatastoreService datastore, String newName, int articleCount) {
+    Query query = new Query("WorldNewsSource");
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity entity : results.asIterable()) {
+        entity.setProperty("Source", newName);
+        entity.setProperty("ArticleCount", articleCount);
+        datastore.put(entity);
+        return;
+    }
+  }
+
+  private boolean storeArticle(DatastoreService datastore, String entityName, Article article) {
+    try {
+      if (article.title != null && article.publisher != null && article.date != null && article.description != null && article.url != null && article.thumbnailUrl != null && article.location != null && article.theme != null) {
+        Entity entity = new Entity(entityName);
+        entity.setProperty("title", article.title);
+        entity.setProperty("publisher", article.publisher);
+        entity.setProperty("date", article.date.toString());
+        entity.setProperty("description", article.description);    
+        entity.setProperty("url", article.url);
+        entity.setProperty("thumbnailUrl", article.thumbnailUrl);
+        entity.setProperty("locationCity", article.location.city);
+        entity.setProperty("locationSubCountry", article.location.subcountry);
+        entity.setProperty("locationCountry", article.location.country);
+        entity.setProperty("theme", article.theme);    
+        datastore.put(entity);
+        ServletLogger.logText("Stored: " + article.title);
+        return true;
+      } else {
+        ServletLogger.logText("Failed to Store: " + article.title);
+        return false;
+      }
+    } catch (Exception e) {
+      ServletLogger.logText("Failed to Store: " + article.title + " | Error : " + e);
+      return false;
+    }
+  }
+
+  private void deleteOldEntites(DatastoreService datastore, String name) {
+    ServletLogger.logText("Start deleteOldEntites()");
+    Query query = new Query(name);
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity entity : results.asIterable()) {
+        datastore.delete(entity.getKey());
+    }
+    ServletLogger.logText("End deleteOldEntites()");
+  } 
+
+  private String getBackFacingEntityName(DatastoreService datastore) {
+    ServletLogger.logText("Start getBackFacingEntityName()");
+    Query query = new Query("WorldNewsSource");
+    PreparedQuery results = datastore.prepare(query);
+    for (Entity entity : results.asIterable()) {
+      String source = (String) entity.getProperty("Source");
+      if (source.equals("Articles_A")){
+        return "Articles_B";
+      } else {
+        return "Articles_A";
+      }
+    }
+    ServletLogger.logText("End getBackFacingEntityName()");
+    return "Articles_A";
+  }
+
+  private List<Article> retrieveTopic(String topic)  {
+    ServletLogger.logText("Start retrieveTopic() | Topic : " + topic);
+    if (topic != null && ALLOWED_TOPICS.contains(topic)) {
+      try {
+        List<Article> retrievedArticles = newsService.getWorldNews(topic, 100);
+        ServletLogger.logText("Good End retrieveTopic() | Topic : " + topic);
+        return retrievedArticles;
+      } catch (Exception e) {
+        ServletLogger.logText("Bad End retrieveTopic() | Topic : " + topic + " | Error " + e.toString());
+        return null;
+      }
+    }
+    ServletLogger.logText("Bad End retrieveTopic() | Topic : " + topic);
+    return null;
+  }
 
 /**
    * Converts a  instance into a JSON string using manual String concatentation.
@@ -96,28 +209,27 @@ public class CategoryArticleRetrieval extends HttpServlet {
   /**
     Returns the article with the correct location if its valid (findable location and in english), otherwise returns null. 
   */
-  private Article getArticleWithCorrectLocation(Article article) {
-      if (inEnglish(article.description)) {
-          String[] bestLocation = getBestLocationGuess(article.url);
-          if (bestLocation != null) {
-              String location = bestLocation[0] + "," + bestLocation[1] + "," + bestLocation[2];
-              return new Article(article.title, article.publisher, article.date, article.description, article.url, article.thumbnailUrl, article.location, article.theme);
-          } else {
-              return null;
-          }
+  private Article getArticleWithCorrectLocation(Article article, String theme) {
+    if (inEnglish(article.description) && article.url != null) {
+      Location bestLocation = getBestLocationGuess(article.url);
+      if (bestLocation != null) {
+        return new Article(article.title, article.publisher, article.date, article.description, article.url, article.thumbnailUrl, bestLocation, theme);
       } else {
-          return null;
+        return null;
       }
+    } else {
+      return null;
+    }
   }
 
   /**
     Returns the guessed location for the provided url. Returns null if none can be found.
   */
-  private String[] getBestLocationGuess(String url) {
+  private Location getBestLocationGuess(String url) {
       int attempts = 0;
-      String[] guess = null;
+      Location guess = null;
       ArticleLabeler labeler = new ArticleLabeler(this.getServletContext(), "/WEB-INF/fullcitylist.csv");
-      while (attempts < 5 && guess == null) {
+      while (attempts < 3 && guess == null) {
           guess = labeler.useCloudToFindLocation(url);
           attempts++;
       }
@@ -128,6 +240,7 @@ public class CategoryArticleRetrieval extends HttpServlet {
     Returns if the provided text is in english.
   */
   private boolean inEnglish(String text) {
+    if (text != null) {
         Translate translate = TranslateOptions.getDefaultInstance().getService();
         Detection detection = translate.detect(text);
         if (detection != null) {
@@ -135,5 +248,8 @@ public class CategoryArticleRetrieval extends HttpServlet {
         } else {
             return false;
         }
+    } else {
+      return false;
+    }
   }
 }

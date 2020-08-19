@@ -48,16 +48,9 @@ public class NLPTestServlet extends HttpServlet {
 
   private String testCloud(String url) {
         ArticleLabeler labeler = new ArticleLabeler(this.getServletContext(), "/WEB-INF/fullcitylist.csv");
-        String ret = "";
         //ret += "-- BEGIN ARTICLE LABELER TESTS --\n-- LEFT SIDE IS CORRECT | RIGHT SIDE IS GUESS --\n";
-        String[] ret1 = labeler.useCloudToFindLocation(url);
-        for (int i = 0; i < ret1.length; i++) {
-            ret += ret1[i];
-            if (i < ret1.length - 1) {
-                ret += ",";
-            }
-        }
-        return ret;
+        Location ret = labeler.useCloudToFindLocation(url);
+        return ret.toString();
     }
 
 }

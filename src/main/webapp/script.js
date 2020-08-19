@@ -127,7 +127,7 @@ function finishSearch(suggestions, topic) {
         let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
         const response = fetch(fetchParameter);
         response.then(getRegionArticles);
-        const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response2.then(getJSONOfGeoCoding);
     }
     testNLP();
@@ -250,37 +250,37 @@ function configureWorldArticles(json) {
     }
     for (key in articleMapCity) {
         // console.log(key, articleMapCity[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCity[key], "city"));
     }
     for (key in articleMapSubcountry) {
         // console.log(key, articleMapSubcountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSubcountry[key], "subcountry"));
     }
     for (key in articleMapCountry) {
         // console.log(key, articleMapCountry[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapCountry[key], "country"));
     }    
     for (key in articleMapSports) {
         // console.log(key, articleMapSports[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapSports[key], "sports"));
     }
     for (key in articleMapBusiness) {
         // console.log(key, articleMapBusiness[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapBusiness[key], "business"));
     }
     for (key in articleMapPolitics) {
         // console.log(key, articleMapPolitics[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapPolitics[key], "politics"));
     }
     for (key in articleMapMisc) {
         // console.log(key, articleMapMisc[key].length);
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMapMisc[key], "misc"));
     }
 }
@@ -301,6 +301,7 @@ function getRegionJSONOfGeoCoding(articles, label, response) {
     Prints the response.
  */
 function placeArticlesPinOnMap(articles, label, json) {
+    console.log(json);
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;

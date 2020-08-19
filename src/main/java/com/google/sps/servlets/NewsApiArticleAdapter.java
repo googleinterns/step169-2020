@@ -39,7 +39,8 @@ class NewsApiArticleAdapter {
         removeHtmlTags(result.description),
         result.url,
         result.urlToImage,
-        getLocation(result)
+        getLocation(result),
+        "miscellaneous"
     );
   }
 

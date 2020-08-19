@@ -1,11 +1,11 @@
 package com.google.sps.servlets;
 
-class Location {
+public class Location {
   final String city;
   final String subcountry;
   final String country;
 
-  Location(String city, String subcountry, String country) {
+  public Location(String city, String subcountry, String country) {
     this.city = city;
     this.subcountry = subcountry;
     this.country = country;
