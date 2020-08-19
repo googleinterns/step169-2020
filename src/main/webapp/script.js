@@ -67,13 +67,16 @@ let articleMapMiscCountry = new Map();
 let articleMapMiscSubcountry = new Map();
 let articleMapMiscCity = new Map();
 
+
 function onPageLoad() {
+  window.addEventListener("resize", clearSmallForm);
   attachSearchFormSubmissionEvent();
   attachSmallSearchFormSubmissionEvent();
   map = initMap();
   sharedMap = map;
   getInitialContent();
   initAutoComplete();
+
 }
 
 /** 
@@ -823,6 +826,7 @@ function openNav() {
     articlesOpen = true;
     document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+    if (smallSearch)
     endSearch();
 }
 
@@ -846,6 +850,7 @@ function toggleNav() {
 // open search mini form 
 function expandSearch() {
     closeNav();
+    
     document.getElementById("small-screen-display").style.display = "grid";
     document.getElementById("search-expand").style.display = "none";
     smallSearch=true;
@@ -854,15 +859,23 @@ function expandSearch() {
 // Closes small form if user clicks away
 function endSearch() {
     document.getElementById("small-screen-display").style.display = "none";
+    // console.log(document.getElementsByClassName("themes").style);
+    // if (document.getElementById("themes").style.display === "none"){
     document.getElementById("search-expand").style.display = "block";
     smallSearch=false;
 }
-// // Toggles initial user message upon entry
-// function closeSmallSearch(){
-//     document.getElementById('small-screen-display').style.display = "none";
-//     document.getElementById("search-expand").style.display = "block";
-//     smallSearch=false;
-// }
+
+function clearSmallForm() {
+  var scrWidth = document.documentElement.clientWidth;
+  if (scrWidth>1200){
+    document.getElementById("small-screen-display").style.display = "none";
+    document.getElementById("search-expand").style.display = "none";
+  }
+  else{
+    document.getElementById("search-expand").style.display = "block";
+    document.getElementById("small-screen-display").style.display = "none";
+  }
+}
 
 // Resets the region search bar
 function clearSearchRegion() {
