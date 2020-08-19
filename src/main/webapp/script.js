@@ -24,7 +24,10 @@ var places;
 var autoComplete;
 var autoCompleteService;
 var articlesOpen = false;
+var smallSearch = false;
 var countryRestrict = {'country': 'us'};
+
+// marker collections
 var cityMarkers = [];
 var subcountryMarkers = [];
 var countryMarkers = [];
@@ -40,10 +43,14 @@ var businessMarkersCity = [];
 var miscMarkersCountry = [];
 var miscMarkersSubcountry = [];
 var miscMarkersCity = [];
+
+// boolean to set visibility 
 var showpol =false;
 var showmisc =false;
 var showbus =false;
 var showsports =false;
+
+// Article lists for each category
 let articleMapCity = new Map();
 let articleMapSubcountry = new Map();
 let articleMapCountry = new Map();
@@ -60,12 +67,16 @@ let articleMapMiscCountry = new Map();
 let articleMapMiscSubcountry = new Map();
 let articleMapMiscCity = new Map();
 
+
 function onPageLoad() {
+  window.addEventListener("resize", clearSmallForm);
   attachSearchFormSubmissionEvent();
+  attachSmallSearchFormSubmissionEvent();
   map = initMap();
   sharedMap = map;
   getInitialContent();
   initAutoComplete();
+
 }
 
 /** 
@@ -76,6 +87,22 @@ function attachSearchFormSubmissionEvent() {
   searchForm.addEventListener('submit', event => {
     event.preventDefault();
     doSearch(event.target);
+  });
+}
+
+/** 
+    Makes it so the search form uses our custom JS and not the default HTML functionality. On small screen
+ */
+function attachSmallSearchFormSubmissionEvent() {
+  const smallSearchForm = document.getElementById('small-search-form');
+  document.getElementById("small-screen-display").style.display = "none";
+  smallSearchForm.addEventListener('submit', event => {
+    event.preventDefault();
+    doSearch(event.target);
+    document.getElementById("small-screen-display").style.display = "none";
+    document.getElementById("search-expand").style.display = "block";
+    smallSearch = false;
+    openNav();
   });
 }
 
@@ -206,7 +233,7 @@ function getWorldArticles(response) {
 function configureWorldArticles(json) {
 
 
-    // Creates and fills maps for each level of geographical divisions
+    // Creates and fills maps for each level of geographical divisions and each category
     for (index in json) {
         let articleObj = json[index];
         fillArticleMaps(articleMapCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
@@ -270,9 +297,6 @@ function fillArticleMaps(articleMap, key, articles){
     Get the region response geo coding.
  */
 function getRegionJSONOfGeoCoding(articles, label, response) {
-    // console.log("Response is: " + response);
-    // console.log("label is : " + label);
-
     const json = response.json();
 
     return json.then(placeArticlesPinOnMap.bind(null, articles, label));
@@ -303,7 +327,7 @@ function getInitialContent() {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let titleElement = document.createElement('h2');
-    titleElement.innerText = "Enter a state or city in the search bar above or click a pin on the map for articles relevant to that location.";
+    titleElement.innerText = "Enter a state or city in the search bar or click a pin on the map for articles relevant to that location.";
     item.appendChild(titleElement);
     articleList.appendChild(item);
     /**
@@ -383,8 +407,10 @@ function formatTimestamp(timestamp) {
   return dateFormat.format(date);
 }
 
-/** Adds a marker that shows an info window when clicked. */
+// Adds a landmark based on its corresponding label
 function addLandmark(map, lat, lng, title, articles, label) {
+
+    // Varies marker color based on label
     if (label=="city"){
         newMarker(map, lat, lng, title, "red", cityMarkers, articles);
     } else if (label == "subcountry"){
@@ -428,9 +454,12 @@ function addLandmark(map, lat, lng, title, articles, label) {
     else if (label == "misccity"){
         newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCity, articles);
     }
-    showBasedOnZoom();
+
+    // Determine visibility
+    showBasedOnZoom(); 
 }
 
+/** Adds a marker that shows an info window when clicked. */
 function newMarker(map, lat, lng, title, color, markerSet, articles){
     let url = "https://maps.google.com/mapfiles/ms/icons/";
     url += color + "-dot.png";
@@ -481,11 +510,15 @@ function showBasedOnZoom(){
         }
     });
 }
+
+// Sets visibility on true or false
 function zoomVisibility(markerSet, visible){
     for (i = 0; i < markerSet.length; i++) {
         markerSet[i].setVisible(visible);
     }
 }
+
+// Shows or hides markers about politics on select or unselect respectively
 function showPol(){
     showpol = !showpol;
     var zoom = sharedMap.getZoom();
@@ -494,6 +527,8 @@ function showPol(){
     displayRelevant(politicsMarkersSubcountry, showpol && (zoom >= 5) && (zoom <= 8));
     displayRelevant(politicsMarkersCity, showpol && (zoom > 8));
 }
+
+// Shows or hides markers about miscellaneous on select or unselect respectively
 function showMisc(){
     showmisc = !showmisc;
     var zoom = sharedMap.getZoom();
@@ -502,6 +537,8 @@ function showMisc(){
     displayRelevant(miscMarkersSubcountry, showmisc && (zoom >= 5) && (zoom <= 8));
     displayRelevant(miscMarkersCity, showmisc && (zoom > 8));
 }
+
+// Shows or hides markers about business on select or unselect respectively
 function showBus(){
     showbus = !showbus;
     var zoom = sharedMap.getZoom();
@@ -510,6 +547,8 @@ function showBus(){
     displayRelevant(businessMarkersSubcountry, showbus && (zoom >= 5) && (zoom <= 8));
     displayRelevant(businessMarkersCity, showbus && (zoom > 8));
 }
+
+// Shows or hides markers about sports on select or unselect respectively
 function showSports(){
     showsports = !showsports;
     var zoom = sharedMap.getZoom();
@@ -519,6 +558,7 @@ function showSports(){
     displayRelevant(sportsMarkersCity, showsports && (zoom > 8));
 }
 
+// Shows or hides relevant markers on select or unselect respectively of the categories
 function displayRelevant(markerSet, visible){
     if (showpol || showbus || showmisc || showsports){
         for (i = 0; i < countryMarkers.length; i++) {
@@ -781,16 +821,24 @@ function onPlaceChanged() {
     }
 }
 
+// Open Article list nav
 function openNav() {
     articlesOpen = true;
-    document.getElementById("article-list-container").style.transform = "translateX(-36vw)";
+    document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
+    document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+    if (smallSearch)
+    endSearch();
 }
 
+// Close Article list nav
 function closeNav() {
     articlesOpen = false;
-    document.getElementById("article-list-container").style.transform = "translateX(0)";
+    document.getElementById("article-list-container").style.transform = "translateX(1200px)";
+    document.getElementById("article-list-container").style.transition = "all 0.7s ease";
+
 }
 
+// Open or close nav depending on current state
 function toggleNav() {
     if (articlesOpen) {
         closeNav();
@@ -799,6 +847,37 @@ function toggleNav() {
     }
 }
 
+// open search mini form 
+function expandSearch() {
+    closeNav();
+    
+    document.getElementById("small-screen-display").style.display = "grid";
+    document.getElementById("search-expand").style.display = "none";
+    smallSearch=true;
+}
+
+// Closes small form if user clicks away
+function endSearch() {
+    document.getElementById("small-screen-display").style.display = "none";
+    // console.log(document.getElementsByClassName("themes").style);
+    // if (document.getElementById("themes").style.display === "none"){
+    document.getElementById("search-expand").style.display = "block";
+    smallSearch=false;
+}
+
+function clearSmallForm() {
+  var scrWidth = document.documentElement.clientWidth;
+  if (scrWidth>1200){
+    document.getElementById("small-screen-display").style.display = "none";
+    document.getElementById("search-expand").style.display = "none";
+  }
+  else{
+    document.getElementById("search-expand").style.display = "block";
+    document.getElementById("small-screen-display").style.display = "none";
+  }
+}
+
+// Resets the region search bar
 function clearSearchRegion() {
     const clearIcon = document.querySelector(".clear-region-icon");
     const searchBar = document.querySelector(".searchRegion");
@@ -814,6 +893,7 @@ function clearSearchRegion() {
     clearIcon.style.visibility = "hidden";
 }
 
+// Resets the topic search bar
 function clearSearchTopic() {
     const clearIcon = document.querySelector(".clear-topic-icon");
     const searchBar = document.querySelector(".searchTopic");
@@ -829,6 +909,7 @@ function clearSearchTopic() {
     clearIcon.style.visibility = "hidden";
 }
 
+// Toggles initial user message upon entry
 function disableTutorial(){
     document.getElementById('tutorial').style.display = "none";
 }
