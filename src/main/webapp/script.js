@@ -79,6 +79,13 @@ function onPageLoad() {
 
 }
 
+/**
+    Prints the nlp test response.
+ */
+function printNLPTestResponse(reponse) {
+    console.log(response);
+}
+
 /** 
     Makes it so the search form uses our custom JS and not the default HTML functionality.
  */
@@ -156,20 +163,24 @@ function doSearchNotFromForm() {
         const response = fetch(fetchParameter);
         response.then(getRegionArticles);
     } 
+    testNLP();
 }
 
 /**
     Finishes the search using autocomplete suggested results.
  */
 function finishSearch(suggestions, topic) {
-    let region = suggestions[0].description;
-    document.getElementById("region-search-field").value = region;
-    console.log("region: " + region + " topic: " + topic);
-    let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
-    const response = fetch(fetchParameter);
-    response.then(getRegionArticles);
-    const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
-    response2.then(getJSONOfGeoCoding);
+    if (suggestions && suggestions.length > 0) {
+        let region = suggestions[0].description;
+        document.getElementById("region-search-field").value = region;
+        console.log("region: " + region + " topic: " + topic);
+        let fetchParameter = "/region-news?region=" + region + "&topic=" + topic;
+        const response = fetch(fetchParameter);
+        response.then(getRegionArticles);
+        const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
+        response2.then(getJSONOfGeoCoding);
+    }
+    testNLP();
 }
 
 /**
@@ -294,7 +305,7 @@ function fillArticleMaps(articleMap, key, articles){
 }
 
 /**
-    Get the region response geo coding.
+    Get the world news response geo coding.
  */
 function getRegionJSONOfGeoCoding(articles, label, response) {
     const json = response.json();
@@ -306,6 +317,7 @@ function getRegionJSONOfGeoCoding(articles, label, response) {
     Prints the response.
  */
 function placeArticlesPinOnMap(articles, label, json) {
+    console.log(json);
     let lat = json.results[0].geometry.location.lat;
     let long = json.results[0].geometry.location.lng;
     let title = json.results[0].formatted_address;
@@ -948,3 +960,92 @@ function getOutLink(){
     logElement.text = "LOGOUT";
  });
 }
+
+/**
+    Makes call to the NLP testing servlet.
+ */
+function testNLP() {
+    console.log("-- BEGIN ARTICLE LABELER TESTS --\n-- CORRECT | NLP GUESS --\n");
+    for (i = 0; i < labelerTestCases.length; i++) {
+        var loc = labelerTestCases[i];
+        let fetchParameter = "/nlp-test?url=" + loc.url;
+        const response = fetch(fetchParameter);
+        let locString = loc.city + "," + loc.subCountry + "," + loc.country;
+        response.then((resp) => resp.text().then((text) => console.log(locString + " | " + text)));
+    }
+}
+
+var labelerTestCases = [
+    {
+        city: "tampa",
+        subCountry: "florida",
+        country: "united states",
+        url: "https://abcnews.go.com/US/wireStory/officer-injured-wounded-florida-shooting-spree-72100571?cid=clicksource_4380645_2_heads_hero_live_headlines_hed"
+    },
+    {
+        city: "portland",
+        subCountry: "oregon",
+        country: "united states",
+        url: "https://abcnews.go.com/US/portland-nations-hotbed-clashes-protesters-federal-agents/story?id=72050134&cid=clicksource_4380645_13_hero_headlines_bsq_image"
+    },
+    {
+        city: "berkeley",
+        subCountry: "california",
+        country: "united states",
+        url: "https://www.nbcbayarea.com/news/local/east-bay/berkeley-officer-discharges-weapon-during-encounter-with-suspects/2336142/"
+    },
+    {
+        city: "san mateo",
+        subCountry: "california",
+        country: "united states",
+        url: "https://www.nbcbayarea.com/news/local/peninsula/2-arrested-after-30-pounds-of-suspected-meth-found-during-san-mateo-traffic-stop/2333720/"
+    },
+    {
+        city: "san francisco",
+        subCountry: "california",
+        country: "united states",
+        url: "https://www.nbcbayarea.com/news/local/san-francisco/san-francisco-police-sergeant-4-officers-injured-in-separate-incidents/2335962/"
+    },
+    {
+        city: "fort lauderdale",
+        subCountry: "florida",
+        country: "united states",
+        url: "https://www.sun-sentinel.com/local/broward/fort-lauderdale/fl-ne-water-crisis-fort-lauderdale-lawsuit-20200731-mtavzrdjfvfkxn47qksrniijry-story.html"
+    },
+    {
+        city: "florida",
+        subCountry: "florida",
+        country: "united states",
+        url: "https://abcnews.go.com/Politics/fauci-warns-states-coronavirus-numbers-good/story?id=72059455&cid=clicksource_4380645_2_heads_hero_live_hero_hed"
+    },
+    {
+        city: "altanta",
+        subCountry: "georgia",
+        country: "united states",
+        url: "https://abcnews.go.com/Politics/read-president-barack-obamas-eulogy-rep-john-lewis/story?id=72081189&cid=clicksource_4380645_5_three_posts_card_image"
+    },
+    {
+        city: "philadelphia",
+        subCountry: "pennsylvania",
+        country: "united states",
+        url: "https://abcnews.go.com/US/wireStory/philadelphia-trash-piles-pandemic-stymies-removal-72080100?cid=clicksource_4380645_2_heads_hero_live_headlines_hed"
+    },
+    {
+        city: "beirut",
+        subCountry: "beyrouth",
+        country: "lebanon",
+        url: "https://www.nytimes.com/2020/08/05/world/middleeast/beirut-lebanon-explosion.html"
+    },
+    {
+        city: "tokyo",
+        subCountry: "tokyo",
+        country: "japan",
+        url: "https://www.nytimes.com/2020/08/05/business/japan-entry-ban-coronavirus.html?action=click&module=News&pgtype=Homepage"
+    },
+    {
+        city: "nanchang",
+        subCountry: "jiangxi sheng",
+        country: "china",
+        url: "https://www.bbc.com/news/world-asia-china-53666557"
+    }
+];
