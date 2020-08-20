@@ -6,7 +6,9 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.jsoup.Jsoup;
 
@@ -18,10 +20,16 @@ class NewsApiArticleAdapter {
 
   List<Article> buildArticlesFrom(NewsApiResults results) {
     List<Article> articles = new ArrayList<>();
+    Set<String> existingUrls = new HashSet<>();
     int i = 0;
     for (NewsApiResults.Result result : results.articles) {
       try {
-        articles.add(buildSingleArticleFrom(result));
+        Article article = buildSingleArticleFrom(result);
+        if (!existingUrls.contains(article.url)) {
+          articles.add(article);
+          existingUrls.add(article.url);
+        }
+
       } catch (NullPointerException e) {
         System.err.printf("Failed to parse article %d\n", i);
       }
