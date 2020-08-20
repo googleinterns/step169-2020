@@ -103,8 +103,8 @@ public class ArticleLabeler {
         ServletLogger.logText("Good End parseArticle() : " + url);
         return text;
       } catch(Exception e) {
-          ServletLogger.logText("Bad End parseArticle() : " + url + " | Error : " + e.toString());
-          return "";
+        ServletLogger.logText("Bad End parseArticle() : " + url + " | Error : " + e.toString());
+        return "";
       }
     }
 

@@ -291,7 +291,7 @@ function configureWorldArticles(json) {
 
 function fetchAddressGeocode(articleMap, label){
     for (key in articleMap) {
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key], label));
     }
 }
