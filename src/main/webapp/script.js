@@ -243,20 +243,20 @@ function configureWorldArticles(json) {
         // CATEGORIZATION FEATURE 
         if (articleObj.theme == "sports"){
             fillArticleMaps(articleMapSportsCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapSportsSubcountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapSportsCity, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSportsCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
         } else if (articleObj.theme == "politics"){
             fillArticleMaps(articleMapPoliticsCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapPoliticsSubcountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapPoliticsCity, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapPoliticsCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
         } else if (articleObj.theme == "miscellaneous"){
             fillArticleMaps(articleMapMiscCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapMiscSubcountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapMiscCity, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapMiscCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
         } else if (articleObj.theme == "business"){
             fillArticleMaps(articleMapBusinessCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapBusinessSubcountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapBusinessCity, articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusinessCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
         }
     }
 
