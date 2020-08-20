@@ -306,11 +306,14 @@ function getRegionJSONOfGeoCoding(articles, label, response) {
     Prints the response.
  */
 function placeArticlesPinOnMap(articles, label, json) {
-    let lat = json.results[0].geometry.location.lat;
-    let long = json.results[0].geometry.location.lng;
-    let title = json.results[0].formatted_address;
-    addLandmark(sharedMap, lat, long, title, articles, label);
-    return json;
+    if (json.results[0] !== undefined) {
+        let lat = json.results[0].geometry.location.lat;
+        let long = json.results[0].geometry.location.lng;
+        let title = json.results[0].formatted_address;
+        addLandmark(sharedMap, lat, long, title, articles, label);
+        return json;
+    }
+    return;
 }
 
 /**
