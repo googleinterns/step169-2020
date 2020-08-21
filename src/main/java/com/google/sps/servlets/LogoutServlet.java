@@ -25,22 +25,28 @@ import javax.servlet.http.HttpServletResponse;
 
 // Servlet which logs the user out of their google account
 @WebServlet("/logout")
-public class DataServletLogout extends HttpServlet {
-  
-  // Fetch logout link is user is logged in
+public class LogoutServlet extends HttpServlet {
+  private static final String INDEX_URL = "/";
+
+  private final UserManager userManager;
+
+  public LogoutServlet() {
+    userManager = new UsersApiUserManager();
+  }
+
+  // Redirect to logout link if user is logged in
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html");
     PrintWriter out = response.getWriter();
     
-    UserService userService = UserServiceFactory.getUserService();
-    if (!userService.isUserLoggedIn()) {
+    if (userManager.userIsLoggedIn()) {
       // Redirect back to the HTML page.
-      response.sendRedirect("/index.html");
+      response.sendRedirect(INDEX_URL);
     } else {
-      // Return logout link
-      String logoutUrl = userService.createLogoutURL("/logout");
-      out.println(logoutUrl);
+      // Return login link
+      String loginUrl = userManager.createLoginUrl(INDEX_URL);
+      out.println(loginUrl);
     }
   }
 
