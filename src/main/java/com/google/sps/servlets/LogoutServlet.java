@@ -40,13 +40,13 @@ public class LogoutServlet extends HttpServlet {
     response.setContentType("text/html");
     PrintWriter out = response.getWriter();
     
-    if (userManager.userIsLoggedIn()) {
+    if (!userManager.userIsLoggedIn()) {
       // Redirect back to the HTML page.
       response.sendRedirect(INDEX_URL);
     } else {
-      // Return login link
-      String loginUrl = userManager.createLoginUrl(INDEX_URL);
-      out.println(loginUrl);
+      // Return logout link
+      String logoutUrl = userManager.createLogoutUrl(INDEX_URL);
+      out.println(logoutUrl);
     }
   }
 
