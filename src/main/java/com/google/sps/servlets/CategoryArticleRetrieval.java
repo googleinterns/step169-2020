@@ -38,7 +38,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import com.google.cloud.translate.*;
-import com.google.sps.ArticleLabeler;
+import com.google.sps.servlets.ArticleLabeler;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import java.util.Arrays;

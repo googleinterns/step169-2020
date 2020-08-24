@@ -1,6 +1,6 @@
 package com.google.sps.servlets;
 
-public class Location {
+final class Location {
   final String city;
   final String subcountry;
   final String country;

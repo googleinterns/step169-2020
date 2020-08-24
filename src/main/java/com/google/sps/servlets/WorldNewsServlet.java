@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import com.google.sps.ArticleLabeler;
+import com.google.sps.servlets.ArticleLabeler;
 import java.util.Scanner;
 import java.util.ArrayList;
 import com.google.gson.Gson;
