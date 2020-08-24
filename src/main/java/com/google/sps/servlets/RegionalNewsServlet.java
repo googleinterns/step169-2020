@@ -3,6 +3,7 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,12 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 public class RegionalNewsServlet extends HttpServlet {
   private final NewsService newsService;
   private final Gson gson;
+  private final UserManager userManager;
+  private final SearchHistoryService searchHistoryService;
   
   public RegionalNewsServlet() {
     newsService = new NewsApiNewsService();
     gson = new GsonBuilder()
         .disableHtmlEscaping()
         .create();
+    userManager = new UsersApiUserManager();
+    searchHistoryService = new DatastoreSearchHistoryService();
   }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -35,6 +40,11 @@ public class RegionalNewsServlet extends HttpServlet {
         topic = ""; 
         // No topic is acceptable, so we replace 
         // it with an empty string to avoid NullPointerExceptions
+      }
+
+      if (userManager.userIsLoggedIn()) {
+        SearchRequest search = new SearchRequest(region, topic, Instant.now());
+        searchHistoryService.addSearch(userManager.currentUserId(), search);
       }
 
       try {
