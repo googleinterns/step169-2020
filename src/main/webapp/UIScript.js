@@ -274,64 +274,101 @@ function createArticleHtmlComponent(title, publisher, content, date, link, thumb
 function addLandmark(map, lat, lng, title, articles, label) {
 
     // Varies marker color based on label
-    if (label=="city"){
-        newMarker(map, lat, lng, title, "red", cityMarkers, articles);
+    if (label == "city"){
+        newMarker(map, lat, lng, title, "red", markers["city"], articles);
     } else if (label == "subcountry"){
-        newMarker(map, lat, lng, title, "red", subcountryMarkers, articles);
+        newMarker(map, lat, lng, title, "red", markers["subCountry"], articles);
     } else if (label == "country"){
-        newMarker(map, lat, lng, title, "red", countryMarkers, articles);
+        newMarker(map, lat, lng, title, "red", markers["country"], articles);
     }
     else if (label == "sportscountry"){        
-        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCountry, articles);
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers["country"], articles);
     }    
     else if (label == "sportssubcountry"){        
-        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersSubcountry, articles);
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers["subCountry"], articles);
     }    
     else if (label == "sportscity"){        
-        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkersCity, articles);
+        newMarker(map, lat+0.15, lng-0.25, title, "blue", sportsMarkers["city"], articles);
     }
     else if (label == "businesscountry"){
-        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCountry, articles);
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers["country"], articles);
     }    
-    else if (label == "businesscsubcountry"){
-        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersSubcountry, articles);
+    else if (label == "businesssubcountry"){
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers["subCountry"], articles);
     }
     else if (label == "businesscity"){
-        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkersCity, articles);
+        newMarker(map, lat+0.15, lng+0.15, title, "yellow", businessMarkers["city"], articles);
     }
-    else if (label == "politicscountry"){
-        newMarker(map, lat, lng, title, "green", politicsMarkersCountry, articles);
+    else if (label == "generalcountry"){
+        newMarker(map, lat, lng, title, "white", generalMarkers["country"], articles);
     }
-    else if (label == "politicssubcountry"){
-        newMarker(map, lat, lng, title, "green", politicsMarkersSubcountry, articles);
+    else if (label == "generalsubcountry"){
+        newMarker(map, lat, lng, title, "white", generalMarkers["subCountry"], articles);
     }
-    else if (label == "politicscity"){
-        newMarker(map, lat, lng, title, "green", politicsMarkersCity, articles);
+    else if (label == "generalcity"){
+        newMarker(map, lat, lng, title, "white", generalMarkers["city"], articles);
     }
-    else if (label == "misccountry"){
-        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCountry, articles);
+    else if (label == "healthcountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "green", healthMarkers["country"], articles);
     }
-    else if (label == "miscsubcountry"){
-        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersSubcountry, articles);
+    else if (label == "healthsubcountry"){
+        newMarker(map, lat-0.15, lng-0.15, title, "green", healthMarkers["subCountry"], articles);
     }
-    else if (label == "misccity"){
-        newMarker(map, lat-0.15, lng-0.15, title, "purple", miscMarkersCity, articles);
+    else if (label == "healthcity"){
+        newMarker(map, lat-0.15, lng-0.15, title, "green", healthMarkers["city"], articles);
+    }    
+    else if (label == "techcountry"){
+        newMarker(map, lat+0.25, lng-0.15, title, "orange", techMarkers["country"], articles);
     }
-
+    else if (label == "techsubcountry"){
+        newMarker(map, lat+0.25, lng-0.15, title, "orange", techMarkers["subCountry"], articles);
+    }
+    else if (label == "techcity"){
+        newMarker(map, lat+0.25, lng-0.15, title, "orange", techMarkers["city"], articles);
+    }
+    else if (label == "sciencecountry"){
+        newMarker(map, lat-0.25, lng-0.25, title, "purple", scienceMarkers["country"], articles);
+    }
+    else if (label == "sciencesubcountry"){
+        newMarker(map, lat-0.25, lng-0.25, title, "purple", scienceMarkers["subCountry"], articles);
+    }
+    else if (label == "sciencecity"){
+        newMarker(map, lat-0.25, lng-0.25, title, "purple", scienceMarkers["city"], articles);
+    }
+   else if (label == "entertainmentcountry"){
+        newMarker(map, lat-0.15, lng+0.25, title, "lightblue", entertainmentMarkers["country"], articles);
+    }
+    else if (label == "entertainmentsubcountry"){
+        newMarker(map, lat-0.15, lng+0.25, title, "lightblue", entertainmentMarkers["subCountry"], articles);
+    }
+    else if (label == "entertainmentcity"){
+        newMarker(map, lat-0.15, lng+0.25, title, "lightblue", entertainmentMarkers["city"], articles);
+    }
     // Determine visibility
     showBasedOnZoom(); 
 }
 
 /** Adds a marker that shows an info window when clicked. */
 function newMarker(map, lat, lng, title, color, markerSet, articles){
-    let url = "https://maps.google.com/mapfiles/ms/icons/";
-    url += color + "-dot.png";
+    let url;
+    if (color==="white"){
+        url = "http://maps.google.com/mapfiles/kml/paddle/wht-circle.png";
+    } else if(color==="lightblue"){
+        url = "http://maps.google.com/mapfiles/kml/paddle/ltblu-circle.png";
+    } else {
+        url = "https://maps.google.com/mapfiles/ms/icons/";
+        url += color + "-dot.png";
+    }
     const marker = new google.maps.Marker(
       {position: {lat: lat, lng: lng}, 
       map: map, 
       title: title,
-      icon: { url: url}
-        });
+      icon: { url: url,
+            scaledSize: new google.maps.Size(30, 30), // scaled size
+            origin: new google.maps.Point(0,0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
+      }
+    });
 
     markerSet.push(marker);
     marker.addListener('click', () => {
@@ -347,30 +384,45 @@ function showBasedOnZoom(){
     google.maps.event.addListener(sharedMap, 'zoom_changed', function() {
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
-        if (!showPolitics && !showBusiness && !showmisc && !showsports){
-            zoomVisibility(countryMarkers, (zoom < 5));
-            zoomVisibility(cityMarkers, (zoom > 8));
-            zoomVisibility(subcountryMarkers, (zoom >= 5) && (zoom <= 8));
+        if (!showGeneralOn && !showBusinessOn && !showTechOn && !showSportsOn && !showHealthOn && !showEntertainmentOn && !showScienceOn){
+            zoomVisibility(markers["country"], (zoom < 5));
+            zoomVisibility(markers["city"], (zoom > 8));
+            zoomVisibility(markers["subCountry"], (zoom >= 5) && (zoom <= 8));
         }
-        if (showPolitics) {
-            zoomVisibility(politicsMarkersCountry, (zoom < 5));
-            zoomVisibility(politicsMarkersCity, (zoom > 8));
-            zoomVisibility(politicsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        if (showGeneralOn) {
+            zoomVisibility(generalMarkers["country"], (zoom < 5));
+            zoomVisibility(generalMarkers["city"], (zoom > 8));
+            zoomVisibility(generalMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
         }
-        if (showBusiness) {
-            zoomVisibility(businessMarkersCountry, (zoom < 5));
-            zoomVisibility(businessMarkersCity, (zoom > 8));
-            zoomVisibility(businessMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        if (showBusinessOn) {
+            zoomVisibility(businessMarkers["country"], (zoom < 5));
+            zoomVisibility(businessMarkers["city"], (zoom > 8));
+            zoomVisibility(businessMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
         }
-        if (showmisc) {
-            zoomVisibility(miscMarkersCountry, (zoom < 5));
-            zoomVisibility(miscMarkersCity, (zoom > 8));
-            zoomVisibility(miscMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        if (showTechOn) {
+            zoomVisibility(techMarkers["country"], (zoom < 5));
+            zoomVisibility(techMarkers["city"], (zoom > 8));
+            zoomVisibility(techMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
         }
-        if (showsports) {
-            zoomVisibility(sportsMarkersCountry, (zoom < 5));
-            zoomVisibility(sportsMarkersCity, (zoom > 8));
-            zoomVisibility(sportsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
+        if (showSportsOn) {
+            zoomVisibility(sportsMarkers["country"], (zoom < 5));
+            zoomVisibility(sportsMarkers["city"], (zoom > 8));
+            zoomVisibility(sportsMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+        }
+        if (showHealthOn) {
+            zoomVisibility(healthMarkers["country"], (zoom < 5));
+            zoomVisibility(healthMarkers["city"], (zoom > 8));
+            zoomVisibility(healthMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+        }
+        if (showScienceOn) {
+            zoomVisibility(scienceMarkers["country"], (zoom < 5));
+            zoomVisibility(scienceMarkers["city"], (zoom > 8));
+            zoomVisibility(scienceMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+        }
+        if (showEntertainmentOn) {
+            zoomVisibility(entertainmentMarkers["country"], (zoom < 5));
+            zoomVisibility(entertainmentMarkers["city"], (zoom > 8));
+            zoomVisibility(entertainmentMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
         }
     });
 }
@@ -383,73 +435,79 @@ function zoomVisibility(markerSet, visible){
 }
 
 // Shows or hides markers about politics on select or unselect respectively
-function showPol(){
-    showPolitics = !showPolitics;
-    var zoom = sharedMap.getZoom();
-
-    displayRelevant(politicsMarkersCountry, showPolitics && (zoom < 5));
-    displayRelevant(politicsMarkersSubcountry, showPolitics && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(politicsMarkersCity, showPolitics && (zoom > 8));
-}
-
-// Shows or hides markers about miscellaneous on select or unselect respectively
-function showMisc(){
-    showmisc = !showmisc;
-    var zoom = sharedMap.getZoom();
-
-    displayRelevant(miscMarkersCountry, showmisc && (zoom < 5));
-    displayRelevant(miscMarkersSubcountry, showmisc && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(miscMarkersCity, showmisc && (zoom > 8));
+function showGeneral(){
+    showGeneralOn = !showGeneralOn;
+    displayAllRelevantLevels(generalMarkers, showGeneralOn);
 }
 
 // Shows or hides markers about business on select or unselect respectively
-function showBus(){
-    showBusiness = !showBusiness;
-    var zoom = sharedMap.getZoom();
-
-    displayRelevant(businessMarkersCountry, showBusiness && (zoom < 5));
-    displayRelevant(businessMarkersSubcountry, showBusiness && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(businessMarkersCity, showBusiness && (zoom > 8));
+function showBusiness(){
+    showBusinessOn = !showBusinessOn;
+    displayAllRelevantLevels(businessMarkers, showBusinessOn);
 }
 
 // Shows or hides markers about sports on select or unselect respectively
 function showSports(){
-    showsports = !showsports;
-    var zoom = sharedMap.getZoom();
-
-    displayRelevant(sportsMarkersCountry, showsports && (zoom < 5));
-    displayRelevant(sportsMarkersSubcountry, showsports && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(sportsMarkersCity, showsports && (zoom > 8));
+    showSportsOn = !showSportsOn;
+    displayAllRelevantLevels(sportsMarkers, showSportsOn);
 }
-
+// Shows or hides markers about tech on select or unselect respectively
+function showTech(){
+    showTechOn = !showTechOn;
+    displayAllRelevantLevels(techMarkers, showTechOn);
+}
+// Shows or hides markers about health on select or unselect respectively
+function showHealth(){
+    showHealthOn = !showHealthOn;
+    displayAllRelevantLevels(healthMarkers, showHealthOn);
+}
+// Shows or hides markers about entertainment on select or unselect respectively
+function showEntertainment(){
+    showEntertainmentOn = !showEntertainmentOn;
+    displayAllRelevantLevels(entertainmentMarkers, showEntertainmentOn);
+}
+// Shows or hides markers about science on select or unselect respectively
+function showScience(){
+    showScienceOn = !showScienceOn;
+    displayAllRelevantLevels(scienceMarkers, showScienceOn);
+}
 // Shows or hides relevant markers on select or unselect respectively of the categories
 function displayRelevant(markerSet, visible){
-    if (showPolitics || showBusiness || showmisc || showsports){
-        for (i = 0; i < countryMarkers.length; i++) {
-            countryMarkers[i].setVisible(false);
+    var zoom = sharedMap.getZoom();
+
+    if (showTechOn || showBusinessOn || showScienceOn || showSportsOn || showHealthOn || showEntertainmentOn || showGeneralOn){
+        for (i = 0; i < markers["country"].length; i++) {
+            markers["country"][i].setVisible(false);
         }
-       for (i = 0; i < cityMarkers.length; i++) {
-            cityMarkers[i].setVisible(false);
+       for (i = 0; i < markers["city"].length; i++) {
+            markers["city"][i].setVisible(false);
         }
-        for (i = 0; i < subcountryMarkers.length; i++) {
-            subcountryMarkers[i].setVisible(false);
+        for (i = 0; i < markers["subCountry"].length; i++) {
+            markers["subCountry"][i].setVisible(false);
         }  
     }
     else {
-        for (i = 0; i < countryMarkers.length; i++) {
-            countryMarkers[i].setVisible(true);
+        for (i = 0; i < markers["country"].length; i++) {
+            markers["country"][i].setVisible((zoom < 5));
         }
-       for (i = 0; i < cityMarkers.length; i++) {
-            cityMarkers[i].setVisible(false);
+       for (i = 0; i < markers["city"].length; i++) {
+            markers["city"][i].setVisible((zoom > 8));
         }
-        for (i = 0; i < subcountryMarkers.length; i++) {
-            subcountryMarkers[i].setVisible(false);
+        for (i = 0; i < markers["subCountry"].length; i++) {
+            markers["subCountry"][i].setVisible((zoom >= 5) && (zoom <= 8));
         }  
     }
 
     for (i = 0; i < markerSet.length; i++) {
         markerSet[i].setVisible(visible);
     }   
+}
+
+function displayAllRelevantLevels(markerSet, state){
+    var zoom = sharedMap.getZoom();
+    displayRelevant(markerSet["country"], state && (zoom < 5));
+    displayRelevant(markerSet["subCountry"], state && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(markerSet["city"], state && (zoom > 8));
 }
 /**
     Displays the passed list of articles.
@@ -562,6 +620,5 @@ function clearSearchTopic() {
 // Toggles initial user message upon entry
 function disableTutorial(){
     document.getElementById('tutorial').style.display = "none";
-    document.getElementById('topic-search-field').focus();
-
+    // document.getElementById('topic-search-field').focus();
 }

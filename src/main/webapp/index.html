@@ -6,8 +6,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Comfortaa" />
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlKFdxL2rShylt-FgSZJsI1262UzOmTCE&callback=initMap&libraries=places&callback=initAutocomplete">    
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlKFdxL2rShylt-FgSZJsI1262UzOmTCE&callback=initMap&libraries=places&callback=initAutocomplete">    
     </script>
     <script src="variableScript.js"></script>
     <script src="UIScript.js"></script>
@@ -81,19 +80,35 @@
     <!-- Select between different classes to view -->
     <div class="themes" id="themes">
         <ul id="theme-list">  
-            <h2>Categories</h2>          
-            <li>
-                <input class="theme-check" type="checkbox" id="polbutton" onClick="showPol()" aria-label="Politics Category">Politics</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="busbutton" onClick="showBus()" aria-label="Business Category">Business</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="busbutton" onClick="showSports()" aria-label="Sports Category">Sports</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="miscbutton" onClick="showMisc()" aria-label="Miscellaneous Category">Misc</input>
-            </li>
+            <h2>Categories</h2>
+            <div class="legend-values">     
+                <div>
+                    <img src="./images/colors.png" alt="" class="legend" />
+                </div>
+                <div>     
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showGeneral()" aria-label="General Category">General</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showScience()" aria-label="Science Category">Science</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showSports()" aria-label="Sports Category">Sports</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showEntertainment()" aria-label="Entertainment Category">Entertainment</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showHealth()" aria-label="Health Category">Health</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showBusiness()" aria-label="Business Category">Business</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showTech()" aria-label="Technology Category">Technology</input>
+                    </li>
+                </div>
+            </div>
         </ul>
     </div>
 
@@ -134,18 +149,35 @@
      
         <ul id="theme-list">  
             <h2>Categories</h2>          
-            <li>
-                <input class="theme-check" type="checkbox" id="polbutton" onClick="showPol()" aria-label="Politics Category">Politics</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="busbutton" onClick="showBus()" aria-label="Business Category">Business</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="busbutton" onClick="showSports()" aria-label="Sports Category">Sports</input>
-            </li>
-            <li>
-                <input class="theme-check" type="checkbox" id="miscbutton" onClick="showMisc()" aria-label="Miscellaneous Category">Misc</input>
-            </li>
+
+            <div class="legend-values">     
+                <div>
+                    <img src="./images/colors.png" alt="" class="legend" />
+                </div>
+                <div style="margin-left: 15px">     
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showGeneral()" aria-label="General Category">General</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showScience()" aria-label="Science Category">Science</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showSports()" aria-label="Sports Category">Sports</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showEntertainment()" aria-label="Entertainment Category">Entertainment</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showHealth()" aria-label="Health Category">Health</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showBusiness()" aria-label="Business Category">Business</input>
+                    </li>
+                    <li>
+                        <input class="theme-check" type="checkbox" onClick="showTech()" aria-label="Technology Category">Technology</input>
+                    </li>
+                </div>
+            </div>
         </ul>
         </div>
 

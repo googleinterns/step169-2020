@@ -21,42 +21,96 @@ var smallSearch = false;
 var countryRestrict = {'country': 'us'};
 
 // marker collections
-var cityMarkers = [];
-var subcountryMarkers = [];
-var countryMarkers = [];
-var sportsMarkersCountry = [];
-var sportsMarkersSubcountry = [];
-var sportsMarkersCity = [];
-var politicsMarkersCountry = [];
-var politicsMarkersSubcountry = [];
-var politicsMarkersCity = [];
-var businessMarkersCountry = [];
-var businessMarkersSubcountry = [];
-var businessMarkersCity = [];
-var miscMarkersCountry = [];
-var miscMarkersSubcountry = [];
-var miscMarkersCity = [];
+var markers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var sportsMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var generalMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var businessMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var healthMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var entertainmentMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var techMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+var scienceMarkers = {
+    "city" : [], 
+    "subCountry" : [], 
+    "country" : []
+    };
+
 
 // boolean to set visibility 
-var showPolitics =false;
-var showmisc =false;
-var showBusiness =false;
-var showsports =false;
+var showGeneralOn =false;
+var showHealthOn =false;
+var showBusinessOn =false;
+var showSportsOn =false;
+var showEntertainmentOn =false;
+var showTechOn =false;
+var showScienceOn =false;
 
 // Article lists for each category
-let articleMapCity = new Map();
-let articleMapSubcountry = new Map();
-let articleMapCountry = new Map();
-let articleMapSportsCountry = new Map();
-let articleMapSportsSubcountry = new Map();
-let articleMapSportsCity = new Map();
-let articleMapBusinessCountry = new Map();
-let articleMapBusinessSubcountry = new Map();
-let articleMapBusinessCity = new Map();
-let articleMapPoliticsCountry = new Map();
-let articleMapPoliticsSubcountry = new Map();
-let articleMapPoliticsCity = new Map();
-let articleMapMiscCountry = new Map();
-let articleMapMiscSubcountry = new Map();
-let articleMapMiscCity = new Map();
+var articleMap = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapSports = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapGeneral= {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapBusiness = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapHealth = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapEntertainment = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapTech = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
+var articleMapScience = {
+    "city" : new Map(), 
+    "subCountry" : new Map(), 
+    "country" : new Map()
+    };
 

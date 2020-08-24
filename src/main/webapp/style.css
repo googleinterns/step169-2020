@@ -383,10 +383,10 @@ body{
 #small-screen-display-form ul{
     font-family: Comfortaa;
     list-style-type:none;
-    font-size:25px;
+    font-size:22px;
 }
 #small-screen-display-form ul li{
-    margin:7px;
+    margin-bottom: 11px;
 }
 
 #small-screen-display-form:hover{
@@ -443,6 +443,14 @@ body{
 
 .ham-container:hover .tooltiptext {
   visibility: visible;
+}
+.legend-values{
+    display:inline-flex;
+}
+.legend{
+    margin-top: -2px;
+    width: 8px;
+    height: 240px;
 }
 
 @media only screen and (max-width: 1200px) {

@@ -185,60 +185,69 @@ function configureWorldArticles(json) {
     // Creates and fills maps for each level of geographical divisions and each category
     for (index in json) {
         let articleObj = json[index];
-        fillArticleMaps(articleMapCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-        fillArticleMaps(articleMapSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-        fillArticleMaps(articleMapCountry, articleObj.location.country, articleObj);
+        fillArticleMaps(articleMap, articleObj);
+
        
         // CATEGORIZATION FEATURE 
         if (articleObj.theme == "sports"){
-            fillArticleMaps(articleMapSportsCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapSportsSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapSportsCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-        } else if (articleObj.theme == "politics"){
-            fillArticleMaps(articleMapPoliticsCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapPoliticsSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapPoliticsCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-        } else if (articleObj.theme == "miscellaneous"){
-            fillArticleMaps(articleMapMiscCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapMiscSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapMiscCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapSports, articleObj);
+        } else if (articleObj.theme == "health"){
+            fillArticleMaps(articleMapHealth, articleObj);
+        } else if (articleObj.theme == "general"){
+            fillArticleMaps(articleMapGeneral, articleObj);
         } else if (articleObj.theme == "business"){
-            fillArticleMaps(articleMapBusinessCountry, articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapBusinessSubcountry, articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
-            fillArticleMaps(articleMapBusinessCity, articleObj.location.city + ", " + articleObj.location.subcountry + ", " + articleObj.location.country, articleObj);
+            fillArticleMaps(articleMapBusiness, articleObj);        
+        } else if (articleObj.theme == "science"){
+            fillArticleMaps(articleMapScience, articleObj);      
+        } else if (articleObj.theme == "tech"){
+            fillArticleMaps(articleMapTech, articleObj);      
+        } else if (articleObj.theme == "entertainment"){
+            fillArticleMaps(articleMapEntertainment, articleObj);
         }
     }
 
-    fetchAddressGeocode(articleMapCity, "city");
-    fetchAddressGeocode(articleMapSubcountry, "subcountry");
-    fetchAddressGeocode(articleMapCountry, "country");
-    fetchAddressGeocode(articleMapSportsCountry, "sportscountry");
-    fetchAddressGeocode(articleMapSportsSubcountry, "sportssubcountry");
-    fetchAddressGeocode(articleMapSportsCity, "sportscity");
-    fetchAddressGeocode(articleMapBusinessCountry, "businesscountry");
-    fetchAddressGeocode(articleMapBusinessSubcountry, "businesssubcountry");
-    fetchAddressGeocode(articleMapBusinessCity, "businesscity");
-    fetchAddressGeocode(articleMapPoliticsCountry, "politicscountry");
-    fetchAddressGeocode(articleMapPoliticsSubcountry, "politicssubcountry");
-    fetchAddressGeocode(articleMapPoliticsCity, "politicscity");
-    fetchAddressGeocode(articleMapMiscCountry, "misccountry");
-    fetchAddressGeocode(articleMapMiscSubcountry, "miscsubcountry");
-    fetchAddressGeocode(articleMapMiscCity, "misccity");
+    fetchAddressGeocode(articleMap, "");
+    fetchAddressGeocode(articleMapSports, "sports");
+    fetchAddressGeocode(articleMapBusiness, "business");
+    fetchAddressGeocode(articleMapGeneral, "general");
+    fetchAddressGeocode(articleMapHealth, "health");
+    fetchAddressGeocode(articleMapTech, "tech");
+    fetchAddressGeocode(articleMapEntertainment, "entertainment");
+    fetchAddressGeocode(articleMapScience, "science");
 }
 
 
 function fetchAddressGeocode(articleMap, label){
-    for (key in articleMap) {
+    for (key in articleMap["city"]) {
         response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
-        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key], label));
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap["city"][key], label + "city"));
+    }
+    for (key in articleMap["subCountry"]) {
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap["subCountry"][key], label + "subcountry"));
+    }
+    for (key in articleMap["country"]) {
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
+        response.then(getRegionJSONOfGeoCoding.bind(null, articleMap["country"][key], label + "country"));
     }
 }
 
-function fillArticleMaps(articleMap, key, articles){
-    if (articleMap[key] == null) {
-        articleMap[key] = [articles];
+function fillArticleMaps(articleMap, articles){
+    
+    if (articleMap["country"][articles.location.country] == null) {
+        articleMap["country"][articles.location.country] = [articles];
     } else {
-        articleMap[key].push(articles);
+        articleMap["country"][articles.location.country].push(articles);
+    }
+    if (articleMap["subCountry"][articles.location.subcountry + ", " + articles.location.country] == null) {
+        articleMap["subCountry"][articles.location.subcountry + ", " + articles.location.country] = [articles];
+    } else {
+        articleMap["subCountry"][articles.location.subcountry + ", " + articles.location.country].push(articles);
+    }
+    if (articleMap["city"][articles.location.city + ", " + articles.location.subcountry + ", " + articles.location.country] == null) {
+        articleMap["city"][articles.location.city + ", " + articles.location.subcountry + ", " + articles.location.country] = [articles];
+    } else {
+        articleMap["city"][articles.location.city + ", " + articles.location.subcountry + ", " + articles.location.country].push(articles);
     }
 }
 
