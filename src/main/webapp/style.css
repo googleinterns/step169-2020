@@ -307,7 +307,7 @@ body{
     /* outline: none; */
     border:none;
     font-size: 40px;
-    margin:10px;
+    margin:0 10px;
     cursor:pointer;
 }
 #ham:hover, #logout:hover, #login:hover {
@@ -406,6 +406,45 @@ body{
 .search-expand{
     display: none;
 }
+
+.ham-container {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.ham-container .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgb(73, 73, 73);
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 90%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.ham-container .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent rgb(73, 73, 73) transparent;
+}
+
+.ham-container:hover .tooltiptext {
+  visibility: visible;
+}
+
 @media only screen and (max-width: 1200px) {
     #search-form{
         display: none;
