@@ -211,8 +211,8 @@ body{
     outline: 0;
     background-color: #f5f5f542;
     color:white;
-
 }
+
 .searchRegion:hover, .search:focus {
     border: 1.5px solid #009688;
     background-color: rgba(255, 255, 255, 0.315);
