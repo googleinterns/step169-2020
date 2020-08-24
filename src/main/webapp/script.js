@@ -45,9 +45,9 @@ var miscMarkersSubcountry = [];
 var miscMarkersCity = [];
 
 // boolean to set visibility 
-var showpol =false;
+var showPolitics =false;
 var showmisc =false;
-var showbus =false;
+var showBusiness =false;
 var showsports =false;
 
 // Article lists for each category
@@ -109,7 +109,7 @@ function attachSmallSearchFormSubmissionEvent() {
     document.getElementById("small-screen-display").style.display = "none";
     document.getElementById("search-expand").style.display = "block";
     smallSearch = false;
-    openNav();
+    displayArticlePanel();
   });
 }
 
@@ -217,9 +217,9 @@ function displayArticlesFromJSON(json) {
     clearArticleList();
     for (index in json) {
         let articleObj = json[index];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
+        createArticleHtmlComponent(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
-    openNav();
+    displayArticlePanel();
 }
 
 /**
@@ -242,8 +242,6 @@ function getWorldArticles(response) {
     Sorts the world news articles, saves them and adds pins to the map for them.
  */
 function configureWorldArticles(json) {
-
-
     // Creates and fills maps for each level of geographical divisions and each category
     for (index in json) {
         let articleObj = json[index];
@@ -291,7 +289,7 @@ function configureWorldArticles(json) {
 
 function fetchAddressGeocode(articleMap, label){
     for (key in articleMap) {
-        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyDTrfkvl_JKE7dPcK3BBHlO4xF7JKFK4bY");
+        response = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + key +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response.then(getRegionJSONOfGeoCoding.bind(null, articleMap[key], label));
     }
 }
@@ -359,15 +357,15 @@ function displayArticles(articles) {
     clearArticleList();
     for (i = 0; i < articles.length; i++) {
         articleObj = articles[i];
-        addArticle(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
+        createArticleHtmlComponent(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
     }
-    openNav();
+    displayArticlePanel();
 }
 
 /**
     Adds an article with the passed attributes to the article list.
  */
-function addArticle(title, publisher, content, date, link, thumbnail) {
+function createArticleHtmlComponent(title, publisher, content, date, link, thumbnail) {
     const articleList = document.getElementById("articles-list");
     let item = document.createElement('li');
     let linkElement = document.createElement('a');
@@ -379,7 +377,7 @@ function addArticle(title, publisher, content, date, link, thumbnail) {
         picElement = document.createElement('img');
         picElement.className="thumbnail";
         picElement.src = thumbnail;
-        picElement.style = "width:100%;"
+        picElement.style = "width:100%;border-radius:10px"
         picElement.alt = 'pic';
     }
     let publisherElement = document.createElement('h4');
@@ -497,17 +495,17 @@ function showBasedOnZoom(){
     google.maps.event.addListener(sharedMap, 'zoom_changed', function() {
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
-        if (!showpol && !showbus && !showmisc && !showsports){
+        if (!showPolitics && !showBusiness && !showmisc && !showsports){
             zoomVisibility(countryMarkers, (zoom < 5));
             zoomVisibility(cityMarkers, (zoom > 8));
             zoomVisibility(subcountryMarkers, (zoom >= 5) && (zoom <= 8));
         }
-        if (showpol) {
+        if (showPolitics) {
             zoomVisibility(politicsMarkersCountry, (zoom < 5));
             zoomVisibility(politicsMarkersCity, (zoom > 8));
             zoomVisibility(politicsMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
         }
-        if (showbus) {
+        if (showBusiness) {
             zoomVisibility(businessMarkersCountry, (zoom < 5));
             zoomVisibility(businessMarkersCity, (zoom > 8));
             zoomVisibility(businessMarkersSubcountry, (zoom >= 5) && (zoom <= 8));
@@ -534,12 +532,12 @@ function zoomVisibility(markerSet, visible){
 
 // Shows or hides markers about politics on select or unselect respectively
 function showPol(){
-    showpol = !showpol;
+    showPolitics = !showPolitics;
     var zoom = sharedMap.getZoom();
 
-    displayRelevant(politicsMarkersCountry, showpol && (zoom < 5));
-    displayRelevant(politicsMarkersSubcountry, showpol && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(politicsMarkersCity, showpol && (zoom > 8));
+    displayRelevant(politicsMarkersCountry, showPolitics && (zoom < 5));
+    displayRelevant(politicsMarkersSubcountry, showPolitics && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(politicsMarkersCity, showPolitics && (zoom > 8));
 }
 
 // Shows or hides markers about miscellaneous on select or unselect respectively
@@ -554,12 +552,12 @@ function showMisc(){
 
 // Shows or hides markers about business on select or unselect respectively
 function showBus(){
-    showbus = !showbus;
+    showBusiness = !showBusiness;
     var zoom = sharedMap.getZoom();
 
-    displayRelevant(businessMarkersCountry, showbus && (zoom < 5));
-    displayRelevant(businessMarkersSubcountry, showbus && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(businessMarkersCity, showbus && (zoom > 8));
+    displayRelevant(businessMarkersCountry, showBusiness && (zoom < 5));
+    displayRelevant(businessMarkersSubcountry, showBusiness && (zoom >= 5) && (zoom <= 8));
+    displayRelevant(businessMarkersCity, showBusiness && (zoom > 8));
 }
 
 // Shows or hides markers about sports on select or unselect respectively
@@ -574,7 +572,7 @@ function showSports(){
 
 // Shows or hides relevant markers on select or unselect respectively of the categories
 function displayRelevant(markerSet, visible){
-    if (showpol || showbus || showmisc || showsports){
+    if (showPolitics || showBusiness || showmisc || showsports){
         for (i = 0; i < countryMarkers.length; i++) {
             countryMarkers[i].setVisible(false);
         }
@@ -836,7 +834,7 @@ function onPlaceChanged() {
 }
 
 // Open Article list nav
-function openNav() {
+function displayArticlePanel() {
     articlesOpen = true;
     document.getElementById("article-list-container").style.transform = "translateX(-1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
@@ -845,7 +843,7 @@ function openNav() {
 }
 
 // Close Article list nav
-function closeNav() {
+function hideArticlePanel() {
     articlesOpen = false;
     document.getElementById("article-list-container").style.transform = "translateX(1200px)";
     document.getElementById("article-list-container").style.transition = "all 0.7s ease";
@@ -855,16 +853,15 @@ function closeNav() {
 // Open or close nav depending on current state
 function toggleNav() {
     if (articlesOpen) {
-        closeNav();
+        hideArticlePanel();
     } else {
-        openNav();
+        displayArticlePanel();
     }
 }
 
 // open search mini form 
 function expandSearch() {
-    closeNav();
-    
+    hideArticlePanel();
     document.getElementById("small-screen-display").style.display = "grid";
     document.getElementById("search-expand").style.display = "none";
     smallSearch=true;
@@ -926,6 +923,8 @@ function clearSearchTopic() {
 // Toggles initial user message upon entry
 function disableTutorial(){
     document.getElementById('tutorial').style.display = "none";
+    document.getElementById('topic-search-field').focus();
+
 }
 
 // Retrieves login link from DataServletLogin.java
