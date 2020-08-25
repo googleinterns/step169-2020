@@ -51,8 +51,13 @@ import com.google.cloud.logging.Payload.StringPayload;
 import com.google.cloud.logging.Severity;
 import java.util.Collections;
 
+/*
+<basic-scaling>
+    <max-instances>200</max-instances>
+  </basic-scaling>
+*/
 
-// Servlet which retrieves client String comment entries, stores them on server, and displays them on wall 
+// Servlet which retrieves and caches world news articles.
 @WebServlet("/articles")
 public class CategoryArticleRetrieval extends HttpServlet {
 
@@ -89,24 +94,23 @@ public class CategoryArticleRetrieval extends HttpServlet {
     int count = 0;
     ServletLogger.logText("Start getAndStoreArticles()");
     for (String topic : ALLOWED_TOPICS) {
-        List<Article> topicArticles = retrieveTopic(topic);
-        if (topicArticles != null) {
-            for (Article article : topicArticles) {
-              if (article != null) {
-                ServletLogger.logText("Getting Correct Location For : " + article.title);
-                Article finalArticleVersion = getArticleWithCorrectLocation(article, topic);
-                ServletLogger.logText("Done Getting Correct Location For : " + article.title);
-                if (finalArticleVersion != null) {
-                ServletLogger.logText("Storing: " + finalArticleVersion.title);
-                  if (storeArticle(datastore, backFacingEntityName, finalArticleVersion)) {
-                    count += 1;
-                  }
-                }
+      List<Article> topicArticles = retrieveTopic(topic);
+      if (topicArticles != null) {
+        for (Article article : topicArticles) {
+          if (article != null && inEnglish(article.description)) {
+            ServletLogger.logText("Getting Correct Location For : " + article.title);
+            Location bestLocation = getBestLocationGuess(article.url);
+            ServletLogger.logText("Done Getting Correct Location For : " + article.title);
+            if (bestLocation != null) {
+              Article finalArticleVersion = new Article(article.title, article.publisher, article.date, article.description, article.url, article.thumbnailUrl, bestLocation, topic);
+              ServletLogger.logText("Storing: " + finalArticleVersion.title);
+              if (storeArticle(datastore, backFacingEntityName, finalArticleVersion)) {
+                count += 1;
               }
             }
-        } else {
-            count = -1;
+          }
         }
+      } 
     }
     ServletLogger.logText("End getAndStoreArticles() | Count " + count);
     return count;
@@ -155,7 +159,7 @@ public class CategoryArticleRetrieval extends HttpServlet {
     Query query = new Query(name);
     PreparedQuery results = datastore.prepare(query);
     for (Entity entity : results.asIterable()) {
-        datastore.delete(entity.getKey());
+      datastore.delete(entity.getKey());
     }
     ServletLogger.logText("End deleteOldEntites()");
   } 
@@ -207,33 +211,17 @@ public class CategoryArticleRetrieval extends HttpServlet {
   }
 
   /**
-    Returns the article with the correct location if its valid (findable location and in english), otherwise returns null. 
-  */
-  private Article getArticleWithCorrectLocation(Article article, String theme) {
-    if (inEnglish(article.description) && article.url != null) {
-      Location bestLocation = getBestLocationGuess(article.url);
-      if (bestLocation != null) {
-        return new Article(article.title, article.publisher, article.date, article.description, article.url, article.thumbnailUrl, bestLocation, theme);
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  /**
     Returns the guessed location for the provided url. Returns null if none can be found.
   */
   private Location getBestLocationGuess(String url) {
-      int attempts = 0;
-      Location guess = null;
-      ArticleLabeler labeler = new ArticleLabeler(this.getServletContext(), "/WEB-INF/fullcitylist.csv");
-      while (attempts < 3 && guess == null) {
-          guess = labeler.useCloudToFindLocation(url);
-          attempts++;
-      }
-      return guess;
+    int attempts = 0;
+    Location guess = null;
+    ArticleLabeler labeler = new ArticleLabeler(this.getServletContext(), "/WEB-INF/fullcitylist.csv");
+    while (attempts < 3 && guess == null) {
+      guess = labeler.useCloudToFindLocation(url);
+      attempts++;
+    }
+    return guess;
   }
 
   /**
@@ -241,15 +229,16 @@ public class CategoryArticleRetrieval extends HttpServlet {
   */
   private boolean inEnglish(String text) {
     if (text != null) {
-        Translate translate = TranslateOptions.getDefaultInstance().getService();
-        Detection detection = translate.detect(text);
-        if (detection != null) {
-            return detection.getLanguage().equals("en");
-        } else {
-            return false;
-        }
+      Translate translate = TranslateOptions.getDefaultInstance().getService();
+      Detection detection = translate.detect(text);
+      if (detection != null) {
+        return detection.getLanguage().equals("en");
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
   }
+  
 }
