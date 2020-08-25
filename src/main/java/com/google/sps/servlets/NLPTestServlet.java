@@ -31,7 +31,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import javax.servlet.ServletContext;
 import java.util.Scanner;
-import com.google.sps.ArticleLabeler;
+import com.google.sps.servlets.ArticleLabeler;
 
 @WebServlet("/nlp-test")
 public class NLPTestServlet extends HttpServlet {
