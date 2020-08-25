@@ -16,11 +16,13 @@ class NewsApiNewsService implements NewsService {
     adapter = new NewsApiArticleAdapter();
   }
 
+  @Override
   public List<Article> getWorldNews(String category, int count) {
     List<String> apiResponse = requester.requestWorldNews(category, count);
     return parseResponse(apiResponse);
   }
   
+  @Override
   public List<Article> getRegionalNews(String region, String topic, int count) {
     List<String> apiResponse = requester.requestRegionalNews(region, topic, count);
     return parseResponse(apiResponse);

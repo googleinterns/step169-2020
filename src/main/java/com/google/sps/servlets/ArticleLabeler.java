@@ -1,4 +1,4 @@
-package com.google.sps;
+package com.google.sps.servlets;
 
 import java.io.IOException;  
 import org.jsoup.Jsoup;  
