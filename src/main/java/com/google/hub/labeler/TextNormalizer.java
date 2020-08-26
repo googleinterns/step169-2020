@@ -9,6 +9,7 @@ class TextNormalizer {
     private static String splitTargets = "\n ";
 
     public static List<String> getNormalizedWords(String text) {
+      if (text != null) {
         text = text.toLowerCase();
         List<String> words = new ArrayList<String>();
         String word = "";
@@ -28,6 +29,8 @@ class TextNormalizer {
             words.add(word);
         }
         return words;
+    } else {
+      return new ArrayList<String>();
     }
-
+  }
 }

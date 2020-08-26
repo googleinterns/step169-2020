@@ -6,6 +6,9 @@
   <threadsafe>false</threadsafe>
   <sessions-enabled>true</sessions-enabled>
   <runtime>java8</runtime>
+  <basic-scaling>
+    <max-instances>200</max-instances>
+  </basic-scaling>
   <static-files>
     <!-- prevent unwanted caching when accessing via the web preview server -->
     <include path="/**" expiration="0s" />
