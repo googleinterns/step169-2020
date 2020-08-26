@@ -103,7 +103,6 @@ function doSearchNotFromForm(barLabel) {
         const response = fetch(fetchParameter);
         response.then(getRegionArticles);
     } 
-    testNLP();
 }
 
 /**
@@ -120,7 +119,6 @@ function finishSearch(suggestions, topic, barLabel) {
         const response2 = fetch("https://maps.googleapis.com/maps/api/geocode/json?address=" + region +"&key=AIzaSyCZTgWP9rvo_ICsAcVXukYQ860eg3BS1wU");
         response2.then(getJSONOfGeoCoding);
     }
-    testNLP();
 }
 
 /**
@@ -155,6 +153,7 @@ function getRegionArticles(response) {
  */
 function displayArticlesFromJSON(json) {
     clearArticleList();
+    json.sort((a, b) => b.date.seconds - a.date.seconds);
     for (index in json) {
         let articleObj = json[index];
         createArticleHtmlComponent(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
