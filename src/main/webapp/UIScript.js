@@ -21,11 +21,8 @@ function initMap() {
     zoom: 6,
     disableDefaultUI:true,
     zoomControl:true,
-    // zoomControlOptions: {
-    //     position: google.maps.ControlPosition.TOP_RIGHT
-    // },
     minZoom:3,
-            styles: [
+    styles: [
         {
             "elementType": "geometry",
             "stylers": [
