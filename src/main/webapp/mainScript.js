@@ -267,7 +267,7 @@ function placeArticlesPinOnMap(articles, label, json) {
         let lat = json.results[0].geometry.location.lat;
         let long = json.results[0].geometry.location.lng;
         let title = json.results[0].formatted_address;
-        addLandmark(sharedMap, lat, long, title, articles, label);
+        addMarkerWithArticles(sharedMap, lat, long, title, articles, label);
         return json;
     }
     return;

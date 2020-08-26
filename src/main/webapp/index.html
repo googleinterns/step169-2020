@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8">
     <title>Hub</title>
@@ -23,18 +23,8 @@
     </button>
 
     <header>
-      <!-- Navigation bar with search form -->
-      <img src="images/hublogo3.png" alt="Hub" id="logo"/>            
-
-      <div id="hamburger">
-          <div class="ham-container">
-                <button id="ham" onclick="toggleNav()" aria-label="News Panel Toggle Button">&#9776;
-                </button>
-                <span class="tooltiptext">Article List</span>
-          </div>
-          <a id="logout" aria-label="Logout Button"></a>
-          <a id="login" aria-label="Login Button"></a>
-      </div>
+            <!-- Navigation bar with search form -->
+      <img src="images/hublogo3.png" alt="Hub" id="logo"/>     
 
       <div id="navbar">
         <form id="search-form">
@@ -60,22 +50,24 @@
             </button> 
         </form>
       </div>
+       
+
+      <div id="hamburger">
+          <div class="ham-container">
+                <button id="ham" onclick="toggleNav()" aria-label="News Panel Toggle Button">&#9776;
+                </button>
+                <span class="tooltiptext">Article List</span>
+          </div>
+          <a id="logout" aria-label="Logout Button"></a>
+          <a id="login" aria-label="Login Button"></a>
+      </div>
+
     </header>
 
     <div id="content">
-      <!-- Map of the world with relevant labels -->
-      <div id="map-container">
-          <div id="map" aria-label="News Map"></div>
-        </div>
 
-      <!-- List of articles returned from the search -->
-      <div id="article-list-container" aria-label="Article List">
-        <div id ="list">
-          <ul id="articles-list">                             
-          </ul>
-        </div>
-      </div>
-    </div>
+
+
     
     <!-- Select between different classes to view -->
     <div class="themes" id="themes">
@@ -111,7 +103,19 @@
             </div>
         </ul>
     </div>
+      <!-- List of articles returned from the search -->
+      <div id="article-list-container" aria-label="Article List">
+        <div id ="list">
+          <ul id="articles-list">                             
+          </ul>
+        </div>
+      </div>
 
+              <!-- Map of the world with relevant labels -->
+        <div id="map-container">
+          <div id="map" aria-label="News Map"></div>
+        </div>
+    </div>
 
     <!-- FOR SMALL SCREEN COMPATIBILITY  -->
         <button aria-label="Search Open Mini Form" class="search-expand" id="search-expand"
@@ -180,8 +184,8 @@
             </div>
         </ul>
         </div>
-
     </div>
+
     </body>
 </html>
  
