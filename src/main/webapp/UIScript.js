@@ -514,6 +514,7 @@ function displayAllRelevantLevels(markerSet, state){
  */
 function displayArticles(articles) {
     clearArticleList();
+    articles.sort((a, b) => b.date.seconds - a.date.seconds);
     for (i = 0; i < articles.length; i++) {
         articleObj = articles[i];
         createArticleHtmlComponent(articleObj.title, articleObj.publisher, articleObj.description, articleObj.date, articleObj.url, articleObj.thumbnailUrl);
