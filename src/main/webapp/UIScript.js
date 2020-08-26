@@ -22,7 +22,7 @@ function initMap() {
     disableDefaultUI:true,
     zoomControl:true,
     minZoom:3,
-            styles: [
+    styles: [
         {
             "elementType": "geometry",
             "stylers": [
@@ -270,8 +270,8 @@ function createArticleHtmlComponent(title, publisher, content, date, link, thumb
 }
 
 
-// Adds a landmark based on its corresponding label
-function addLandmark(map, lat, lng, title, articles, label) {
+// Adds a marker with the articles based on its corresponding label
+function addMarkerWithArticles(map, lat, lng, title, articles, label) {
 
     // Varies marker color based on label
     if (label == "city"){
@@ -385,44 +385,44 @@ function showBasedOnZoom(){
         var zoom = sharedMap.getZoom();
         // iterate over markers and call setVisible
         if (!showGeneralOn && !showBusinessOn && !showTechOn && !showSportsOn && !showHealthOn && !showEntertainmentOn && !showScienceOn){
-            zoomVisibility(markers["country"], (zoom < 5));
-            zoomVisibility(markers["city"], (zoom > 8));
-            zoomVisibility(markers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(markers["country"], (zoom < 4));
+            zoomVisibility(markers["city"], (zoom > 6));
+            zoomVisibility(markers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showGeneralOn) {
-            zoomVisibility(generalMarkers["country"], (zoom < 5));
-            zoomVisibility(generalMarkers["city"], (zoom > 8));
-            zoomVisibility(generalMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(generalMarkers["country"], (zoom < 4));
+            zoomVisibility(generalMarkers["city"], (zoom > 6));
+            zoomVisibility(generalMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showBusinessOn) {
-            zoomVisibility(businessMarkers["country"], (zoom < 5));
-            zoomVisibility(businessMarkers["city"], (zoom > 8));
-            zoomVisibility(businessMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(businessMarkers["country"], (zoom < 4));
+            zoomVisibility(businessMarkers["city"], (zoom > 6));
+            zoomVisibility(businessMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showTechOn) {
-            zoomVisibility(techMarkers["country"], (zoom < 5));
-            zoomVisibility(techMarkers["city"], (zoom > 8));
-            zoomVisibility(techMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(techMarkers["country"], (zoom < 4));
+            zoomVisibility(techMarkers["city"], (zoom > 6));
+            zoomVisibility(techMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showSportsOn) {
-            zoomVisibility(sportsMarkers["country"], (zoom < 5));
-            zoomVisibility(sportsMarkers["city"], (zoom > 8));
-            zoomVisibility(sportsMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(sportsMarkers["country"], (zoom < 4));
+            zoomVisibility(sportsMarkers["city"], (zoom > 6));
+            zoomVisibility(sportsMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showHealthOn) {
-            zoomVisibility(healthMarkers["country"], (zoom < 5));
-            zoomVisibility(healthMarkers["city"], (zoom > 8));
-            zoomVisibility(healthMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(healthMarkers["country"], (zoom < 4));
+            zoomVisibility(healthMarkers["city"], (zoom > 6));
+            zoomVisibility(healthMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showScienceOn) {
-            zoomVisibility(scienceMarkers["country"], (zoom < 5));
-            zoomVisibility(scienceMarkers["city"], (zoom > 8));
-            zoomVisibility(scienceMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(scienceMarkers["country"], (zoom < 4));
+            zoomVisibility(scienceMarkers["city"], (zoom > 6));
+            zoomVisibility(scienceMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
         if (showEntertainmentOn) {
-            zoomVisibility(entertainmentMarkers["country"], (zoom < 5));
-            zoomVisibility(entertainmentMarkers["city"], (zoom > 8));
-            zoomVisibility(entertainmentMarkers["subCountry"], (zoom >= 5) && (zoom <= 8));
+            zoomVisibility(entertainmentMarkers["country"], (zoom < 4));
+            zoomVisibility(entertainmentMarkers["city"], (zoom > 6));
+            zoomVisibility(entertainmentMarkers["subCountry"], (zoom >= 4) && (zoom <= 6));
         }
     });
 }
@@ -488,13 +488,13 @@ function displayRelevant(markerSet, visible){
     }
     else {
         for (i = 0; i < markers["country"].length; i++) {
-            markers["country"][i].setVisible((zoom < 5));
+            markers["country"][i].setVisible((zoom < 4));
         }
        for (i = 0; i < markers["city"].length; i++) {
-            markers["city"][i].setVisible((zoom > 8));
+            markers["city"][i].setVisible((zoom > 6));
         }
         for (i = 0; i < markers["subCountry"].length; i++) {
-            markers["subCountry"][i].setVisible((zoom >= 5) && (zoom <= 8));
+            markers["subCountry"][i].setVisible((zoom >= 4) && (zoom <= 6));
         }  
     }
 
@@ -505,9 +505,9 @@ function displayRelevant(markerSet, visible){
 
 function displayAllRelevantLevels(markerSet, state){
     var zoom = sharedMap.getZoom();
-    displayRelevant(markerSet["country"], state && (zoom < 5));
-    displayRelevant(markerSet["subCountry"], state && (zoom >= 5) && (zoom <= 8));
-    displayRelevant(markerSet["city"], state && (zoom > 8));
+    displayRelevant(markerSet["country"], state && (zoom < 4));
+    displayRelevant(markerSet["subCountry"], state && (zoom >= 4) && (zoom <= 6));
+    displayRelevant(markerSet["city"], state && (zoom > 6));
 }
 /**
     Displays the passed list of articles.

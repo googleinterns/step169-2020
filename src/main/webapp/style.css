@@ -114,7 +114,7 @@ body{
 
 #article-list-container {
   height: auto;
-  max-height: 85%;
+  max-height: calc(90vh - 210px);;
   width: 27vw;
   min-width:400px;
   position: fixed;
@@ -236,7 +236,9 @@ body{
 .searchTopic::placeholder, .searchRegion::placeholder {
     color:white;
 }
-
+.gmnoprint{
+    z-index: 1000;
+}
 #form-search-button {
     border-radius: 20px;
     outline:none;
@@ -326,6 +328,7 @@ body{
     font-size:19px;
     color:white;
     font-weight: bold;
+    z-index: 1;
 }
 .themes ul{
     list-style-type:none;
