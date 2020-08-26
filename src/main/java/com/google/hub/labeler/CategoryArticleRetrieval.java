@@ -53,6 +53,8 @@ import com.google.hub.news.Article;
 import com.google.hub.news.Location;
 import com.google.hub.news.NewsService;
 import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 /*
 <basic-scaling>
@@ -62,7 +64,7 @@ import java.util.Collections;
 
 // Servlet which retrieves and caches world news articles.
 @WebServlet("/articles")
-class CategoryArticleRetrieval extends HttpServlet {
+public class CategoryArticleRetrieval extends HttpServlet {
 
   private static final List<String> ALLOWED_TOPICS = Arrays.asList(
       "business", "entertainment", "health", "science", "sports", "technology", "general"
@@ -96,11 +98,12 @@ class CategoryArticleRetrieval extends HttpServlet {
   private int getAndStoreArticles(DatastoreService datastore, String backFacingEntityName) {
     int count = 0;
     ServletLogger.logText("Start getAndStoreArticles()");
+    Set<String> foundUrls = new HashSet<String>();
     for (String topic : ALLOWED_TOPICS) {
       List<Article> topicArticles = retrieveTopic(topic);
       if (topicArticles != null) {
         for (Article article : topicArticles) {
-          if (article != null && inEnglish(article.description)) {
+          if (article != null && inEnglish(article.description) && !foundUrls.contains(article.url)) {
             ServletLogger.logText("Getting Correct Location For : " + article.title);
             Location bestLocation = getBestLocationGuess(article.url);
             ServletLogger.logText("Done Getting Correct Location For : " + article.title);
@@ -109,6 +112,7 @@ class CategoryArticleRetrieval extends HttpServlet {
               ServletLogger.logText("Storing: " + finalArticleVersion.title);
               if (storeArticle(datastore, backFacingEntityName, finalArticleVersion)) {
                 count += 1;
+                foundUrls.add(finalArticleVersion.url);
               }
             }
           }
