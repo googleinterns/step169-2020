@@ -12,6 +12,18 @@ public final class Location {
   }
   
   @Override
+  public boolean equals(Object other) {
+    if (other instanceof Location) {
+      Location otherLocation = (Location) other;
+      return this.city.equals(otherLocation.city) 
+          && this.subcountry.equals(otherLocation.subcountry) 
+          && this.country.equals(otherLocation.country);
+    } else {
+      return false;
+    }
+  }
+
+  @Override
   public String toString() {
     return String.format("%s, %s, %s", city, subcountry, country);
   }

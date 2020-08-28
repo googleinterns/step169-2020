@@ -23,4 +23,21 @@ public final class Article {
     this.location = location;
     this.theme = theme;
   }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other instanceof Article) {
+      Article otherArticle = (Article) other;
+      return this.title.equals(otherArticle.title) 
+          && this.publisher.equals(otherArticle.publisher) 
+          && this.date.equals(otherArticle.date)
+          && this.description.equals(otherArticle.description)
+          && this.url.equals(otherArticle.url)
+          && this.thumbnailUrl.equals(otherArticle.thumbnailUrl)
+          && this.location.equals(otherArticle.location)
+          && this.theme.equals(otherArticle.theme);
+    } else {
+      return false;
+    }
+  }
 }
