@@ -15,6 +15,9 @@ public final class LocationTest {
   private static final Location LOCATION_1 = new Location(CITY_1, 
       SUBCOUNTRY_1, 
       COUNTRY_1);
+  private static final String CITY_2 = "Toronto";
+  private static final String SUBCOUNTRY_2 = "Ontario";
+  private static final String COUNTRY_2 = "Canada";
 
   @Test
   public void constructorSetsAppropriateFields() {
@@ -36,5 +39,29 @@ public final class LocationTest {
       SUBCOUNTRY_1, 
       COUNTRY_1); // Should be identical to LOCATION_1
     Assert.assertEquals(LOCATION_1, location2);
+  }
+
+  @Test
+  public void unequalCity() {
+    Location location2 = new Location(CITY_2, 
+      SUBCOUNTRY_1, 
+      COUNTRY_1); // Should be identical to LOCATION_1 besides city
+    Assert.assertNotEquals(LOCATION_1, location2);
+  }
+
+  @Test
+  public void unequalSubcountry() {
+    Location location2 = new Location(CITY_1, 
+      SUBCOUNTRY_2, 
+      COUNTRY_1); // Should be identical to LOCATION_1 besides subcountry
+    Assert.assertNotEquals(LOCATION_1, location2);
+  }
+
+  @Test
+  public void unequalCountry() {
+    Location location2 = new Location(CITY_1, 
+      SUBCOUNTRY_1, 
+      COUNTRY_2); // Should be identical to LOCATION_1 besides country
+    Assert.assertNotEquals(LOCATION_1, location2);
   }
 }
