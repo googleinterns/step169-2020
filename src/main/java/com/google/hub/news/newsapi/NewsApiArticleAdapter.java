@@ -73,7 +73,7 @@ class NewsApiArticleAdapter {
   private String removeHtmlTags(String text) {
     try {
       return Jsoup.parse(text).text();
-    } catch (NullPointerException e) {
+    } catch (NullPointerException | IllegalArgumentException e) {
       System.out.printf("Failed to remove HTML from text %s", text);
       return text;
     }
